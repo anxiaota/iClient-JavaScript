@@ -7,3 +7,4 @@ export {SuperMapCloud} from './SuperMapCloud';
 export {Tianditu} from './Tianditu';
 export {TileSuperMapRest} from './TileSuperMapRest';
 export {WebMap} from './WebMap';
+export {DatavizWebMap} from './DatavizWebMap';

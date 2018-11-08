@@ -261,6 +261,44 @@ export class Util {
         var canvas = document.createElement('canvas');
         return Boolean(canvas && canvas.getContext("webgl2"));
     }
+    static getRootUrl(url = window.location.href) {
+        /*let tempRootUrl = {};
+        let onlineUrl = 'https://www.supermapol.com/', itestUrl = 'https://itest.supermapol.com/';
+        if (tempRootUrl[url]) return tempRootUrl[url];
+        let rootUrl = "";
+        if (url.indexOf(onlineUrl) === 0) {
+            rootUrl = onlineUrl;
+        } else if (url.indexOf(itestUrl) === 0) {
+            rootUrl = itestUrl;
+        } else {
+            let regExp = /\/apps|\/web|\/manager|\/developer|\/services/i,
+                index = url.search(regExp);
+            let anchor = this.getAnchor(url);
+            rootUrl += anchor.protocol + '//' + this.getHost(url) + '/';
+            if (index > 0) {
+                rootUrl += url.substring(rootUrl.length, index + 1);
+            }
+        }
+        tempRootUrl[url] = rootUrl;
+        return rootUrl;*/
+        return 'http://127.0.0.1:8090/iportal/';
+    }
+    /**
+     * 是否为字符串
+     *
+     * @param str
+     */
+    static isString(str) {
+        return (typeof str === 'string') && str.constructor === String;
+    }
+    /**
+     * 字符串裁剪两边的空格
+     *
+     * @param str {String} 需要裁剪的字符串
+     */
+    static trim(str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
 
 
 }

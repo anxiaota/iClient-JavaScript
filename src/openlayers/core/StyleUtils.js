@@ -580,6 +580,94 @@ export class StyleUtils {
         }
         return style;
     }
+
+    static toOpenLayersStyle(style, type) {
+        style = style || this.getDefaultStyle();
+        let olStyle = new ol.style.Style();
+        let newImage, newFill, newStroke;
+        const ZERO = 0.0000001;
+        let {
+            fillColor,
+            fillOpacity,
+            strokeColor,
+            strokeWidth,
+            strokeOpacity,
+            radius,
+            lineDash,
+            lineCap,
+            src,
+            scale,
+            //size,
+            //imgSize,
+            anchor
+        } = style;
+        let fillColorArray = this.hexToRgb(fillColor);
+        if(fillColorArray){
+            fillColorArray.push(fillOpacity);
+        }
+
+        let strokeColorArray = this.hexToRgb(strokeColor);
+        if(strokeColorArray){
+            strokeColorArray.push(strokeOpacity);
+        }
+        if (type === "POINT") {
+            if (src) {
+                newImage = new ol.style.Icon({
+                    src: src,
+                    scale: scale,
+                    anchor: anchor
+                });
+            } else {
+                newImage = new ol.style.Circle({
+                    radius: radius,
+                    fill: new ol.style.Fill({
+                        color: fillColorArray
+                    }),
+                    stroke: new ol.style.Stroke({
+                        width: strokeWidth || ZERO,
+                        color: strokeColorArray
+                    })
+                });
+            }
+            olStyle.setImage(newImage);
+        }
+        /*else if (type === VectorFeatureType.LINE) {
+            newStroke = new ol.style.Stroke({
+                width: strokeWidth || ZERO,
+                color: strokeColorArray,
+                lineCap: lineCap || 'round',
+                lineDash: this.getFormatLineDash(lineDash, strokeWidth)
+            });
+            olStyle.setStroke(newStroke);
+        } else {
+            newFill = new ol.style.Fill({
+                color: fillColorArray
+            });
+            newStroke = new ol.style.Stroke({
+                width: strokeWidth || ZERO,
+                color: strokeColorArray,
+                lineCap: lineCap || 'round',
+                lineDash: this.getFormatLineDash(lineDash, strokeWidth)
+            });
+            olStyle.setFill(newFill);
+            olStyle.setStroke(newStroke);
+        }*/
+        return olStyle;
+    }
+    /**
+     * 将16进制的颜色，转换成rgb格式
+     * @param hexColor
+     * @returns {*[]}
+     */
+    static hexToRgb (hexColor) {
+        if (!hexColor) return;
+        var s = hexColor.replace('#', '').split('');
+        var rgb = [s[0] + s[1], s[2] + s[3], s[4] + s[5]];
+        rgb = rgb.map(function (hex) {
+            return parseInt(hex, 16);
+        });
+        return rgb;
+    }
 }
 
 ol.supermap.StyleUtils = StyleUtils;
