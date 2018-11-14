@@ -2,7 +2,11 @@
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
 import ol from 'openlayers';
-import {Unit, Bounds, GeoJSON as GeoJSONFormat} from '@supermap/iclient-common';
+import {Unit, Bounds, GeoJSON as GeoJSONFormat, FilterParameter,
+    GetFeaturesBySQLParameters,
+    GetFeaturesBySQLService
+} from '@supermap/iclient-common';
+import geostats from 'geostats'
 
 ol.supermap = ol.supermap || {};
 
@@ -299,7 +303,197 @@ export class Util {
     static trim(str) {
         return str.replace(/(^\s*)|(\s*$)/g, "");
     }
+    /**
+     * 随机生成id
+     * @param attr
+     * @returns {string}
+     */
+    static newGuid(attr) {
+        let len = attr || 32;
+        let guid = "";
+        for (let i = 1; i < len; i++) {
+            let n = Math.floor(Math.random() * 16.0).toString(16);
+            guid += n;
+        }
+        return guid;
+    }
+    /**
+     * 获取数组统计的值
+     *
+     * @param array 需要统计的数组
+     * @param type  统计方法
+     */
+    static getArrayStatistic(array, type){
+        if(!array.length) return 0;
+        if(type === "Sum" || type === "求和"){
+            // return this.getSum(array);
+        }
+        else if(type === "Maximum" || type === "最大值"){
+            return this.getMax(array);
+        }
+        else if(type === "Minimum" || type === "最小值"){
+            return this.getMin(array);
+        }
+        else if(type === "Average" || type === "平均值"){
+            return this.getMean(array);
+        }
+        else if(type === "Median" || type === "中位数"){
+            return this.getMedian(array);
+        }
+        else if(type === "times" || type === "计数"){
+            return this.getTimes(array);
+        }
+    }
+    /**
+     * 获取数组分段后的数值
+     *
+     * @param array  需要分段的数组
+     * @param type   分段方法
+     * @param segNum 分段个数
+     */
+    static getArraySegments(array, type, segNum) {
+        if(type === "Offset segment" || type === "等距分段法") {
+            return this.getEqInterval(array, segNum);
+        } else if(type === "Natural breaks" || type === "自然断裂法") {
+            return this.getJenks(array, segNum);
+        } else if(type === "Square root segment" || type === "平方根分段法") {
+            // 数据都必须 >= 0
+            let minValue = this.getMin(array);
+            if(minValue >= 0){
+                return this.getSqrtInterval(array, segNum);
+            }else {
+                // todo 提示数据不合法
+                //console.log('数据都必须 >= 0');
+                // Util.showMessage(Language.hasNegValue + Language.noSupportRange, 'ERROR');
+                return false;
+            }
 
+        } else if(type === "Logarithm segment" || type === "对数分段法") {
+            // 数据都必须 > 0
+            let minValue = this.getMin(array);
+            if(minValue > 0){
+                return this.getGeometricProgression(array, segNum);
+            }else {
+                // todo 提示数据不合法
+                //console.log('数据都必须 > 0');
+                // Util.showMessage(Language.hasZeroNegValue + Language.noSupportRange, 'ERROR');
+                return false;
+            }
+        }
+    }
+    /**
+     * 最小值
+     * @param array
+     * @returns {*}
+     */
+    static getMax(array){
+        return this.getInstance(array).max();
+    }
+    /**
+     * 最大值
+     * @param array
+     * @returns {*}
+     */
+    static getMin(array){
+        return this.getInstance(array).min();
+    }
+    /**
+     * 初始化插件实例
+     */
+    static newInstance() {
+        if(!this.geostatsInstance) {
+            this.geostatsInstance = new geostats();
+        }
+        return this.geostatsInstance;
+    }
+    /**
+     * 设置需要被处理的数组
+     *
+     * @param array
+     */
+    static getInstance(array) {
+        let instance = this.newInstance();
+        instance.setSerie(array);
+        return instance;
+    }
+    /**
+     * 等距分段法
+     *
+     * @param array
+     * @param segNum
+     */
+    static getEqInterval(array, segNum) {
+        return this.getInstance(array).getClassEqInterval(segNum);
+    }
+    /**
+     * 平方根分段法
+     *
+     * @param array
+     * @param segNum
+     */
+    static getSqrtInterval(array, segNum) {
+        array = array.map(function(value) {
+            return Math.sqrt(value);
+        });
+        let breaks = this.getInstance(array).getClassEqInterval(segNum);
+        return (
+            breaks.map(function(value) {
+                return value * value;
+            })
+        )
+    }
+
+    /**
+     * 检测数据是否为number
+     * @param value 值，未知数据类型
+     * @returns {boolean}
+     */
+    static isNumber(value) {
+        if (value === '') {
+            return false;
+        }
+        let mdata = Number(value);
+        if (mdata === 0) {
+            return true;
+        }
+        return !isNaN(mdata);
+    }
+    /**
+     * 获取feature (restData)
+     * @param url
+     * @param datasetNames
+     * @param processCompleted
+     * @param processFaild
+     */
+    static getFeatureBySQL(url, datasetNames, processCompleted, processFaild) {
+        let getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
+        getFeatureParam = new FilterParameter({
+            name: datasetNames.join().replace(":", "@"),
+            attributeFilter: 'SMID > 0'
+        });
+        getFeatureBySQLParams = new GetFeaturesBySQLParameters({
+            queryParameter: getFeatureParam,
+            datasetNames: datasetNames,
+            fromIndex: 0,
+            toIndex: 100000,
+            returnContent: true
+        });
+        let options = {
+            eventListeners: {
+                processCompleted: function (getFeaturesEventArgs) {
+                    processCompleted(getFeaturesEventArgs);
+                },
+                processFaild: function (e) {
+                    processFaild && processFaild(e);
+                }
+            }
+        };
+        /*if (!this.isInTheSameDomain(url)) {
+            url = this.getIPortalUrl() + 'apps/viewer/getUrlResource.json?url=' + url;
+        }*/
+        getFeatureBySQLService = new GetFeaturesBySQLService(url, options);
+        getFeatureBySQLService.processAsync(getFeatureBySQLParams);
+    }
 
 }
 

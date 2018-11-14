@@ -1,10 +1,11 @@
-/* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
- * This program are made available under the terms of the Apache License, Version 2.0
- * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
 import ol from 'openlayers';
+import canvg from 'canvg/';
 import {SuperMap, CommonUtil, StringExt} from '@supermap/iclient-common';
 import {StyleMap} from '../overlay/vectortile/StyleMap';
 import {DeafultCanvasStyle} from '../overlay/vectortile/DeafultCanvasStyle';
+import {
+    Util
+} from '../core/Util';
 
 ol.supermap = ol.supermap || {};
 
@@ -420,7 +421,7 @@ export class StyleUtils {
             return [];
         }
         var w = style.strokeWidth * widthFactor;
-        var str = style.strokeDashstyle;
+        var str = style.strokeDashstyle || style.lineDash;
         switch (str) {
             case 'solid':
                 return [];
@@ -631,12 +632,12 @@ export class StyleUtils {
             }
             olStyle.setImage(newImage);
         }
-        /*else if (type === VectorFeatureType.LINE) {
+        else if (type === "LINE" || type === "LINESTRING") {
             newStroke = new ol.style.Stroke({
                 width: strokeWidth || ZERO,
                 color: strokeColorArray,
-                lineCap: lineCap || 'round',
-                lineDash: this.getFormatLineDash(lineDash, strokeWidth)
+                lineCap: lineCap || 'round', //todo 缺少lineCap
+                lineDash: this.dashStyle(style, 1)
             });
             olStyle.setStroke(newStroke);
         } else {
@@ -647,11 +648,11 @@ export class StyleUtils {
                 width: strokeWidth || ZERO,
                 color: strokeColorArray,
                 lineCap: lineCap || 'round',
-                lineDash: this.getFormatLineDash(lineDash, strokeWidth)
+                lineDash: this.dashStyle(style, 1)
             });
             olStyle.setFill(newFill);
             olStyle.setStroke(newStroke);
-        }*/
+        }
         return olStyle;
     }
     /**
@@ -668,6 +669,57 @@ export class StyleUtils {
         });
         return rgb;
     }
+    /**
+     * 将颜色数组转换成标准的rgb颜色格式
+     * @param colorArray {Array}
+     * @returns {String} 'rgb(0,0,0)'或者 rgba(0,0,0,0)
+     */
+    static formatRGB(colorArray) {
+        let rgb;
+        if(colorArray.length === 3) {
+            rgb = 'rgb(';
+            colorArray.forEach(function (color,index) {
+                index === 2 ? rgb += color : rgb += color + ',';
+            });
+        } else {
+            rgb = 'rgba(';
+            colorArray.forEach(function (color,index) {
+                index === 3 ? rgb += color : rgb += color + ',';
+            });
+        }
+        return rgb;
+    }
+    /**
+     * 将SVG转换成Canvas
+     * @param svgUrl
+     * @param divDom
+     * @param callBack
+     */
+    static getCanvasFromSVG (svgUrl, divDom, callBack) {
+        //一个图层对应一个canvas
+        let canvas = document.createElement('canvas');
+        canvas.id = 'dataviz-canvas-' + Util.newGuid(8);
+        divDom.appendChild(canvas);
+        try {
+            canvg(canvas.id, svgUrl, {
+                ignoreMouse: true,
+                ignoreAnimation: true,
+                renderCallback: function () {
+                    if(canvas.width > 300 || canvas.height > 300) {
+                        // Util.showMessage(DataViz.Language.sizeIsWrong,'WARNING');
+                        return;
+                    }
+                    callBack(canvas);
+                },
+                forceRedraw: function () {
+                    return false
+                }
+            });
+        } catch(e) {
+            // Util.showMessage(DataViz.Language.loadFaild,'ERROR');
+        }
+    }
+
 }
 
 ol.supermap.StyleUtils = StyleUtils;

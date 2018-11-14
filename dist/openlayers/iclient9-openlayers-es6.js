@@ -89,7 +89,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 86);
+/******/ 	return __webpack_require__(__webpack_require__.s = 38);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -108,7 +108,7 @@ var TWO_PI = Math.PI * 2;
 // have drifted from their original location along the 180th meridian (due to
 // floating point error) from changing their sign.
 var SPI = 3.14159265359;
-var sign = __webpack_require__(10);
+var sign = __webpack_require__(5);
 
 module.exports = function(x) {
   return (Math.abs(x) <= SPI) ? x : (x - (sign(x) * TWO_PI));
@@ -116,6 +116,15 @@ module.exports = function(x) {
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+module.exports = function(eccent, sinphi, cosphi) {
+  var con = eccent * sinphi;
+  return cosphi / (Math.sqrt(1 - con * con));
+};
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports) {
 
 module.exports = function(x) {
@@ -126,129 +135,10 @@ module.exports = function(x) {
 };
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-module.exports = function(eccent, sinphi, cosphi) {
-  var con = eccent * sinphi;
-  return cosphi / (Math.sqrt(1 - con * con));
-};
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var HALF_PI = Math.PI/2;
-var sign = __webpack_require__(10);
-
-module.exports = function(x) {
-  return (Math.abs(x) < HALF_PI) ? x : (x - (sign(x) * Math.PI));
-};
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-module.exports = function(e0, e1, e2, e3, phi) {
-  return (e0 * phi - e1 * Math.sin(2 * phi) + e2 * Math.sin(4 * phi) - e3 * Math.sin(6 * phi));
-};
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-module.exports = function(x) {
-  return (x * x * x * (35 / 3072));
-};
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-module.exports = function(x) {
-  return (0.05859375 * x * x * (1 + 0.75 * x));
-};
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-module.exports = function(x) {
-  return (0.375 * x * (1 + 0.25 * x * (1 + 0.46875 * x)));
-};
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports) {
-
-module.exports = function(x) {
-  return (1 - 0.25 * x * (1 + x / 16 * (3 + 1.25 * x)));
-};
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-module.exports = function(x) {
-  return x<0 ? -1 : 1;
-};
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-var HALF_PI = Math.PI/2;
-module.exports = function(eccent, ts) {
-  var eccnth = 0.5 * eccent;
-  var con, dphi;
-  var phi = HALF_PI - 2 * Math.atan(ts);
-  for (var i = 0; i <= 15; i++) {
-    con = eccent * Math.sin(phi);
-    dphi = HALF_PI - 2 * Math.atan(ts * (Math.pow(((1 - con) / (1 + con)), eccnth))) - phi;
-    phi += dphi;
-    if (Math.abs(dphi) <= 0.0000000001) {
-      return phi;
-    }
-  }
-  //console.log("phi2z has NoConvergence");
-  return -9999;
-};
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-var HALF_PI = Math.PI/2;
-
-module.exports = function(eccent, phi, sinphi) {
-  var con = eccent * sinphi;
-  var com = 0.5 * eccent;
-  con = Math.pow(((1 - con) / (1 + con)), com);
-  return (Math.tan(0.5 * (HALF_PI - phi)) / con);
-};
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var proj4 = __webpack_require__(80);
-proj4.defaultDatum = 'WGS84'; //default datum
-proj4.Proj = __webpack_require__(19);
-proj4.WGS84 = new proj4.Proj('WGS84');
-proj4.Point = __webpack_require__(66);
-proj4.toPoint = __webpack_require__(28);
-proj4.defs = __webpack_require__(32);
-proj4.transform = __webpack_require__(29);
-proj4.mgrs = __webpack_require__(27);
-proj4.version = __webpack_require__(65).version;
-__webpack_require__(64)(proj4);
-module.exports = proj4;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var utils = __webpack_require__(81)
+var utils = __webpack_require__(45)
 
 var AND = '&&'
   , OR = '||'
@@ -539,82 +429,153 @@ function Query(dataSource, query, opts) {
   return Fields(Parse(dataSource));
 }
 
-if (typeof(module) != 'undefined' && typeof(module.exports) != 'undefined') module.exports = Query;
+if ( true && typeof(module.exports) != 'undefined') module.exports = Query;
 if (typeof(window) != 'undefined') window.Query = Query;
 
 /***/ }),
-/* 15 */
+/* 5 */
 /***/ (function(module, exports) {
 
-module.exports = function(eccent, sinphi) {
-  var con;
-  if (eccent > 1.0e-7) {
-    con = eccent * sinphi;
-    return ((1 - eccent * eccent) * (sinphi / (1 - con * con) - (0.5 / eccent) * Math.log((1 - con) / (1 + con))));
-  }
-  else {
-    return (2 * sinphi);
-  }
+module.exports = function(x) {
+  return x<0 ? -1 : 1;
 };
 
 /***/ }),
-/* 16 */
+/* 6 */
 /***/ (function(module, exports) {
 
-module.exports = function(ml, e0, e1, e2, e3) {
-  var phi;
-  var dphi;
+module.exports = function(x) {
+  return (1 - 0.25 * x * (1 + x / 16 * (3 + 1.25 * x)));
+};
 
-  phi = ml / e0;
-  for (var i = 0; i < 15; i++) {
-    dphi = (ml - (e0 * phi - e1 * Math.sin(2 * phi) + e2 * Math.sin(4 * phi) - e3 * Math.sin(6 * phi))) / (e0 - 2 * e1 * Math.cos(2 * phi) + 4 * e2 * Math.cos(4 * phi) - 6 * e3 * Math.cos(6 * phi));
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = function(x) {
+  return (0.375 * x * (1 + 0.25 * x * (1 + 0.46875 * x)));
+};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = function(x) {
+  return (0.05859375 * x * x * (1 + 0.75 * x));
+};
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = function(x) {
+  return (x * x * x * (35 / 3072));
+};
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = function(e0, e1, e2, e3, phi) {
+  return (e0 * phi - e1 * Math.sin(2 * phi) + e2 * Math.sin(4 * phi) - e3 * Math.sin(6 * phi));
+};
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var HALF_PI = Math.PI/2;
+var sign = __webpack_require__(5);
+
+module.exports = function(x) {
+  return (Math.abs(x) < HALF_PI) ? x : (x - (sign(x) * Math.PI));
+};
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+var HALF_PI = Math.PI/2;
+
+module.exports = function(eccent, phi, sinphi) {
+  var con = eccent * sinphi;
+  var com = 0.5 * eccent;
+  con = Math.pow(((1 - con) / (1 + con)), com);
+  return (Math.tan(0.5 * (HALF_PI - phi)) / con);
+};
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+var HALF_PI = Math.PI/2;
+module.exports = function(eccent, ts) {
+  var eccnth = 0.5 * eccent;
+  var con, dphi;
+  var phi = HALF_PI - 2 * Math.atan(ts);
+  for (var i = 0; i <= 15; i++) {
+    con = eccent * Math.sin(phi);
+    dphi = HALF_PI - 2 * Math.atan(ts * (Math.pow(((1 - con) / (1 + con)), eccnth))) - phi;
     phi += dphi;
     if (Math.abs(dphi) <= 0.0000000001) {
       return phi;
     }
   }
-
-  //..reportError("IMLFN-CONV:Latitude failed to converge after 15 iterations");
-  return NaN;
+  //console.log("phi2z has NoConvergence");
+  return -9999;
 };
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports) {
-
-module.exports = function(a, e, sinphi) {
-  var temp = e * sinphi;
-  return a / Math.sqrt(1 - temp * temp);
-};
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports) {
-
-module.exports = function(destination, source) {
-  destination = destination || {};
-  var value, property;
-  if (!source) {
-    return destination;
-  }
-  for (property in source) {
-    value = source[property];
-    if (value !== undefined) {
-      destination[property] = value;
-    }
-  }
-  return destination;
-};
-
-
-/***/ }),
-/* 19 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parseCode = __webpack_require__(79);
-var extend = __webpack_require__(18);
-var projections = __webpack_require__(75);
-var deriveConstants = __webpack_require__(72);
+var proj4 = __webpack_require__(46);
+proj4.defaultDatum = 'WGS84'; //default datum
+proj4.Proj = __webpack_require__(16);
+proj4.WGS84 = new proj4.Proj('WGS84');
+proj4.Point = __webpack_require__(60);
+proj4.toPoint = __webpack_require__(29);
+proj4.defs = __webpack_require__(25);
+proj4.transform = __webpack_require__(28);
+proj4.mgrs = __webpack_require__(30);
+proj4.version = __webpack_require__(61).version;
+__webpack_require__(62)(proj4);
+module.exports = proj4;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var parseCode = __webpack_require__(47);
+var extend = __webpack_require__(17);
+var projections = __webpack_require__(51);
+var deriveConstants = __webpack_require__(54);
 
 function Projection(srsCode,callback) {
   if (!(this instanceof Projection)) {
@@ -647,51 +608,72 @@ module.exports = Projection;
 
 
 /***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+module.exports = function(destination, source) {
+  destination = destination || {};
+  var value, property;
+  if (!source) {
+    return destination;
+  }
+  for (property in source) {
+    value = source[property];
+    if (value !== undefined) {
+      destination[property] = value;
+    }
+  }
+  return destination;
+};
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = function(a, e, sinphi) {
+  var temp = e * sinphi;
+  return a / Math.sqrt(1 - temp * temp);
+};
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+module.exports = function(ml, e0, e1, e2, e3) {
+  var phi;
+  var dphi;
+
+  phi = ml / e0;
+  for (var i = 0; i < 15; i++) {
+    dphi = (ml - (e0 * phi - e1 * Math.sin(2 * phi) + e2 * Math.sin(4 * phi) - e3 * Math.sin(6 * phi))) / (e0 - 2 * e1 * Math.cos(2 * phi) + 4 * e2 * Math.cos(4 * phi) - 6 * e3 * Math.cos(6 * phi));
+    phi += dphi;
+    if (Math.abs(dphi) <= 0.0000000001) {
+      return phi;
+    }
+  }
+
+  //..reportError("IMLFN-CONV:Latitude failed to converge after 15 iterations");
+  return NaN;
+};
+
+/***/ }),
 /* 20 */
 /***/ (function(module, exports) {
 
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
+module.exports = function(eccent, sinphi) {
+  var con;
+  if (eccent > 1.0e-7) {
+    con = eccent * sinphi;
+    return ((1 - eccent * eccent) * (sinphi / (1 - con * con) - (0.5 / eccent) * Math.log((1 - con) / (1 + con))));
+  }
+  else {
+    return (2 * sinphi);
+  }
+};
 
 /***/ }),
 /* 21 */
-/***/ (function(module, exports) {
-
-module.exports = function(){try{return turf}catch(e){return {}}}();
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
-module.exports = function(){try{return mapv}catch(e){return {}}}();
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports) {
-
-module.exports = function(){try{return XLSX}catch(e){return {}}}();
-
-/***/ }),
-/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
@@ -799,158 +781,548 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 });
 
 /***/ }),
-/* 25 */
+/* 22 */
 /***/ (function(module, exports) {
 
-module.exports = function(phi, sphi, cphi, en) {
-  cphi *= sphi;
-  sphi *= sphi;
-  return (en[0] * phi - cphi * (en[1] + sphi * (en[2] + sphi * (en[3] + sphi * en[4]))));
-};
+module.exports = function(){try{return XLSX}catch(e){return {}}}();
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports) {
+
+module.exports = function(){try{return mapv}catch(e){return {}}}();
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports) {
+
+module.exports = function(){try{return turf}catch(e){return {}}}();
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var globals = __webpack_require__(48);
+var parseProj = __webpack_require__(26);
+var wkt = __webpack_require__(27);
+
+function defs(name) {
+  /*global console*/
+  var that = this;
+  if (arguments.length === 2) {
+    var def = arguments[1];
+    if (typeof def === 'string') {
+      if (def.charAt(0) === '+') {
+        defs[name] = parseProj(arguments[1]);
+      }
+      else {
+        defs[name] = wkt(arguments[1]);
+      }
+    } else {
+      defs[name] = def;
+    }
+  }
+  else if (arguments.length === 1) {
+    if (Array.isArray(name)) {
+      return name.map(function(v) {
+        if (Array.isArray(v)) {
+          defs.apply(that, v);
+        }
+        else {
+          defs(v);
+        }
+      });
+    }
+    else if (typeof name === 'string') {
+      if (name in defs) {
+        return defs[name];
+      }
+    }
+    else if ('EPSG' in name) {
+      defs['EPSG:' + name.EPSG] = name;
+    }
+    else if ('ESRI' in name) {
+      defs['ESRI:' + name.ESRI] = name;
+    }
+    else if ('IAU2000' in name) {
+      defs['IAU2000:' + name.IAU2000] = name;
+    }
+    else {
+      console.log(name);
+    }
+    return;
+  }
+
+
+}
+globals(defs);
+module.exports = defs;
+
 
 /***/ }),
 /* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var e0fn = __webpack_require__(9);
-var e1fn = __webpack_require__(8);
-var e2fn = __webpack_require__(7);
-var e3fn = __webpack_require__(6);
-var mlfn = __webpack_require__(5);
-var adjust_lon = __webpack_require__(1);
-var HALF_PI = Math.PI/2;
-var EPSLN = 1.0e-10;
-var sign = __webpack_require__(10);
-var asinz = __webpack_require__(2);
+var D2R = 0.01745329251994329577;
+var PrimeMeridian = __webpack_require__(49);
+var units = __webpack_require__(50);
 
-exports.init = function() {
-  this.e0 = e0fn(this.es);
-  this.e1 = e1fn(this.es);
-  this.e2 = e2fn(this.es);
-  this.e3 = e3fn(this.es);
-  this.ml0 = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, this.lat0);
-};
-
-/**
-    Transverse Mercator Forward  - long/lat to x/y
-    long/lat in radians
-  */
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-
-  var delta_lon = adjust_lon(lon - this.long0);
-  var con;
-  var x, y;
-  var sin_phi = Math.sin(lat);
-  var cos_phi = Math.cos(lat);
-
-  if (this.sphere) {
-    var b = cos_phi * Math.sin(delta_lon);
-    if ((Math.abs(Math.abs(b) - 1)) < 0.0000000001) {
-      return (93);
+module.exports = function(defData) {
+  var self = {};
+  var paramObj = {};
+  defData.split("+").map(function(v) {
+    return v.trim();
+  }).filter(function(a) {
+    return a;
+  }).forEach(function(a) {
+    var split = a.split("=");
+    split.push(true);
+    paramObj[split[0].toLowerCase()] = split[1];
+  });
+  var paramName, paramVal, paramOutname;
+  var params = {
+    proj: 'projName',
+    datum: 'datumCode',
+    rf: function(v) {
+      self.rf = parseFloat(v);
+    },
+    lat_0: function(v) {
+      self.lat0 = v * D2R;
+    },
+    lat_1: function(v) {
+      self.lat1 = v * D2R;
+    },
+    lat_2: function(v) {
+      self.lat2 = v * D2R;
+    },
+    lat_ts: function(v) {
+      self.lat_ts = v * D2R;
+    },
+    lon_0: function(v) {
+      self.long0 = v * D2R;
+    },
+    lon_1: function(v) {
+      self.long1 = v * D2R;
+    },
+    lon_2: function(v) {
+      self.long2 = v * D2R;
+    },
+    alpha: function(v) {
+      self.alpha = parseFloat(v) * D2R;
+    },
+    lonc: function(v) {
+      self.longc = v * D2R;
+    },
+    x_0: function(v) {
+      self.x0 = parseFloat(v);
+    },
+    y_0: function(v) {
+      self.y0 = parseFloat(v);
+    },
+    k_0: function(v) {
+      self.k0 = parseFloat(v);
+    },
+    k: function(v) {
+      self.k0 = parseFloat(v);
+    },
+    a: function(v) {
+      self.a = parseFloat(v);
+    },
+    b: function(v) {
+      self.b = parseFloat(v);
+    },
+    r_a: function() {
+      self.R_A = true;
+    },
+    zone: function(v) {
+      self.zone = parseInt(v, 10);
+    },
+    south: function() {
+      self.utmSouth = true;
+    },
+    towgs84: function(v) {
+      self.datum_params = v.split(",").map(function(a) {
+        return parseFloat(a);
+      });
+    },
+    to_meter: function(v) {
+      self.to_meter = parseFloat(v);
+    },
+    units: function(v) {
+      self.units = v;
+      if (units[v]) {
+        self.to_meter = units[v].to_meter;
+      }
+    },
+    from_greenwich: function(v) {
+      self.from_greenwich = v * D2R;
+    },
+    pm: function(v) {
+      self.from_greenwich = (PrimeMeridian[v] ? PrimeMeridian[v] : parseFloat(v)) * D2R;
+    },
+    nadgrids: function(v) {
+      if (v === '@null') {
+        self.datumCode = 'none';
+      }
+      else {
+        self.nadgrids = v;
+      }
+    },
+    axis: function(v) {
+      var legalAxis = "ewnsud";
+      if (v.length === 3 && legalAxis.indexOf(v.substr(0, 1)) !== -1 && legalAxis.indexOf(v.substr(1, 1)) !== -1 && legalAxis.indexOf(v.substr(2, 1)) !== -1) {
+        self.axis = v;
+      }
+    }
+  };
+  for (paramName in paramObj) {
+    paramVal = paramObj[paramName];
+    if (paramName in params) {
+      paramOutname = params[paramName];
+      if (typeof paramOutname === 'function') {
+        paramOutname(paramVal);
+      }
+      else {
+        self[paramOutname] = paramVal;
+      }
     }
     else {
-      x = 0.5 * this.a * this.k0 * Math.log((1 + b) / (1 - b));
-      con = Math.acos(cos_phi * Math.cos(delta_lon) / Math.sqrt(1 - b * b));
-      if (lat < 0) {
-        con = -con;
-      }
-      y = this.a * this.k0 * (con - this.lat0);
+      self[paramName] = paramVal;
     }
   }
-  else {
-    var al = cos_phi * delta_lon;
-    var als = Math.pow(al, 2);
-    var c = this.ep2 * Math.pow(cos_phi, 2);
-    var tq = Math.tan(lat);
-    var t = Math.pow(tq, 2);
-    con = 1 - this.es * Math.pow(sin_phi, 2);
-    var n = this.a / Math.sqrt(con);
-    var ml = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, lat);
-
-    x = this.k0 * n * al * (1 + als / 6 * (1 - t + c + als / 20 * (5 - 18 * t + Math.pow(t, 2) + 72 * c - 58 * this.ep2))) + this.x0;
-    y = this.k0 * (ml - this.ml0 + n * tq * (als * (0.5 + als / 24 * (5 - t + 9 * c + 4 * Math.pow(c, 2) + als / 30 * (61 - 58 * t + Math.pow(t, 2) + 600 * c - 330 * this.ep2))))) + this.y0;
-
+  if(typeof self.datumCode === 'string' && self.datumCode !== "WGS84"){
+    self.datumCode = self.datumCode.toLowerCase();
   }
-  p.x = x;
-  p.y = y;
-  return p;
+  return self;
 };
-
-/**
-    Transverse Mercator Inverse  -  x/y to long/lat
-  */
-exports.inverse = function(p) {
-  var con, phi;
-  var delta_phi;
-  var i;
-  var max_iter = 6;
-  var lat, lon;
-
-  if (this.sphere) {
-    var f = Math.exp(p.x / (this.a * this.k0));
-    var g = 0.5 * (f - 1 / f);
-    var temp = this.lat0 + p.y / (this.a * this.k0);
-    var h = Math.cos(temp);
-    con = Math.sqrt((1 - h * h) / (1 + g * g));
-    lat = asinz(con);
-    if (temp < 0) {
-      lat = -lat;
-    }
-    if ((g === 0) && (h === 0)) {
-      lon = this.long0;
-    }
-    else {
-      lon = adjust_lon(Math.atan2(g, h) + this.long0);
-    }
-  }
-  else { // ellipsoidal form
-    var x = p.x - this.x0;
-    var y = p.y - this.y0;
-
-    con = (this.ml0 + y / this.k0) / this.a;
-    phi = con;
-    for (i = 0; true; i++) {
-      delta_phi = ((con + this.e1 * Math.sin(2 * phi) - this.e2 * Math.sin(4 * phi) + this.e3 * Math.sin(6 * phi)) / this.e0) - phi;
-      phi += delta_phi;
-      if (Math.abs(delta_phi) <= EPSLN) {
-        break;
-      }
-      if (i >= max_iter) {
-        return (95);
-      }
-    } // for()
-    if (Math.abs(phi) < HALF_PI) {
-      var sin_phi = Math.sin(phi);
-      var cos_phi = Math.cos(phi);
-      var tan_phi = Math.tan(phi);
-      var c = this.ep2 * Math.pow(cos_phi, 2);
-      var cs = Math.pow(c, 2);
-      var t = Math.pow(tan_phi, 2);
-      var ts = Math.pow(t, 2);
-      con = 1 - this.es * Math.pow(sin_phi, 2);
-      var n = this.a / Math.sqrt(con);
-      var r = n * (1 - this.es) / con;
-      var d = x / (n * this.k0);
-      var ds = Math.pow(d, 2);
-      lat = phi - (n * tan_phi * ds / r) * (0.5 - ds / 24 * (5 + 3 * t + 10 * c - 4 * cs - 9 * this.ep2 - ds / 30 * (61 + 90 * t + 298 * c + 45 * ts - 252 * this.ep2 - 3 * cs)));
-      lon = adjust_lon(this.long0 + (d * (1 - ds / 6 * (1 + 2 * t + c - ds / 20 * (5 - 2 * c + 28 * t - 3 * cs + 8 * this.ep2 + 24 * ts))) / cos_phi));
-    }
-    else {
-      lat = HALF_PI * sign(y);
-      lon = this.long0;
-    }
-  }
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["Transverse_Mercator", "Transverse Mercator", "tmerc"];
 
 
 /***/ }),
 /* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var D2R = 0.01745329251994329577;
+var extend = __webpack_require__(17);
+
+function mapit(obj, key, v) {
+  obj[key] = v.map(function(aa) {
+    var o = {};
+    sExpr(aa, o);
+    return o;
+  }).reduce(function(a, b) {
+    return extend(a, b);
+  }, {});
+}
+
+function sExpr(v, obj) {
+  var key;
+  if (!Array.isArray(v)) {
+    obj[v] = true;
+    return;
+  }
+  else {
+    key = v.shift();
+    if (key === 'PARAMETER') {
+      key = v.shift();
+    }
+    if (v.length === 1) {
+      if (Array.isArray(v[0])) {
+        obj[key] = {};
+        sExpr(v[0], obj[key]);
+      }
+      else {
+        obj[key] = v[0];
+      }
+    }
+    else if (!v.length) {
+      obj[key] = true;
+    }
+    else if (key === 'TOWGS84') {
+      obj[key] = v;
+    }
+    else {
+      obj[key] = {};
+      if (['UNIT', 'PRIMEM', 'VERT_DATUM'].indexOf(key) > -1) {
+        obj[key] = {
+          name: v[0].toLowerCase(),
+          convert: v[1]
+        };
+        if (v.length === 3) {
+          obj[key].auth = v[2];
+        }
+      }
+      else if (key === 'SPHEROID') {
+        obj[key] = {
+          name: v[0],
+          a: v[1],
+          rf: v[2]
+        };
+        if (v.length === 4) {
+          obj[key].auth = v[3];
+        }
+      }
+      else if (['GEOGCS', 'GEOCCS', 'DATUM', 'VERT_CS', 'COMPD_CS', 'LOCAL_CS', 'FITTED_CS', 'LOCAL_DATUM'].indexOf(key) > -1) {
+        v[0] = ['name', v[0]];
+        mapit(obj, key, v);
+      }
+      else if (v.every(function(aa) {
+        return Array.isArray(aa);
+      })) {
+        mapit(obj, key, v);
+      }
+      else {
+        sExpr(v, obj[key]);
+      }
+    }
+  }
+}
+
+function rename(obj, params) {
+  var outName = params[0];
+  var inName = params[1];
+  if (!(outName in obj) && (inName in obj)) {
+    obj[outName] = obj[inName];
+    if (params.length === 3) {
+      obj[outName] = params[2](obj[outName]);
+    }
+  }
+}
+
+function d2r(input) {
+  return input * D2R;
+}
+
+function cleanWKT(wkt) {
+  if (wkt.type === 'GEOGCS') {
+    wkt.projName = 'longlat';
+  }
+  else if (wkt.type === 'LOCAL_CS') {
+    wkt.projName = 'identity';
+    wkt.local = true;
+  }
+  else {
+    if (typeof wkt.PROJECTION === "object") {
+      wkt.projName = Object.keys(wkt.PROJECTION)[0];
+    }
+    else {
+      wkt.projName = wkt.PROJECTION;
+    }
+  }
+  if (wkt.UNIT) {
+    wkt.units = wkt.UNIT.name.toLowerCase();
+    if (wkt.units === 'metre') {
+      wkt.units = 'meter';
+    }
+    if (wkt.UNIT.convert) {
+      if (wkt.type === 'GEOGCS') {
+        if (wkt.DATUM && wkt.DATUM.SPHEROID) {
+          wkt.to_meter = parseFloat(wkt.UNIT.convert, 10)*wkt.DATUM.SPHEROID.a;
+        }
+      } else {
+        wkt.to_meter = parseFloat(wkt.UNIT.convert, 10);
+      }
+    }
+  }
+
+  if (wkt.GEOGCS) {
+    //if(wkt.GEOGCS.PRIMEM&&wkt.GEOGCS.PRIMEM.convert){
+    //  wkt.from_greenwich=wkt.GEOGCS.PRIMEM.convert*D2R;
+    //}
+    if (wkt.GEOGCS.DATUM) {
+      wkt.datumCode = wkt.GEOGCS.DATUM.name.toLowerCase();
+    }
+    else {
+      wkt.datumCode = wkt.GEOGCS.name.toLowerCase();
+    }
+    if (wkt.datumCode.slice(0, 2) === 'd_') {
+      wkt.datumCode = wkt.datumCode.slice(2);
+    }
+    if (wkt.datumCode === 'new_zealand_geodetic_datum_1949' || wkt.datumCode === 'new_zealand_1949') {
+      wkt.datumCode = 'nzgd49';
+    }
+    if (wkt.datumCode === "wgs_1984") {
+      if (wkt.PROJECTION === 'Mercator_Auxiliary_Sphere') {
+        wkt.sphere = true;
+      }
+      wkt.datumCode = 'wgs84';
+    }
+    if (wkt.datumCode.slice(-6) === '_ferro') {
+      wkt.datumCode = wkt.datumCode.slice(0, - 6);
+    }
+    if (wkt.datumCode.slice(-8) === '_jakarta') {
+      wkt.datumCode = wkt.datumCode.slice(0, - 8);
+    }
+    if (~wkt.datumCode.indexOf('belge')) {
+      wkt.datumCode = "rnb72";
+    }
+    if (wkt.GEOGCS.DATUM && wkt.GEOGCS.DATUM.SPHEROID) {
+      wkt.ellps = wkt.GEOGCS.DATUM.SPHEROID.name.replace('_19', '').replace(/[Cc]larke\_18/, 'clrk');
+      if (wkt.ellps.toLowerCase().slice(0, 13) === "international") {
+        wkt.ellps = 'intl';
+      }
+
+      wkt.a = wkt.GEOGCS.DATUM.SPHEROID.a;
+      wkt.rf = parseFloat(wkt.GEOGCS.DATUM.SPHEROID.rf, 10);
+    }
+    if (~wkt.datumCode.indexOf('osgb_1936')) {
+      wkt.datumCode = "osgb36";
+    }
+  }
+  if (wkt.b && !isFinite(wkt.b)) {
+    wkt.b = wkt.a;
+  }
+
+  function toMeter(input) {
+    var ratio = wkt.to_meter || 1;
+    return parseFloat(input, 10) * ratio;
+  }
+  var renamer = function(a) {
+    return rename(wkt, a);
+  };
+  var list = [
+    ['standard_parallel_1', 'Standard_Parallel_1'],
+    ['standard_parallel_2', 'Standard_Parallel_2'],
+    ['false_easting', 'False_Easting'],
+    ['false_northing', 'False_Northing'],
+    ['central_meridian', 'Central_Meridian'],
+    ['latitude_of_origin', 'Latitude_Of_Origin'],
+    ['latitude_of_origin', 'Central_Parallel'],
+    ['scale_factor', 'Scale_Factor'],
+    ['k0', 'scale_factor'],
+    ['latitude_of_center', 'Latitude_of_center'],
+    ['lat0', 'latitude_of_center', d2r],
+    ['longitude_of_center', 'Longitude_Of_Center'],
+    ['longc', 'longitude_of_center', d2r],
+    ['x0', 'false_easting', toMeter],
+    ['y0', 'false_northing', toMeter],
+    ['long0', 'central_meridian', d2r],
+    ['lat0', 'latitude_of_origin', d2r],
+    ['lat0', 'standard_parallel_1', d2r],
+    ['lat1', 'standard_parallel_1', d2r],
+    ['lat2', 'standard_parallel_2', d2r],
+    ['alpha', 'azimuth', d2r],
+    ['srsCode', 'name']
+  ];
+  list.forEach(renamer);
+  if (!wkt.long0 && wkt.longc && (wkt.projName === 'Albers_Conic_Equal_Area' || wkt.projName === "Lambert_Azimuthal_Equal_Area")) {
+    wkt.long0 = wkt.longc;
+  }
+  if (!wkt.lat_ts && wkt.lat1 && (wkt.projName === 'Stereographic_South_Pole' || wkt.projName === 'Polar Stereographic (variant B)')) {
+    wkt.lat0 = d2r(wkt.lat1 > 0 ? 90 : -90);
+    wkt.lat_ts = wkt.lat1;
+  }
+}
+module.exports = function(wkt, self) {
+  var lisp = JSON.parse(("," + wkt).replace(/\s*\,\s*([A-Z_0-9]+?)(\[)/g, ',["$1",').slice(1).replace(/\s*\,\s*([A-Z_0-9]+?)\]/g, ',"$1"]').replace(/,\["VERTCS".+/,''));
+  var type = lisp.shift();
+  var name = lisp.shift();
+  lisp.unshift(['name', name]);
+  lisp.unshift(['type', type]);
+  lisp.unshift('output');
+  var obj = {};
+  sExpr(lisp, obj);
+  cleanWKT(obj.output);
+  return extend(self, obj.output);
+};
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var D2R = 0.01745329251994329577;
+var R2D = 57.29577951308232088;
+var PJD_3PARAM = 1;
+var PJD_7PARAM = 2;
+var datum_transform = __webpack_require__(58);
+var adjust_axis = __webpack_require__(59);
+var proj = __webpack_require__(16);
+var toPoint = __webpack_require__(29);
+module.exports = function transform(source, dest, point) {
+  var wgs84;
+  if (Array.isArray(point)) {
+    point = toPoint(point);
+  }
+  function checkNotWGS(source, dest) {
+    return ((source.datum.datum_type === PJD_3PARAM || source.datum.datum_type === PJD_7PARAM) && dest.datumCode !== "WGS84");
+  }
+
+  // Workaround for datum shifts towgs84, if either source or destination projection is not wgs84
+  if (source.datum && dest.datum && (checkNotWGS(source, dest) || checkNotWGS(dest, source))) {
+    wgs84 = new proj('WGS84');
+    transform(source, wgs84, point);
+    source = wgs84;
+  }
+  // DGR, 2010/11/12
+  if (source.axis !== "enu") {
+    adjust_axis(source, false, point);
+  }
+  // Transform source points to long/lat, if they aren't already.
+  if (source.projName === "longlat") {
+    point.x *= D2R; // convert degrees to radians
+    point.y *= D2R;
+  }
+  else {
+    if (source.to_meter) {
+      point.x *= source.to_meter;
+      point.y *= source.to_meter;
+    }
+    source.inverse(point); // Convert Cartesian to longlat
+  }
+  // Adjust for the prime meridian if necessary
+  if (source.from_greenwich) {
+    point.x += source.from_greenwich;
+  }
+
+  // Convert datums if needed, and if possible.
+  point = datum_transform(source.datum, dest.datum, point);
+
+  // Adjust for the prime meridian if necessary
+  if (dest.from_greenwich) {
+    point.x -= dest.from_greenwich;
+  }
+
+  if (dest.projName === "longlat") {
+    // convert radians to decimal degrees
+    point.x *= R2D;
+    point.y *= R2D;
+  }
+  else { // else project
+    dest.forward(point);
+    if (dest.to_meter) {
+      point.x /= dest.to_meter;
+      point.y /= dest.to_meter;
+    }
+  }
+
+  // DGR, 2010/11/12
+  if (dest.axis !== "enu") {
+    adjust_axis(dest, true, point);
+  }
+
+  return point;
+};
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
+
+module.exports = function (array){
+  var out = {
+    x: array[0],
+    y: array[1]
+  };
+  if (array.length>2) {
+    out.z = array[2];
+  }
+  if (array.length>3) {
+    out.m = array[3];
+  }
+  return out;
+};
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports) {
 
 
@@ -1698,530 +2070,404 @@ function getMinNorthing(zoneLetter) {
 
 
 /***/ }),
-/* 28 */
-/***/ (function(module, exports) {
-
-module.exports = function (array){
-  var out = {
-    x: array[0],
-    y: array[1]
-  };
-  if (array.length>2) {
-    out.z = array[2];
-  }
-  if (array.length>3) {
-    out.m = array[3];
-  }
-  return out;
-};
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var D2R = 0.01745329251994329577;
-var R2D = 57.29577951308232088;
-var PJD_3PARAM = 1;
-var PJD_7PARAM = 2;
-var datum_transform = __webpack_require__(68);
-var adjust_axis = __webpack_require__(67);
-var proj = __webpack_require__(19);
-var toPoint = __webpack_require__(28);
-module.exports = function transform(source, dest, point) {
-  var wgs84;
-  if (Array.isArray(point)) {
-    point = toPoint(point);
-  }
-  function checkNotWGS(source, dest) {
-    return ((source.datum.datum_type === PJD_3PARAM || source.datum.datum_type === PJD_7PARAM) && dest.datumCode !== "WGS84");
-  }
-
-  // Workaround for datum shifts towgs84, if either source or destination projection is not wgs84
-  if (source.datum && dest.datum && (checkNotWGS(source, dest) || checkNotWGS(dest, source))) {
-    wgs84 = new proj('WGS84');
-    transform(source, wgs84, point);
-    source = wgs84;
-  }
-  // DGR, 2010/11/12
-  if (source.axis !== "enu") {
-    adjust_axis(source, false, point);
-  }
-  // Transform source points to long/lat, if they aren't already.
-  if (source.projName === "longlat") {
-    point.x *= D2R; // convert degrees to radians
-    point.y *= D2R;
-  }
-  else {
-    if (source.to_meter) {
-      point.x *= source.to_meter;
-      point.y *= source.to_meter;
-    }
-    source.inverse(point); // Convert Cartesian to longlat
-  }
-  // Adjust for the prime meridian if necessary
-  if (source.from_greenwich) {
-    point.x += source.from_greenwich;
-  }
-
-  // Convert datums if needed, and if possible.
-  point = datum_transform(source.datum, dest.datum, point);
-
-  // Adjust for the prime meridian if necessary
-  if (dest.from_greenwich) {
-    point.x -= dest.from_greenwich;
-  }
-
-  if (dest.projName === "longlat") {
-    // convert radians to decimal degrees
-    point.x *= R2D;
-    point.y *= R2D;
-  }
-  else { // else project
-    dest.forward(point);
-    if (dest.to_meter) {
-      point.x /= dest.to_meter;
-      point.y /= dest.to_meter;
-    }
-  }
-
-  // DGR, 2010/11/12
-  if (dest.axis !== "enu") {
-    adjust_axis(dest, true, point);
-  }
-
-  return point;
-};
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var D2R = 0.01745329251994329577;
-var extend = __webpack_require__(18);
-
-function mapit(obj, key, v) {
-  obj[key] = v.map(function(aa) {
-    var o = {};
-    sExpr(aa, o);
-    return o;
-  }).reduce(function(a, b) {
-    return extend(a, b);
-  }, {});
-}
-
-function sExpr(v, obj) {
-  var key;
-  if (!Array.isArray(v)) {
-    obj[v] = true;
-    return;
-  }
-  else {
-    key = v.shift();
-    if (key === 'PARAMETER') {
-      key = v.shift();
-    }
-    if (v.length === 1) {
-      if (Array.isArray(v[0])) {
-        obj[key] = {};
-        sExpr(v[0], obj[key]);
-      }
-      else {
-        obj[key] = v[0];
-      }
-    }
-    else if (!v.length) {
-      obj[key] = true;
-    }
-    else if (key === 'TOWGS84') {
-      obj[key] = v;
-    }
-    else {
-      obj[key] = {};
-      if (['UNIT', 'PRIMEM', 'VERT_DATUM'].indexOf(key) > -1) {
-        obj[key] = {
-          name: v[0].toLowerCase(),
-          convert: v[1]
-        };
-        if (v.length === 3) {
-          obj[key].auth = v[2];
-        }
-      }
-      else if (key === 'SPHEROID') {
-        obj[key] = {
-          name: v[0],
-          a: v[1],
-          rf: v[2]
-        };
-        if (v.length === 4) {
-          obj[key].auth = v[3];
-        }
-      }
-      else if (['GEOGCS', 'GEOCCS', 'DATUM', 'VERT_CS', 'COMPD_CS', 'LOCAL_CS', 'FITTED_CS', 'LOCAL_DATUM'].indexOf(key) > -1) {
-        v[0] = ['name', v[0]];
-        mapit(obj, key, v);
-      }
-      else if (v.every(function(aa) {
-        return Array.isArray(aa);
-      })) {
-        mapit(obj, key, v);
-      }
-      else {
-        sExpr(v, obj[key]);
-      }
-    }
-  }
-}
-
-function rename(obj, params) {
-  var outName = params[0];
-  var inName = params[1];
-  if (!(outName in obj) && (inName in obj)) {
-    obj[outName] = obj[inName];
-    if (params.length === 3) {
-      obj[outName] = params[2](obj[outName]);
-    }
-  }
-}
-
-function d2r(input) {
-  return input * D2R;
-}
-
-function cleanWKT(wkt) {
-  if (wkt.type === 'GEOGCS') {
-    wkt.projName = 'longlat';
-  }
-  else if (wkt.type === 'LOCAL_CS') {
-    wkt.projName = 'identity';
-    wkt.local = true;
-  }
-  else {
-    if (typeof wkt.PROJECTION === "object") {
-      wkt.projName = Object.keys(wkt.PROJECTION)[0];
-    }
-    else {
-      wkt.projName = wkt.PROJECTION;
-    }
-  }
-  if (wkt.UNIT) {
-    wkt.units = wkt.UNIT.name.toLowerCase();
-    if (wkt.units === 'metre') {
-      wkt.units = 'meter';
-    }
-    if (wkt.UNIT.convert) {
-      if (wkt.type === 'GEOGCS') {
-        if (wkt.DATUM && wkt.DATUM.SPHEROID) {
-          wkt.to_meter = parseFloat(wkt.UNIT.convert, 10)*wkt.DATUM.SPHEROID.a;
-        }
-      } else {
-        wkt.to_meter = parseFloat(wkt.UNIT.convert, 10);
-      }
-    }
-  }
-
-  if (wkt.GEOGCS) {
-    //if(wkt.GEOGCS.PRIMEM&&wkt.GEOGCS.PRIMEM.convert){
-    //  wkt.from_greenwich=wkt.GEOGCS.PRIMEM.convert*D2R;
-    //}
-    if (wkt.GEOGCS.DATUM) {
-      wkt.datumCode = wkt.GEOGCS.DATUM.name.toLowerCase();
-    }
-    else {
-      wkt.datumCode = wkt.GEOGCS.name.toLowerCase();
-    }
-    if (wkt.datumCode.slice(0, 2) === 'd_') {
-      wkt.datumCode = wkt.datumCode.slice(2);
-    }
-    if (wkt.datumCode === 'new_zealand_geodetic_datum_1949' || wkt.datumCode === 'new_zealand_1949') {
-      wkt.datumCode = 'nzgd49';
-    }
-    if (wkt.datumCode === "wgs_1984") {
-      if (wkt.PROJECTION === 'Mercator_Auxiliary_Sphere') {
-        wkt.sphere = true;
-      }
-      wkt.datumCode = 'wgs84';
-    }
-    if (wkt.datumCode.slice(-6) === '_ferro') {
-      wkt.datumCode = wkt.datumCode.slice(0, - 6);
-    }
-    if (wkt.datumCode.slice(-8) === '_jakarta') {
-      wkt.datumCode = wkt.datumCode.slice(0, - 8);
-    }
-    if (~wkt.datumCode.indexOf('belge')) {
-      wkt.datumCode = "rnb72";
-    }
-    if (wkt.GEOGCS.DATUM && wkt.GEOGCS.DATUM.SPHEROID) {
-      wkt.ellps = wkt.GEOGCS.DATUM.SPHEROID.name.replace('_19', '').replace(/[Cc]larke\_18/, 'clrk');
-      if (wkt.ellps.toLowerCase().slice(0, 13) === "international") {
-        wkt.ellps = 'intl';
-      }
-
-      wkt.a = wkt.GEOGCS.DATUM.SPHEROID.a;
-      wkt.rf = parseFloat(wkt.GEOGCS.DATUM.SPHEROID.rf, 10);
-    }
-    if (~wkt.datumCode.indexOf('osgb_1936')) {
-      wkt.datumCode = "osgb36";
-    }
-  }
-  if (wkt.b && !isFinite(wkt.b)) {
-    wkt.b = wkt.a;
-  }
-
-  function toMeter(input) {
-    var ratio = wkt.to_meter || 1;
-    return parseFloat(input, 10) * ratio;
-  }
-  var renamer = function(a) {
-    return rename(wkt, a);
-  };
-  var list = [
-    ['standard_parallel_1', 'Standard_Parallel_1'],
-    ['standard_parallel_2', 'Standard_Parallel_2'],
-    ['false_easting', 'False_Easting'],
-    ['false_northing', 'False_Northing'],
-    ['central_meridian', 'Central_Meridian'],
-    ['latitude_of_origin', 'Latitude_Of_Origin'],
-    ['latitude_of_origin', 'Central_Parallel'],
-    ['scale_factor', 'Scale_Factor'],
-    ['k0', 'scale_factor'],
-    ['latitude_of_center', 'Latitude_of_center'],
-    ['lat0', 'latitude_of_center', d2r],
-    ['longitude_of_center', 'Longitude_Of_Center'],
-    ['longc', 'longitude_of_center', d2r],
-    ['x0', 'false_easting', toMeter],
-    ['y0', 'false_northing', toMeter],
-    ['long0', 'central_meridian', d2r],
-    ['lat0', 'latitude_of_origin', d2r],
-    ['lat0', 'standard_parallel_1', d2r],
-    ['lat1', 'standard_parallel_1', d2r],
-    ['lat2', 'standard_parallel_2', d2r],
-    ['alpha', 'azimuth', d2r],
-    ['srsCode', 'name']
-  ];
-  list.forEach(renamer);
-  if (!wkt.long0 && wkt.longc && (wkt.projName === 'Albers_Conic_Equal_Area' || wkt.projName === "Lambert_Azimuthal_Equal_Area")) {
-    wkt.long0 = wkt.longc;
-  }
-  if (!wkt.lat_ts && wkt.lat1 && (wkt.projName === 'Stereographic_South_Pole' || wkt.projName === 'Polar Stereographic (variant B)')) {
-    wkt.lat0 = d2r(wkt.lat1 > 0 ? 90 : -90);
-    wkt.lat_ts = wkt.lat1;
-  }
-}
-module.exports = function(wkt, self) {
-  var lisp = JSON.parse(("," + wkt).replace(/\s*\,\s*([A-Z_0-9]+?)(\[)/g, ',["$1",').slice(1).replace(/\s*\,\s*([A-Z_0-9]+?)\]/g, ',"$1"]').replace(/,\["VERTCS".+/,''));
-  var type = lisp.shift();
-  var name = lisp.shift();
-  lisp.unshift(['name', name]);
-  lisp.unshift(['type', type]);
-  lisp.unshift('output');
-  var obj = {};
-  sExpr(lisp, obj);
-  cleanWKT(obj.output);
-  return extend(self, obj.output);
-};
-
-
-/***/ }),
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var D2R = 0.01745329251994329577;
-var PrimeMeridian = __webpack_require__(77);
-var units = __webpack_require__(76);
+var e0fn = __webpack_require__(6);
+var e1fn = __webpack_require__(7);
+var e2fn = __webpack_require__(8);
+var e3fn = __webpack_require__(9);
+var mlfn = __webpack_require__(10);
+var adjust_lon = __webpack_require__(1);
+var HALF_PI = Math.PI/2;
+var EPSLN = 1.0e-10;
+var sign = __webpack_require__(5);
+var asinz = __webpack_require__(3);
 
-module.exports = function(defData) {
-  var self = {};
-  var paramObj = {};
-  defData.split("+").map(function(v) {
-    return v.trim();
-  }).filter(function(a) {
-    return a;
-  }).forEach(function(a) {
-    var split = a.split("=");
-    split.push(true);
-    paramObj[split[0].toLowerCase()] = split[1];
-  });
-  var paramName, paramVal, paramOutname;
-  var params = {
-    proj: 'projName',
-    datum: 'datumCode',
-    rf: function(v) {
-      self.rf = parseFloat(v);
-    },
-    lat_0: function(v) {
-      self.lat0 = v * D2R;
-    },
-    lat_1: function(v) {
-      self.lat1 = v * D2R;
-    },
-    lat_2: function(v) {
-      self.lat2 = v * D2R;
-    },
-    lat_ts: function(v) {
-      self.lat_ts = v * D2R;
-    },
-    lon_0: function(v) {
-      self.long0 = v * D2R;
-    },
-    lon_1: function(v) {
-      self.long1 = v * D2R;
-    },
-    lon_2: function(v) {
-      self.long2 = v * D2R;
-    },
-    alpha: function(v) {
-      self.alpha = parseFloat(v) * D2R;
-    },
-    lonc: function(v) {
-      self.longc = v * D2R;
-    },
-    x_0: function(v) {
-      self.x0 = parseFloat(v);
-    },
-    y_0: function(v) {
-      self.y0 = parseFloat(v);
-    },
-    k_0: function(v) {
-      self.k0 = parseFloat(v);
-    },
-    k: function(v) {
-      self.k0 = parseFloat(v);
-    },
-    a: function(v) {
-      self.a = parseFloat(v);
-    },
-    b: function(v) {
-      self.b = parseFloat(v);
-    },
-    r_a: function() {
-      self.R_A = true;
-    },
-    zone: function(v) {
-      self.zone = parseInt(v, 10);
-    },
-    south: function() {
-      self.utmSouth = true;
-    },
-    towgs84: function(v) {
-      self.datum_params = v.split(",").map(function(a) {
-        return parseFloat(a);
-      });
-    },
-    to_meter: function(v) {
-      self.to_meter = parseFloat(v);
-    },
-    units: function(v) {
-      self.units = v;
-      if (units[v]) {
-        self.to_meter = units[v].to_meter;
-      }
-    },
-    from_greenwich: function(v) {
-      self.from_greenwich = v * D2R;
-    },
-    pm: function(v) {
-      self.from_greenwich = (PrimeMeridian[v] ? PrimeMeridian[v] : parseFloat(v)) * D2R;
-    },
-    nadgrids: function(v) {
-      if (v === '@null') {
-        self.datumCode = 'none';
-      }
-      else {
-        self.nadgrids = v;
-      }
-    },
-    axis: function(v) {
-      var legalAxis = "ewnsud";
-      if (v.length === 3 && legalAxis.indexOf(v.substr(0, 1)) !== -1 && legalAxis.indexOf(v.substr(1, 1)) !== -1 && legalAxis.indexOf(v.substr(2, 1)) !== -1) {
-        self.axis = v;
-      }
-    }
-  };
-  for (paramName in paramObj) {
-    paramVal = paramObj[paramName];
-    if (paramName in params) {
-      paramOutname = params[paramName];
-      if (typeof paramOutname === 'function') {
-        paramOutname(paramVal);
-      }
-      else {
-        self[paramOutname] = paramVal;
-      }
+exports.init = function() {
+  this.e0 = e0fn(this.es);
+  this.e1 = e1fn(this.es);
+  this.e2 = e2fn(this.es);
+  this.e3 = e3fn(this.es);
+  this.ml0 = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, this.lat0);
+};
+
+/**
+    Transverse Mercator Forward  - long/lat to x/y
+    long/lat in radians
+  */
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+
+  var delta_lon = adjust_lon(lon - this.long0);
+  var con;
+  var x, y;
+  var sin_phi = Math.sin(lat);
+  var cos_phi = Math.cos(lat);
+
+  if (this.sphere) {
+    var b = cos_phi * Math.sin(delta_lon);
+    if ((Math.abs(Math.abs(b) - 1)) < 0.0000000001) {
+      return (93);
     }
     else {
-      self[paramName] = paramVal;
+      x = 0.5 * this.a * this.k0 * Math.log((1 + b) / (1 - b));
+      con = Math.acos(cos_phi * Math.cos(delta_lon) / Math.sqrt(1 - b * b));
+      if (lat < 0) {
+        con = -con;
+      }
+      y = this.a * this.k0 * (con - this.lat0);
     }
   }
-  if(typeof self.datumCode === 'string' && self.datumCode !== "WGS84"){
-    self.datumCode = self.datumCode.toLowerCase();
+  else {
+    var al = cos_phi * delta_lon;
+    var als = Math.pow(al, 2);
+    var c = this.ep2 * Math.pow(cos_phi, 2);
+    var tq = Math.tan(lat);
+    var t = Math.pow(tq, 2);
+    con = 1 - this.es * Math.pow(sin_phi, 2);
+    var n = this.a / Math.sqrt(con);
+    var ml = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, lat);
+
+    x = this.k0 * n * al * (1 + als / 6 * (1 - t + c + als / 20 * (5 - 18 * t + Math.pow(t, 2) + 72 * c - 58 * this.ep2))) + this.x0;
+    y = this.k0 * (ml - this.ml0 + n * tq * (als * (0.5 + als / 24 * (5 - t + 9 * c + 4 * Math.pow(c, 2) + als / 30 * (61 - 58 * t + Math.pow(t, 2) + 600 * c - 330 * this.ep2))))) + this.y0;
+
   }
-  return self;
+  p.x = x;
+  p.y = y;
+  return p;
 };
+
+/**
+    Transverse Mercator Inverse  -  x/y to long/lat
+  */
+exports.inverse = function(p) {
+  var con, phi;
+  var delta_phi;
+  var i;
+  var max_iter = 6;
+  var lat, lon;
+
+  if (this.sphere) {
+    var f = Math.exp(p.x / (this.a * this.k0));
+    var g = 0.5 * (f - 1 / f);
+    var temp = this.lat0 + p.y / (this.a * this.k0);
+    var h = Math.cos(temp);
+    con = Math.sqrt((1 - h * h) / (1 + g * g));
+    lat = asinz(con);
+    if (temp < 0) {
+      lat = -lat;
+    }
+    if ((g === 0) && (h === 0)) {
+      lon = this.long0;
+    }
+    else {
+      lon = adjust_lon(Math.atan2(g, h) + this.long0);
+    }
+  }
+  else { // ellipsoidal form
+    var x = p.x - this.x0;
+    var y = p.y - this.y0;
+
+    con = (this.ml0 + y / this.k0) / this.a;
+    phi = con;
+    for (i = 0; true; i++) {
+      delta_phi = ((con + this.e1 * Math.sin(2 * phi) - this.e2 * Math.sin(4 * phi) + this.e3 * Math.sin(6 * phi)) / this.e0) - phi;
+      phi += delta_phi;
+      if (Math.abs(delta_phi) <= EPSLN) {
+        break;
+      }
+      if (i >= max_iter) {
+        return (95);
+      }
+    } // for()
+    if (Math.abs(phi) < HALF_PI) {
+      var sin_phi = Math.sin(phi);
+      var cos_phi = Math.cos(phi);
+      var tan_phi = Math.tan(phi);
+      var c = this.ep2 * Math.pow(cos_phi, 2);
+      var cs = Math.pow(c, 2);
+      var t = Math.pow(tan_phi, 2);
+      var ts = Math.pow(t, 2);
+      con = 1 - this.es * Math.pow(sin_phi, 2);
+      var n = this.a / Math.sqrt(con);
+      var r = n * (1 - this.es) / con;
+      var d = x / (n * this.k0);
+      var ds = Math.pow(d, 2);
+      lat = phi - (n * tan_phi * ds / r) * (0.5 - ds / 24 * (5 + 3 * t + 10 * c - 4 * cs - 9 * this.ep2 - ds / 30 * (61 + 90 * t + 298 * c + 45 * ts - 252 * this.ep2 - 3 * cs)));
+      lon = adjust_lon(this.long0 + (d * (1 - ds / 6 * (1 + 2 * t + c - ds / 20 * (5 - 2 * c + 28 * t - 3 * cs + 8 * this.ep2 + 24 * ts))) / cos_phi));
+    }
+    else {
+      lat = HALF_PI * sign(y);
+      lon = this.long0;
+    }
+  }
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["Transverse_Mercator", "Transverse Mercator", "tmerc"];
 
 
 /***/ }),
 /* 32 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-var globals = __webpack_require__(78);
-var parseProj = __webpack_require__(31);
-var wkt = __webpack_require__(30);
-
-function defs(name) {
-  /*global console*/
-  var that = this;
-  if (arguments.length === 2) {
-    var def = arguments[1];
-    if (typeof def === 'string') {
-      if (def.charAt(0) === '+') {
-        defs[name] = parseProj(arguments[1]);
-      }
-      else {
-        defs[name] = wkt(arguments[1]);
-      }
-    } else {
-      defs[name] = def;
-    }
-  }
-  else if (arguments.length === 1) {
-    if (Array.isArray(name)) {
-      return name.map(function(v) {
-        if (Array.isArray(v)) {
-          defs.apply(that, v);
-        }
-        else {
-          defs(v);
-        }
-      });
-    }
-    else if (typeof name === 'string') {
-      if (name in defs) {
-        return defs[name];
-      }
-    }
-    else if ('EPSG' in name) {
-      defs['EPSG:' + name.EPSG] = name;
-    }
-    else if ('ESRI' in name) {
-      defs['ESRI:' + name.ESRI] = name;
-    }
-    else if ('IAU2000' in name) {
-      defs['IAU2000:' + name.IAU2000] = name;
-    }
-    else {
-      console.log(name);
-    }
-    return;
-  }
-
-
-}
-globals(defs);
-module.exports = defs;
-
+module.exports = function(phi, sphi, cphi, en) {
+  cphi *= sphi;
+  sphi *= sphi;
+  return (en[0] * phi - cphi * (en[1] + sphi * (en[2] + sphi * (en[3] + sphi * en[4]))));
+};
 
 /***/ }),
 /* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(setImmediate) {(function (root) {
+
+  // Store setTimeout reference so promise-polyfill will be unaffected by
+  // other code modifying setTimeout (like sinon.useFakeTimers())
+  var setTimeoutFunc = setTimeout;
+
+  function noop() {}
+  
+  // Polyfill for Function.prototype.bind
+  function bind(fn, thisArg) {
+    return function () {
+      fn.apply(thisArg, arguments);
+    };
+  }
+
+  function Promise(fn) {
+    if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new');
+    if (typeof fn !== 'function') throw new TypeError('not a function');
+    this._state = 0;
+    this._handled = false;
+    this._value = undefined;
+    this._deferreds = [];
+
+    doResolve(fn, this);
+  }
+
+  function handle(self, deferred) {
+    while (self._state === 3) {
+      self = self._value;
+    }
+    if (self._state === 0) {
+      self._deferreds.push(deferred);
+      return;
+    }
+    self._handled = true;
+    Promise._immediateFn(function () {
+      var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+      if (cb === null) {
+        (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
+        return;
+      }
+      var ret;
+      try {
+        ret = cb(self._value);
+      } catch (e) {
+        reject(deferred.promise, e);
+        return;
+      }
+      resolve(deferred.promise, ret);
+    });
+  }
+
+  function resolve(self, newValue) {
+    try {
+      // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+      if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.');
+      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+        var then = newValue.then;
+        if (newValue instanceof Promise) {
+          self._state = 3;
+          self._value = newValue;
+          finale(self);
+          return;
+        } else if (typeof then === 'function') {
+          doResolve(bind(then, newValue), self);
+          return;
+        }
+      }
+      self._state = 1;
+      self._value = newValue;
+      finale(self);
+    } catch (e) {
+      reject(self, e);
+    }
+  }
+
+  function reject(self, newValue) {
+    self._state = 2;
+    self._value = newValue;
+    finale(self);
+  }
+
+  function finale(self) {
+    if (self._state === 2 && self._deferreds.length === 0) {
+      Promise._immediateFn(function() {
+        if (!self._handled) {
+          Promise._unhandledRejectionFn(self._value);
+        }
+      });
+    }
+
+    for (var i = 0, len = self._deferreds.length; i < len; i++) {
+      handle(self, self._deferreds[i]);
+    }
+    self._deferreds = null;
+  }
+
+  function Handler(onFulfilled, onRejected, promise) {
+    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+    this.promise = promise;
+  }
+
+  /**
+   * Take a potentially misbehaving resolver function and make sure
+   * onFulfilled and onRejected are only called once.
+   *
+   * Makes no guarantees about asynchrony.
+   */
+  function doResolve(fn, self) {
+    var done = false;
+    try {
+      fn(function (value) {
+        if (done) return;
+        done = true;
+        resolve(self, value);
+      }, function (reason) {
+        if (done) return;
+        done = true;
+        reject(self, reason);
+      });
+    } catch (ex) {
+      if (done) return;
+      done = true;
+      reject(self, ex);
+    }
+  }
+
+  Promise.prototype['catch'] = function (onRejected) {
+    return this.then(null, onRejected);
+  };
+
+  Promise.prototype.then = function (onFulfilled, onRejected) {
+    var prom = new (this.constructor)(noop);
+
+    handle(this, new Handler(onFulfilled, onRejected, prom));
+    return prom;
+  };
+
+  Promise.all = function (arr) {
+    var args = Array.prototype.slice.call(arr);
+
+    return new Promise(function (resolve, reject) {
+      if (args.length === 0) return resolve([]);
+      var remaining = args.length;
+
+      function res(i, val) {
+        try {
+          if (val && (typeof val === 'object' || typeof val === 'function')) {
+            var then = val.then;
+            if (typeof then === 'function') {
+              then.call(val, function (val) {
+                res(i, val);
+              }, reject);
+              return;
+            }
+          }
+          args[i] = val;
+          if (--remaining === 0) {
+            resolve(args);
+          }
+        } catch (ex) {
+          reject(ex);
+        }
+      }
+
+      for (var i = 0; i < args.length; i++) {
+        res(i, args[i]);
+      }
+    });
+  };
+
+  Promise.resolve = function (value) {
+    if (value && typeof value === 'object' && value.constructor === Promise) {
+      return value;
+    }
+
+    return new Promise(function (resolve) {
+      resolve(value);
+    });
+  };
+
+  Promise.reject = function (value) {
+    return new Promise(function (resolve, reject) {
+      reject(value);
+    });
+  };
+
+  Promise.race = function (values) {
+    return new Promise(function (resolve, reject) {
+      for (var i = 0, len = values.length; i < len; i++) {
+        values[i].then(resolve, reject);
+      }
+    });
+  };
+
+  // Use polyfill for setImmediate for performance gains
+  Promise._immediateFn = (typeof setImmediate === 'function' && function (fn) { setImmediate(fn); }) ||
+    function (fn) {
+      setTimeoutFunc(fn, 0);
+    };
+
+  Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+    if (typeof console !== 'undefined' && console) {
+      console.warn('Possible Unhandled Promise Rejection:', err); // eslint-disable-line no-console
+    }
+  };
+
+  /**
+   * Set the immediate function to execute callbacks
+   * @param fn {function} Function to execute
+   * @deprecated
+   */
+  Promise._setImmediateFn = function _setImmediateFn(fn) {
+    Promise._immediateFn = fn;
+  };
+
+  /**
+   * Change the function to execute on unhandled rejection
+   * @param {function} fn Function to execute on unhandled rejection
+   * @deprecated
+   */
+  Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
+    Promise._unhandledRejectionFn = fn;
+  };
+  
+  if ( true && module.exports) {
+    module.exports = Promise;
+  } else if (!root.Promise) {
+    root.Promise = Promise;
+  }
+
+})(this);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(39).setImmediate))
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+module.exports = function(){try{return elasticsearch}catch(e){return {}}}();
+
+/***/ }),
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -2934,353 +3180,5930 @@ var toPairs = createToPairs(keys);
 
 module.exports = toPairs;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(20)))
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports) {
-
-module.exports = function(){try{return elasticsearch}catch(e){return {}}}();
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(setImmediate) {(function (root) {
-
-  // Store setTimeout reference so promise-polyfill will be unaffected by
-  // other code modifying setTimeout (like sinon.useFakeTimers())
-  var setTimeoutFunc = setTimeout;
-
-  function noop() {}
-  
-  // Polyfill for Function.prototype.bind
-  function bind(fn, thisArg) {
-    return function () {
-      fn.apply(thisArg, arguments);
-    };
-  }
-
-  function Promise(fn) {
-    if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new');
-    if (typeof fn !== 'function') throw new TypeError('not a function');
-    this._state = 0;
-    this._handled = false;
-    this._value = undefined;
-    this._deferreds = [];
-
-    doResolve(fn, this);
-  }
-
-  function handle(self, deferred) {
-    while (self._state === 3) {
-      self = self._value;
-    }
-    if (self._state === 0) {
-      self._deferreds.push(deferred);
-      return;
-    }
-    self._handled = true;
-    Promise._immediateFn(function () {
-      var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
-      if (cb === null) {
-        (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
-        return;
-      }
-      var ret;
-      try {
-        ret = cb(self._value);
-      } catch (e) {
-        reject(deferred.promise, e);
-        return;
-      }
-      resolve(deferred.promise, ret);
-    });
-  }
-
-  function resolve(self, newValue) {
-    try {
-      // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-      if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.');
-      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
-        var then = newValue.then;
-        if (newValue instanceof Promise) {
-          self._state = 3;
-          self._value = newValue;
-          finale(self);
-          return;
-        } else if (typeof then === 'function') {
-          doResolve(bind(then, newValue), self);
-          return;
-        }
-      }
-      self._state = 1;
-      self._value = newValue;
-      finale(self);
-    } catch (e) {
-      reject(self, e);
-    }
-  }
-
-  function reject(self, newValue) {
-    self._state = 2;
-    self._value = newValue;
-    finale(self);
-  }
-
-  function finale(self) {
-    if (self._state === 2 && self._deferreds.length === 0) {
-      Promise._immediateFn(function() {
-        if (!self._handled) {
-          Promise._unhandledRejectionFn(self._value);
-        }
-      });
-    }
-
-    for (var i = 0, len = self._deferreds.length; i < len; i++) {
-      handle(self, self._deferreds[i]);
-    }
-    self._deferreds = null;
-  }
-
-  function Handler(onFulfilled, onRejected, promise) {
-    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
-    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
-    this.promise = promise;
-  }
-
-  /**
-   * Take a potentially misbehaving resolver function and make sure
-   * onFulfilled and onRejected are only called once.
-   *
-   * Makes no guarantees about asynchrony.
-   */
-  function doResolve(fn, self) {
-    var done = false;
-    try {
-      fn(function (value) {
-        if (done) return;
-        done = true;
-        resolve(self, value);
-      }, function (reason) {
-        if (done) return;
-        done = true;
-        reject(self, reason);
-      });
-    } catch (ex) {
-      if (done) return;
-      done = true;
-      reject(self, ex);
-    }
-  }
-
-  Promise.prototype['catch'] = function (onRejected) {
-    return this.then(null, onRejected);
-  };
-
-  Promise.prototype.then = function (onFulfilled, onRejected) {
-    var prom = new (this.constructor)(noop);
-
-    handle(this, new Handler(onFulfilled, onRejected, prom));
-    return prom;
-  };
-
-  Promise.all = function (arr) {
-    var args = Array.prototype.slice.call(arr);
-
-    return new Promise(function (resolve, reject) {
-      if (args.length === 0) return resolve([]);
-      var remaining = args.length;
-
-      function res(i, val) {
-        try {
-          if (val && (typeof val === 'object' || typeof val === 'function')) {
-            var then = val.then;
-            if (typeof then === 'function') {
-              then.call(val, function (val) {
-                res(i, val);
-              }, reject);
-              return;
-            }
-          }
-          args[i] = val;
-          if (--remaining === 0) {
-            resolve(args);
-          }
-        } catch (ex) {
-          reject(ex);
-        }
-      }
-
-      for (var i = 0; i < args.length; i++) {
-        res(i, args[i]);
-      }
-    });
-  };
-
-  Promise.resolve = function (value) {
-    if (value && typeof value === 'object' && value.constructor === Promise) {
-      return value;
-    }
-
-    return new Promise(function (resolve) {
-      resolve(value);
-    });
-  };
-
-  Promise.reject = function (value) {
-    return new Promise(function (resolve, reject) {
-      reject(value);
-    });
-  };
-
-  Promise.race = function (values) {
-    return new Promise(function (resolve, reject) {
-      for (var i = 0, len = values.length; i < len; i++) {
-        values[i].then(resolve, reject);
-      }
-    });
-  };
-
-  // Use polyfill for setImmediate for performance gains
-  Promise._immediateFn = (typeof setImmediate === 'function' && function (fn) { setImmediate(fn); }) ||
-    function (fn) {
-      setTimeoutFunc(fn, 0);
-    };
-
-  Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
-    if (typeof console !== 'undefined' && console) {
-      console.warn('Possible Unhandled Promise Rejection:', err); // eslint-disable-line no-console
-    }
-  };
-
-  /**
-   * Set the immediate function to execute callbacks
-   * @param fn {function} Function to execute
-   * @deprecated
-   */
-  Promise._setImmediateFn = function _setImmediateFn(fn) {
-    Promise._immediateFn = fn;
-  };
-
-  /**
-   * Change the function to execute on unhandled rejection
-   * @param {function} fn Function to execute on unhandled rejection
-   * @deprecated
-   */
-  Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
-    Promise._unhandledRejectionFn = fn;
-  };
-  
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Promise;
-  } else if (!root.Promise) {
-    root.Promise = Promise;
-  }
-
-})(this);
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(85).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(15)))
 
 /***/ }),
 /* 36 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
+!function(t,e){ true?module.exports=e(__webpack_require__(43),__webpack_require__(44)):undefined}(this,function(m,d){"use strict";var t;return m=m&&m.hasOwnProperty("default")?m.default:m,d=d&&d.hasOwnProperty("default")?d.default:d,function(t){var u;t.exports;(u=window).DOMParser=window.DOMParser;function p(){return document.createElement("canvas")}var f,c=function(t,e,i){if(null!=t||null!=e||null!=i){var n=function(s){var A={opts:s,FRAMERATE:30,MAX_VIRTUAL_PIXELS:3e4,rootEmSize:12,emSize:12,log:function(t){}};1==A.opts.log&&"undefined"!=typeof console&&(A.log=function(t){console.log(t)});A.init=function(t){var e=0;A.UniqueId=function(){return"canvg"+ ++e},A.Definitions={},A.Styles={},A.StylesSpecificity={},A.Animations=[],A.Images=[],A.ctx=t,A.ViewPort=new function(){this.viewPorts=[],this.Clear=function(){this.viewPorts=[]},this.SetCurrent=function(t,e){this.viewPorts.push({width:t,height:e})},this.RemoveCurrent=function(){this.viewPorts.pop()},this.Current=function(){return this.viewPorts[this.viewPorts.length-1]},this.width=function(){return this.Current().width},this.height=function(){return this.Current().height},this.ComputeSize=function(t){return null!=t&&"number"==typeof t?t:"x"==t?this.width():"y"==t?this.height():Math.sqrt(Math.pow(this.width(),2)+Math.pow(this.height(),2))/Math.sqrt(2)}}},A.init(),A.ImagesLoaded=function(){for(var t=0;t<A.Images.length;t++)if(!A.Images[t].loaded)return!1;return!0},A.trim=function(t){return t.replace(/^\s+|\s+$/g,"")},A.compressSpaces=function(t){return t.replace(/(?!\u3000)\s+/gm," ")},A.ajax=function(t){var e;return(e=u.XMLHttpRequest?new u.XMLHttpRequest:new ActiveXObject("Microsoft.XMLHTTP"))?(e.open("GET",t,!1),e.send(null),e.responseText):null},A.parseXml=function(e){if("undefined"!=typeof Windows&&void 0!==Windows.Data&&void 0!==Windows.Data.Xml){var t=new Windows.Data.Xml.Dom.XmlDocument,i=new Windows.Data.Xml.Dom.XmlLoadSettings;return i.prohibitDtd=!1,t.loadXml(e,i),t}if(!u.DOMParser){e=e.replace(/<!DOCTYPE svg[^>]*>/,"");var t=new ActiveXObject("Microsoft.XMLDOM");return t.async="false",t.loadXML(e),t}try{var n=s.xmldom?new u.DOMParser(s.xmldom):new u.DOMParser;return n.parseFromString(e,"image/svg+xml")}catch(t){return(n=s.xmldom?new u.DOMParser(s.xmldom):new u.DOMParser).parseFromString(e,"text/xml")}},A.Property=function(t,e){this.name=t,this.value=e},A.Property.prototype.getValue=function(){return this.value},A.Property.prototype.hasValue=function(){return null!=this.value&&""!==this.value},A.Property.prototype.numValue=function(){if(!this.hasValue())return 0;var t=parseFloat(this.value);return(this.value+"").match(/%$/)&&(t/=100),t},A.Property.prototype.valueOrDefault=function(t){return this.hasValue()?this.value:t},A.Property.prototype.numValueOrDefault=function(t){return this.hasValue()?this.numValue():t},A.Property.prototype.addOpacity=function(t){var e=this.value;if(null!=t.value&&""!=t.value&&"string"==typeof this.value){var i=new m(this.value);i.ok&&(e="rgba("+i.r+", "+i.g+", "+i.b+", "+t.numValue()+")")}return new A.Property(this.name,e)},A.Property.prototype.getDefinition=function(){var t=this.value.match(/#([^\)'"]+)/);return t&&(t=t[1]),t||(t=this.value),A.Definitions[t]},A.Property.prototype.isUrlDefinition=function(){return 0==this.value.indexOf("url(")},A.Property.prototype.getFillStyleDefinition=function(t,e){var i=this.getDefinition();if(null!=i&&i.createGradient)return i.createGradient(A.ctx,t,e);if(null!=i&&i.createPattern){if(i.getHrefAttribute().hasValue()){var n=i.attribute("patternTransform");i=i.getHrefAttribute().getDefinition(),n.hasValue()&&(i.attribute("patternTransform",!0).value=n.value)}return i.createPattern(A.ctx,t)}return null},A.Property.prototype.getDPI=function(t){return 96},A.Property.prototype.getREM=function(t){return A.rootEmSize},A.Property.prototype.getEM=function(t){return A.emSize},A.Property.prototype.getUnits=function(){var t=this.value+"";return t.replace(/[0-9\.\-]/g,"")},A.Property.prototype.isPixels=function(){if(!this.hasValue())return!1;var t=this.value+"";return!!t.match(/px$/)||!!t.match(/^[0-9]+$/)},A.Property.prototype.toPixels=function(t,e){if(!this.hasValue())return 0;var i=this.value+"";if(i.match(/rem$/))return this.numValue()*this.getREM(t);if(i.match(/em$/))return this.numValue()*this.getEM(t);if(i.match(/ex$/))return this.numValue()*this.getEM(t)/2;if(i.match(/px$/))return this.numValue();if(i.match(/pt$/))return this.numValue()*this.getDPI(t)*(1/72);if(i.match(/pc$/))return 15*this.numValue();if(i.match(/cm$/))return this.numValue()*this.getDPI(t)/2.54;if(i.match(/mm$/))return this.numValue()*this.getDPI(t)/25.4;if(i.match(/in$/))return this.numValue()*this.getDPI(t);if(i.match(/%$/))return this.numValue()*A.ViewPort.ComputeSize(t);var n=this.numValue();return e&&n<1?n*A.ViewPort.ComputeSize(t):n},A.Property.prototype.toMilliseconds=function(){if(!this.hasValue())return 0;var t=this.value+"";return t.match(/s$/)?1e3*this.numValue():(t.match(/ms$/),this.numValue())},A.Property.prototype.toRadians=function(){if(!this.hasValue())return 0;var t=this.value+"";return t.match(/deg$/)?this.numValue()*(Math.PI/180):t.match(/grad$/)?this.numValue()*(Math.PI/200):t.match(/rad$/)?this.numValue():this.numValue()*(Math.PI/180)};var t={baseline:"alphabetic","before-edge":"top","text-before-edge":"top",middle:"middle",central:"middle","after-edge":"bottom","text-after-edge":"bottom",ideographic:"ideographic",alphabetic:"alphabetic",hanging:"hanging",mathematical:"alphabetic"};return A.Property.prototype.toTextBaseline=function(){return this.hasValue()?t[this.value]:null},A.Font=new function(){this.Styles="normal|italic|oblique|inherit",this.Variants="normal|small-caps|inherit",this.Weights="normal|bold|bolder|lighter|100|200|300|400|500|600|700|800|900|inherit",this.CreateFont=function(t,e,i,n,s,a){var r=null!=a?this.Parse(a):this.CreateFont("","","","","",A.ctx.font);return{fontFamily:s=s||r.fontFamily,fontSize:n||r.fontSize,fontStyle:t||r.fontStyle,fontWeight:i||r.fontWeight,fontVariant:e||r.fontVariant,toString:function(){return[this.fontStyle,this.fontVariant,this.fontWeight,this.fontSize,this.fontFamily].join(" ")}}};var r=this;this.Parse=function(t){for(var e={},i=A.trim(A.compressSpaces(t||"")).split(" "),n={fontSize:!1,fontStyle:!1,fontWeight:!1,fontVariant:!1},s="",a=0;a<i.length;a++)n.fontStyle||-1==r.Styles.indexOf(i[a])?n.fontVariant||-1==r.Variants.indexOf(i[a])?n.fontWeight||-1==r.Weights.indexOf(i[a])?n.fontSize?"inherit"!=i[a]&&(s+=i[a]):("inherit"!=i[a]&&(e.fontSize=i[a].split("/")[0]),n.fontStyle=n.fontVariant=n.fontWeight=n.fontSize=!0):("inherit"!=i[a]&&(e.fontWeight=i[a]),n.fontStyle=n.fontVariant=n.fontWeight=!0):("inherit"!=i[a]&&(e.fontVariant=i[a]),n.fontStyle=n.fontVariant=!0):("inherit"!=i[a]&&(e.fontStyle=i[a]),n.fontStyle=!0);return""!=s&&(e.fontFamily=s),e}},A.ToNumberArray=function(t){for(var e=A.trim(A.compressSpaces((t||"").replace(/,/g," "))).split(" "),i=0;i<e.length;i++)e[i]=parseFloat(e[i]);return e},A.Point=function(t,e){this.x=t,this.y=e},A.Point.prototype.angleTo=function(t){return Math.atan2(t.y-this.y,t.x-this.x)},A.Point.prototype.applyTransform=function(t){var e=this.x*t[0]+this.y*t[2]+t[4],i=this.x*t[1]+this.y*t[3]+t[5];this.x=e,this.y=i},A.CreatePoint=function(t){var e=A.ToNumberArray(t);return new A.Point(e[0],e[1])},A.CreatePath=function(t){for(var e=A.ToNumberArray(t),i=[],n=0;n<e.length;n+=2)i.push(new A.Point(e[n],e[n+1]));return i},A.BoundingBox=function(t,e,i,n){this.x1=Number.NaN,this.y1=Number.NaN,this.x2=Number.NaN,this.y2=Number.NaN,this.x=function(){return this.x1},this.y=function(){return this.y1},this.width=function(){return this.x2-this.x1},this.height=function(){return this.y2-this.y1},this.addPoint=function(t,e){null!=t&&((isNaN(this.x1)||isNaN(this.x2))&&(this.x1=t,this.x2=t),t<this.x1&&(this.x1=t),t>this.x2&&(this.x2=t)),null!=e&&((isNaN(this.y1)||isNaN(this.y2))&&(this.y1=e,this.y2=e),e<this.y1&&(this.y1=e),e>this.y2&&(this.y2=e))},this.addX=function(t){this.addPoint(t,null)},this.addY=function(t){this.addPoint(null,t)},this.addBoundingBox=function(t){this.addPoint(t.x1,t.y1),this.addPoint(t.x2,t.y2)},this.addQuadraticCurve=function(t,e,i,n,s,a){var r=t+2/3*(i-t),o=e+2/3*(n-e),l=r+1/3*(s-t),h=o+1/3*(a-e);this.addBezierCurve(t,e,r,l,o,h,s,a)},this.addBezierCurve=function(t,e,i,n,s,a,r,o){var l=[t,e],h=[i,n],u=[s,a],c=[r,o];this.addPoint(l[0],l[1]),this.addPoint(c[0],c[1]);for(var f=0;f<=1;f++){var m=function(t){return Math.pow(1-t,3)*l[f]+3*Math.pow(1-t,2)*t*h[f]+3*(1-t)*Math.pow(t,2)*u[f]+Math.pow(t,3)*c[f]},p=6*l[f]-12*h[f]+6*u[f],d=-3*l[f]+9*h[f]-9*u[f]+3*c[f],y=3*h[f]-3*l[f];if(0!=d){var v=Math.pow(p,2)-4*y*d;if(!(v<0)){var g=(-p+Math.sqrt(v))/(2*d);0<g&&g<1&&(0==f&&this.addX(m(g)),1==f&&this.addY(m(g)));var x=(-p-Math.sqrt(v))/(2*d);0<x&&x<1&&(0==f&&this.addX(m(x)),1==f&&this.addY(m(x)))}}else{if(0==p)continue;var b=-y/p;0<b&&b<1&&(0==f&&this.addX(m(b)),1==f&&this.addY(m(b)))}}},this.isPointInBox=function(t,e){return this.x1<=t&&t<=this.x2&&this.y1<=e&&e<=this.y2},this.addPoint(t,e),this.addPoint(i,n)},A.Transform=function(t){var e=this;this.Type={},this.Type.translate=function(t){this.p=A.CreatePoint(t),this.apply=function(t){t.translate(this.p.x||0,this.p.y||0)},this.unapply=function(t){t.translate(-1*this.p.x||0,-1*this.p.y||0)},this.applyToPoint=function(t){t.applyTransform([1,0,0,1,this.p.x||0,this.p.y||0])}},this.Type.rotate=function(t){var e=A.ToNumberArray(t);this.angle=new A.Property("angle",e[0]),this.cx=e[1]||0,this.cy=e[2]||0,this.apply=function(t){t.translate(this.cx,this.cy),t.rotate(this.angle.toRadians()),t.translate(-this.cx,-this.cy)},this.unapply=function(t){t.translate(this.cx,this.cy),t.rotate(-1*this.angle.toRadians()),t.translate(-this.cx,-this.cy)},this.applyToPoint=function(t){var e=this.angle.toRadians();t.applyTransform([1,0,0,1,this.p.x||0,this.p.y||0]),t.applyTransform([Math.cos(e),Math.sin(e),-Math.sin(e),Math.cos(e),0,0]),t.applyTransform([1,0,0,1,-this.p.x||0,-this.p.y||0])}},this.Type.scale=function(t){this.p=A.CreatePoint(t),this.apply=function(t){t.scale(this.p.x||1,this.p.y||this.p.x||1)},this.unapply=function(t){t.scale(1/this.p.x||1,1/this.p.y||this.p.x||1)},this.applyToPoint=function(t){t.applyTransform([this.p.x||0,0,0,this.p.y||0,0,0])}},this.Type.matrix=function(t){this.m=A.ToNumberArray(t),this.apply=function(t){t.transform(this.m[0],this.m[1],this.m[2],this.m[3],this.m[4],this.m[5])},this.unapply=function(t){var e=this.m[0],i=this.m[2],n=this.m[4],s=this.m[1],a=this.m[3],r=this.m[5],o=1/(e*(1*a-0*r)-i*(1*s-0*r)+n*(0*s-0*a));t.transform(o*(1*a-0*r),o*(0*r-1*s),o*(0*n-1*i),o*(1*e-0*n),o*(i*r-n*a),o*(n*s-e*r))},this.applyToPoint=function(t){t.applyTransform(this.m)}},this.Type.SkewBase=function(t){this.base=e.Type.matrix,this.base(t),this.angle=new A.Property("angle",t)},this.Type.SkewBase.prototype=new this.Type.matrix,this.Type.skewX=function(t){this.base=e.Type.SkewBase,this.base(t),this.m=[1,0,Math.tan(this.angle.toRadians()),1,0,0]},this.Type.skewX.prototype=new this.Type.SkewBase,this.Type.skewY=function(t){this.base=e.Type.SkewBase,this.base(t),this.m=[1,Math.tan(this.angle.toRadians()),0,1,0,0]},this.Type.skewY.prototype=new this.Type.SkewBase,this.transforms=[],this.apply=function(t){for(var e=0;e<this.transforms.length;e++)this.transforms[e].apply(t)},this.unapply=function(t){for(var e=this.transforms.length-1;0<=e;e--)this.transforms[e].unapply(t)},this.applyToPoint=function(t){for(var e=0;e<this.transforms.length;e++)this.transforms[e].applyToPoint(t)};for(var i=A.trim(A.compressSpaces(t)).replace(/\)([a-zA-Z])/g,") $1").replace(/\)(\s?,\s?)/g,") ").split(/\s(?=[a-z])/),n=0;n<i.length;n++)if("none"!==i[n]){var s=A.trim(i[n].split("(")[0]),a=i[n].split("(")[1].replace(")",""),r=this.Type[s];if(void 0!==r){var o=new r(a);o.type=s,this.transforms.push(o)}}},A.AspectRatio=function(t,e,i,n,s,a,r,o,l,h){var u=(e=(e=A.compressSpaces(e)).replace(/^defer\s/,"")).split(" ")[0]||"xMidYMid",c=e.split(" ")[1]||"meet",f=i/n,m=s/a,p=Math.min(f,m),d=Math.max(f,m);"meet"==c&&(n*=p,a*=p),"slice"==c&&(n*=d,a*=d),l=new A.Property("refX",l),h=new A.Property("refY",h),l.hasValue()&&h.hasValue()?t.translate(-p*l.toPixels("x"),-p*h.toPixels("y")):(u.match(/^xMid/)&&("meet"==c&&p==m||"slice"==c&&d==m)&&t.translate(i/2-n/2,0),u.match(/YMid$/)&&("meet"==c&&p==f||"slice"==c&&d==f)&&t.translate(0,s/2-a/2),u.match(/^xMax/)&&("meet"==c&&p==m||"slice"==c&&d==m)&&t.translate(i-n,0),u.match(/YMax$/)&&("meet"==c&&p==f||"slice"==c&&d==f)&&t.translate(0,s-a)),"none"==u?t.scale(f,m):"meet"==c?t.scale(p,p):"slice"==c&&t.scale(d,d),t.translate(null==r?0:-r,null==o?0:-o)},A.Element={},A.EmptyProperty=new A.Property("EMPTY",""),A.Element.ElementBase=function(a){this.attributes={},this.styles={},this.stylesSpecificity={},this.children=[],this.attribute=function(t,e){var i=this.attributes[t];return null!=i?i:(1==e&&(i=new A.Property(t,""),this.attributes[t]=i),i||A.EmptyProperty)},this.getHrefAttribute=function(){for(var t in this.attributes)if("href"==t||t.match(/:href$/))return this.attributes[t];return A.EmptyProperty},this.style=function(t,e,i){var n=this.styles[t];if(null!=n)return n;var s=this.attribute(t);if(null!=s&&s.hasValue())return this.styles[t]=s;if(1!=i){var a=this.parent;if(null!=a){var r=a.style(t);if(null!=r&&r.hasValue())return r}}return 1==e&&(n=new A.Property(t,""),this.styles[t]=n),n||A.EmptyProperty},this.render=function(t){if("none"!=this.style("display").value&&"hidden"!=this.style("visibility").value){if(t.save(),this.style("mask").hasValue()){var e=this.style("mask").getDefinition();null!=e&&e.apply(t,this)}else if(this.style("filter").hasValue()){var i=this.style("filter").getDefinition();null!=i&&i.apply(t,this)}else this.setContext(t),this.renderChildren(t),this.clearContext(t);t.restore()}},this.setContext=function(t){},this.clearContext=function(t){},this.renderChildren=function(t){for(var e=0;e<this.children.length;e++)this.children[e].render(t)},this.addChild=function(t,e){var i=t;e&&(i=A.CreateElement(t)),i.parent=this,"title"!=i.type&&this.children.push(i)},this.addStylesFromStyleDefinition=function(){for(var t in A.Styles)if("@"!=t[0]&&f(a,t)){var e=A.Styles[t],i=A.StylesSpecificity[t];if(null!=e)for(var n in e){var s=this.stylesSpecificity[n];void 0===s&&(s="000"),s<i&&(this.styles[n]=e[n],this.stylesSpecificity[n]=i)}}};var t,e=new RegExp("^[A-Z-]+$");if(null!=a&&1==a.nodeType){for(var i=0;i<a.attributes.length;i++){var n=a.attributes[i],s=(t=n.nodeName,e.test(t)?t.toLowerCase():t);this.attributes[s]=new A.Property(s,n.value)}if(this.addStylesFromStyleDefinition(),this.attribute("style").hasValue()){var r=this.attribute("style").value.split(";");for(i=0;i<r.length;i++)if(""!=A.trim(r[i])){var o=r[i].split(":"),l=A.trim(o[0]),h=A.trim(o[1]);this.styles[l]=new A.Property(l,h)}}for(this.attribute("id").hasValue()&&null==A.Definitions[this.attribute("id").value]&&(A.Definitions[this.attribute("id").value]=this),i=0;i<a.childNodes.length;i++){var u=a.childNodes[i];if(1==u.nodeType&&this.addChild(u,!0),this.captureTextNodes&&(3==u.nodeType||4==u.nodeType)){var c=u.value||u.text||u.textContent||"";""!=A.compressSpaces(c)&&this.addChild(new A.Element.tspan(u),!1)}}}},A.Element.RenderedElementBase=function(t){this.base=A.Element.ElementBase,this.base(t),this.calculateOpacity=function(){for(var t=1,e=this;null!=e;){var i=e.style("opacity",!1,!0);i.hasValue()&&(t*=i.numValue()),e=e.parent}return t},this.setContext=function(t,e){if(!e){var i;if(this.style("fill").isUrlDefinition())null!=(i=this.style("fill").getFillStyleDefinition(this,this.style("fill-opacity")))&&(t.fillStyle=i);else if(this.style("fill").hasValue()){var n;"currentColor"==(n=this.style("fill")).value&&(n.value=this.style("color").value),"inherit"!=n.value&&(t.fillStyle="none"==n.value?"rgba(0,0,0,0)":n.value)}if(this.style("fill-opacity").hasValue()&&(n=(n=new A.Property("fill",t.fillStyle)).addOpacity(this.style("fill-opacity")),t.fillStyle=n.value),this.style("stroke").isUrlDefinition())null!=(i=this.style("stroke").getFillStyleDefinition(this,this.style("stroke-opacity")))&&(t.strokeStyle=i);else if(this.style("stroke").hasValue()){var s;"currentColor"==(s=this.style("stroke")).value&&(s.value=this.style("color").value),"inherit"!=s.value&&(t.strokeStyle="none"==s.value?"rgba(0,0,0,0)":s.value)}if(this.style("stroke-opacity").hasValue()&&(s=(s=new A.Property("stroke",t.strokeStyle)).addOpacity(this.style("stroke-opacity")),t.strokeStyle=s.value),this.style("stroke-width").hasValue()){var a=this.style("stroke-width").toPixels();t.lineWidth=0==a?.001:a}if(this.style("stroke-linecap").hasValue()&&(t.lineCap=this.style("stroke-linecap").value),this.style("stroke-linejoin").hasValue()&&(t.lineJoin=this.style("stroke-linejoin").value),this.style("stroke-miterlimit").hasValue()&&(t.miterLimit=this.style("stroke-miterlimit").value),this.style("paint-order").hasValue()&&(t.paintOrder=this.style("paint-order").value),this.style("stroke-dasharray").hasValue()&&"none"!=this.style("stroke-dasharray").value){var r=A.ToNumberArray(this.style("stroke-dasharray").value);void 0!==t.setLineDash?t.setLineDash(r):void 0!==t.webkitLineDash?t.webkitLineDash=r:void 0===t.mozDash||1==r.length&&0==r[0]||(t.mozDash=r);var o=this.style("stroke-dashoffset").toPixels();void 0!==t.lineDashOffset?t.lineDashOffset=o:void 0!==t.webkitLineDashOffset?t.webkitLineDashOffset=o:void 0!==t.mozDashOffset&&(t.mozDashOffset=o)}}if(void 0!==t.font){t.font=A.Font.CreateFont(this.style("font-style").value,this.style("font-variant").value,this.style("font-weight").value,this.style("font-size").hasValue()?this.style("font-size").toPixels()+"px":"",this.style("font-family").value).toString();var l=this.style("font-size",!1,!1);l.isPixels()&&(A.emSize=l.toPixels())}if(this.style("transform",!1,!0).hasValue()&&new A.Transform(this.style("transform",!1,!0).value).apply(t),this.style("clip-path",!1,!0).hasValue()){var h=this.style("clip-path",!1,!0).getDefinition();null!=h&&h.apply(t)}t.globalAlpha=this.calculateOpacity()}},A.Element.RenderedElementBase.prototype=new A.Element.ElementBase,A.Element.PathElementBase=function(t){this.base=A.Element.RenderedElementBase,this.base(t),this.path=function(t){return null!=t&&t.beginPath(),new A.BoundingBox},this.renderChildren=function(t){this.path(t),A.Mouse.checkPath(this,t),""!=t.fillStyle&&("inherit"!=this.style("fill-rule").valueOrDefault("inherit")?t.fill(this.style("fill-rule").value):t.fill()),""!=t.strokeStyle&&t.stroke();var e=this.getMarkers();if(null!=e){if(this.style("marker-start").isUrlDefinition()&&(i=this.style("marker-start").getDefinition()).render(t,e[0][0],e[0][1]),this.style("marker-mid").isUrlDefinition())for(var i=this.style("marker-mid").getDefinition(),n=1;n<e.length-1;n++)i.render(t,e[n][0],e[n][1]);this.style("marker-end").isUrlDefinition()&&(i=this.style("marker-end").getDefinition()).render(t,e[e.length-1][0],e[e.length-1][1])}},this.getBoundingBox=function(){return this.path()},this.getMarkers=function(){return null}},A.Element.PathElementBase.prototype=new A.Element.RenderedElementBase,A.Element.svg=function(t){this.base=A.Element.RenderedElementBase,this.base(t),this.baseClearContext=this.clearContext,this.clearContext=function(t){this.baseClearContext(t),A.ViewPort.RemoveCurrent()},this.baseSetContext=this.setContext,this.setContext=function(t){if(t.strokeStyle="rgba(0,0,0,0)",t.lineCap="butt",t.lineJoin="miter",t.miterLimit=4,t.canvas.style&&void 0!==t.font&&void 0!==u.getComputedStyle){t.font=u.getComputedStyle(t.canvas).getPropertyValue("font");var e=new A.Property("fontSize",A.Font.Parse(t.font).fontSize);e.hasValue()&&(A.rootEmSize=A.emSize=e.toPixels("y"))}this.baseSetContext(t),this.attribute("x").hasValue()||(this.attribute("x",!0).value=0),this.attribute("y").hasValue()||(this.attribute("y",!0).value=0),t.translate(this.attribute("x").toPixels("x"),this.attribute("y").toPixels("y"));var i=A.ViewPort.width(),n=A.ViewPort.height();if(this.attribute("width").hasValue()||(this.attribute("width",!0).value="100%"),this.attribute("height").hasValue()||(this.attribute("height",!0).value="100%"),void 0===this.root){i=this.attribute("width").toPixels("x"),n=this.attribute("height").toPixels("y");var s=0,a=0;this.attribute("refX").hasValue()&&this.attribute("refY").hasValue()&&(s=-this.attribute("refX").toPixels("x"),a=-this.attribute("refY").toPixels("y")),"visible"!=this.attribute("overflow").valueOrDefault("hidden")&&(t.beginPath(),t.moveTo(s,a),t.lineTo(i,a),t.lineTo(i,n),t.lineTo(s,n),t.closePath(),t.clip())}if(A.ViewPort.SetCurrent(i,n),this.attribute("viewBox").hasValue()){var r=A.ToNumberArray(this.attribute("viewBox").value),o=r[0],l=r[1];i=r[2],n=r[3],A.AspectRatio(t,this.attribute("preserveAspectRatio").value,A.ViewPort.width(),i,A.ViewPort.height(),n,o,l,this.attribute("refX").value,this.attribute("refY").value),A.ViewPort.RemoveCurrent(),A.ViewPort.SetCurrent(r[2],r[3])}}},A.Element.svg.prototype=new A.Element.RenderedElementBase,A.Element.rect=function(t){this.base=A.Element.PathElementBase,this.base(t),this.path=function(t){var e=this.attribute("x").toPixels("x"),i=this.attribute("y").toPixels("y"),n=this.attribute("width").toPixels("x"),s=this.attribute("height").toPixels("y"),a=this.attribute("rx").toPixels("x"),r=this.attribute("ry").toPixels("y");if(this.attribute("rx").hasValue()&&!this.attribute("ry").hasValue()&&(r=a),this.attribute("ry").hasValue()&&!this.attribute("rx").hasValue()&&(a=r),a=Math.min(a,n/2),r=Math.min(r,s/2),null!=t){var o=(Math.sqrt(2)-1)/3*4;t.beginPath(),t.moveTo(e+a,i),t.lineTo(e+n-a,i),t.bezierCurveTo(e+n-a+o*a,i,e+n,i+r-o*r,e+n,i+r),t.lineTo(e+n,i+s-r),t.bezierCurveTo(e+n,i+s-r+o*r,e+n-a+o*a,i+s,e+n-a,i+s),t.lineTo(e+a,i+s),t.bezierCurveTo(e+a-o*a,i+s,e,i+s-r+o*r,e,i+s-r),t.lineTo(e,i+r),t.bezierCurveTo(e,i+r-o*r,e+a-o*a,i,e+a,i),t.closePath()}return new A.BoundingBox(e,i,e+n,i+s)}},A.Element.rect.prototype=new A.Element.PathElementBase,A.Element.circle=function(t){this.base=A.Element.PathElementBase,this.base(t),this.path=function(t){var e=this.attribute("cx").toPixels("x"),i=this.attribute("cy").toPixels("y"),n=this.attribute("r").toPixels();return null!=t&&(t.beginPath(),t.arc(e,i,n,0,2*Math.PI,!1),t.closePath()),new A.BoundingBox(e-n,i-n,e+n,i+n)}},A.Element.circle.prototype=new A.Element.PathElementBase,A.Element.ellipse=function(t){this.base=A.Element.PathElementBase,this.base(t),this.path=function(t){var e=(Math.sqrt(2)-1)/3*4,i=this.attribute("rx").toPixels("x"),n=this.attribute("ry").toPixels("y"),s=this.attribute("cx").toPixels("x"),a=this.attribute("cy").toPixels("y");return null!=t&&(t.beginPath(),t.moveTo(s+i,a),t.bezierCurveTo(s+i,a+e*n,s+e*i,a+n,s,a+n),t.bezierCurveTo(s-e*i,a+n,s-i,a+e*n,s-i,a),t.bezierCurveTo(s-i,a-e*n,s-e*i,a-n,s,a-n),t.bezierCurveTo(s+e*i,a-n,s+i,a-e*n,s+i,a),t.closePath()),new A.BoundingBox(s-i,a-n,s+i,a+n)}},A.Element.ellipse.prototype=new A.Element.PathElementBase,A.Element.line=function(t){this.base=A.Element.PathElementBase,this.base(t),this.getPoints=function(){return[new A.Point(this.attribute("x1").toPixels("x"),this.attribute("y1").toPixels("y")),new A.Point(this.attribute("x2").toPixels("x"),this.attribute("y2").toPixels("y"))]},this.path=function(t){var e=this.getPoints();return null!=t&&(t.beginPath(),t.moveTo(e[0].x,e[0].y),t.lineTo(e[1].x,e[1].y)),new A.BoundingBox(e[0].x,e[0].y,e[1].x,e[1].y)},this.getMarkers=function(){var t=this.getPoints(),e=t[0].angleTo(t[1]);return[[t[0],e],[t[1],e]]}},A.Element.line.prototype=new A.Element.PathElementBase,A.Element.polyline=function(t){this.base=A.Element.PathElementBase,this.base(t),this.points=A.CreatePath(this.attribute("points").value),this.path=function(t){var e=new A.BoundingBox(this.points[0].x,this.points[0].y);null!=t&&(t.beginPath(),t.moveTo(this.points[0].x,this.points[0].y));for(var i=1;i<this.points.length;i++)e.addPoint(this.points[i].x,this.points[i].y),null!=t&&t.lineTo(this.points[i].x,this.points[i].y);return e},this.getMarkers=function(){for(var t=[],e=0;e<this.points.length-1;e++)t.push([this.points[e],this.points[e].angleTo(this.points[e+1])]);return 0<t.length&&t.push([this.points[this.points.length-1],t[t.length-1][1]]),t}},A.Element.polyline.prototype=new A.Element.PathElementBase,A.Element.polygon=function(t){this.base=A.Element.polyline,this.base(t),this.basePath=this.path,this.path=function(t){var e=this.basePath(t);return null!=t&&(t.lineTo(this.points[0].x,this.points[0].y),t.closePath()),e}},A.Element.polygon.prototype=new A.Element.polyline,A.Element.path=function(t){this.base=A.Element.PathElementBase,this.base(t);var e=this.attribute("d").value;e=e.replace(/,/gm," ");for(var i=0;i<2;i++)e=e.replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm,"$1 $2");for(e=(e=e.replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm,"$1 $2")).replace(/([0-9])([+\-])/gm,"$1 $2"),i=0;i<2;i++)e=e.replace(/(\.[0-9]*)(\.)/gm,"$1 $2");e=e.replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm,"$1 $3 $4 "),e=A.compressSpaces(e),e=A.trim(e),this.PathParser=new function(t){this.tokens=t.split(" "),this.reset=function(){this.i=-1,this.command="",this.previousCommand="",this.start=new A.Point(0,0),this.control=new A.Point(0,0),this.current=new A.Point(0,0),this.points=[],this.angles=[]},this.isEnd=function(){return this.i>=this.tokens.length-1},this.isCommandOrEnd=function(){return!!this.isEnd()||null!=this.tokens[this.i+1].match(/^[A-Za-z]$/)},this.isRelativeCommand=function(){switch(this.command){case"m":case"l":case"h":case"v":case"c":case"s":case"q":case"t":case"a":case"z":return!0}return!1},this.getToken=function(){return this.i++,this.tokens[this.i]},this.getScalar=function(){return parseFloat(this.getToken())},this.nextCommand=function(){this.previousCommand=this.command,this.command=this.getToken()},this.getPoint=function(){var t=new A.Point(this.getScalar(),this.getScalar());return this.makeAbsolute(t)},this.getAsControlPoint=function(){var t=this.getPoint();return this.control=t},this.getAsCurrentPoint=function(){var t=this.getPoint();return this.current=t},this.getReflectedControlPoint=function(){return"c"!=this.previousCommand.toLowerCase()&&"s"!=this.previousCommand.toLowerCase()&&"q"!=this.previousCommand.toLowerCase()&&"t"!=this.previousCommand.toLowerCase()?this.current:new A.Point(2*this.current.x-this.control.x,2*this.current.y-this.control.y)},this.makeAbsolute=function(t){return this.isRelativeCommand()&&(t.x+=this.current.x,t.y+=this.current.y),t},this.addMarker=function(t,e,i){null!=i&&0<this.angles.length&&null==this.angles[this.angles.length-1]&&(this.angles[this.angles.length-1]=this.points[this.points.length-1].angleTo(i)),this.addMarkerAngle(t,null==e?null:e.angleTo(t))},this.addMarkerAngle=function(t,e){this.points.push(t),this.angles.push(e)},this.getMarkerPoints=function(){return this.points},this.getMarkerAngles=function(){for(var t=0;t<this.angles.length;t++)if(null==this.angles[t])for(var e=t+1;e<this.angles.length;e++)if(null!=this.angles[e]){this.angles[t]=this.angles[e];break}return this.angles}}(e),this.path=function(t){var e=this.PathParser;e.reset();var i=new A.BoundingBox;for(null!=t&&t.beginPath();!e.isEnd();)switch(e.nextCommand(),e.command){case"M":case"m":var n=e.getAsCurrentPoint();for(e.addMarker(n),i.addPoint(n.x,n.y),null!=t&&t.moveTo(n.x,n.y),e.start=e.current;!e.isCommandOrEnd();)n=e.getAsCurrentPoint(),e.addMarker(n,e.start),i.addPoint(n.x,n.y),null!=t&&t.lineTo(n.x,n.y);break;case"L":case"l":for(;!e.isCommandOrEnd();){var s=e.current;n=e.getAsCurrentPoint(),e.addMarker(n,s),i.addPoint(n.x,n.y),null!=t&&t.lineTo(n.x,n.y)}break;case"H":case"h":for(;!e.isCommandOrEnd();){var a=new A.Point((e.isRelativeCommand()?e.current.x:0)+e.getScalar(),e.current.y);e.addMarker(a,e.current),e.current=a,i.addPoint(e.current.x,e.current.y),null!=t&&t.lineTo(e.current.x,e.current.y)}break;case"V":case"v":for(;!e.isCommandOrEnd();)a=new A.Point(e.current.x,(e.isRelativeCommand()?e.current.y:0)+e.getScalar()),e.addMarker(a,e.current),e.current=a,i.addPoint(e.current.x,e.current.y),null!=t&&t.lineTo(e.current.x,e.current.y);break;case"C":case"c":for(;!e.isCommandOrEnd();){var r=e.current,o=e.getPoint(),l=e.getAsControlPoint(),h=e.getAsCurrentPoint();e.addMarker(h,l,o),i.addBezierCurve(r.x,r.y,o.x,o.y,l.x,l.y,h.x,h.y),null!=t&&t.bezierCurveTo(o.x,o.y,l.x,l.y,h.x,h.y)}break;case"S":case"s":for(;!e.isCommandOrEnd();)r=e.current,o=e.getReflectedControlPoint(),l=e.getAsControlPoint(),h=e.getAsCurrentPoint(),e.addMarker(h,l,o),i.addBezierCurve(r.x,r.y,o.x,o.y,l.x,l.y,h.x,h.y),null!=t&&t.bezierCurveTo(o.x,o.y,l.x,l.y,h.x,h.y);break;case"Q":case"q":for(;!e.isCommandOrEnd();)r=e.current,l=e.getAsControlPoint(),h=e.getAsCurrentPoint(),e.addMarker(h,l,l),i.addQuadraticCurve(r.x,r.y,l.x,l.y,h.x,h.y),null!=t&&t.quadraticCurveTo(l.x,l.y,h.x,h.y);break;case"T":case"t":for(;!e.isCommandOrEnd();)r=e.current,l=e.getReflectedControlPoint(),e.control=l,h=e.getAsCurrentPoint(),e.addMarker(h,l,l),i.addQuadraticCurve(r.x,r.y,l.x,l.y,h.x,h.y),null!=t&&t.quadraticCurveTo(l.x,l.y,h.x,h.y);break;case"A":case"a":for(;!e.isCommandOrEnd();){r=e.current;var u=e.getScalar(),c=e.getScalar(),f=e.getScalar()*(Math.PI/180),m=e.getScalar(),p=e.getScalar(),d=(h=e.getAsCurrentPoint(),new A.Point(Math.cos(f)*(r.x-h.x)/2+Math.sin(f)*(r.y-h.y)/2,-Math.sin(f)*(r.x-h.x)/2+Math.cos(f)*(r.y-h.y)/2)),y=Math.pow(d.x,2)/Math.pow(u,2)+Math.pow(d.y,2)/Math.pow(c,2);1<y&&(u*=Math.sqrt(y),c*=Math.sqrt(y));var v=(m==p?-1:1)*Math.sqrt((Math.pow(u,2)*Math.pow(c,2)-Math.pow(u,2)*Math.pow(d.y,2)-Math.pow(c,2)*Math.pow(d.x,2))/(Math.pow(u,2)*Math.pow(d.y,2)+Math.pow(c,2)*Math.pow(d.x,2)));isNaN(v)&&(v=0);var g=new A.Point(v*u*d.y/c,v*-c*d.x/u),x=new A.Point((r.x+h.x)/2+Math.cos(f)*g.x-Math.sin(f)*g.y,(r.y+h.y)/2+Math.sin(f)*g.x+Math.cos(f)*g.y),b=function(t){return Math.sqrt(Math.pow(t[0],2)+Math.pow(t[1],2))},P=function(t,e){return(t[0]*e[0]+t[1]*e[1])/(b(t)*b(e))},E=function(t,e){return(t[0]*e[1]<t[1]*e[0]?-1:1)*Math.acos(P(t,e))},w=E([1,0],[(d.x-g.x)/u,(d.y-g.y)/c]),B=[(d.x-g.x)/u,(d.y-g.y)/c],C=[(-d.x-g.x)/u,(-d.y-g.y)/c],T=E(B,C);P(B,C)<=-1&&(T=Math.PI),1<=P(B,C)&&(T=0);var V=1-p?1:-1,M=w+V*(T/2),S=new A.Point(x.x+u*Math.cos(M),x.y+c*Math.sin(M));if(e.addMarkerAngle(S,M-V*Math.PI/2),e.addMarkerAngle(h,M-V*Math.PI),i.addPoint(h.x,h.y),null!=t){P=c<u?u:c;var k=c<u?1:u/c,D=c<u?c/u:1;t.translate(x.x,x.y),t.rotate(f),t.scale(k,D),t.arc(0,0,P,w,w+T,1-p),t.scale(1/k,1/D),t.rotate(-f),t.translate(-x.x,-x.y)}}break;case"Z":case"z":null!=t&&i.x1!==i.x2&&i.y1!==i.y2&&t.closePath(),e.current=e.start}return i},this.getMarkers=function(){for(var t=this.PathParser.getMarkerPoints(),e=this.PathParser.getMarkerAngles(),i=[],n=0;n<t.length;n++)i.push([t[n],e[n]]);return i}},A.Element.path.prototype=new A.Element.PathElementBase,A.Element.pattern=function(t){this.base=A.Element.ElementBase,this.base(t),this.createPattern=function(t,e){var i=this.attribute("width").toPixels("x",!0),n=this.attribute("height").toPixels("y",!0),s=new A.Element.svg;s.attributes.viewBox=new A.Property("viewBox",this.attribute("viewBox").value),s.attributes.width=new A.Property("width",i+"px"),s.attributes.height=new A.Property("height",n+"px"),s.attributes.transform=new A.Property("transform",this.attribute("patternTransform").value),s.children=this.children;var a=p();a.width=i,a.height=n;var r=a.getContext("2d");this.attribute("x").hasValue()&&this.attribute("y").hasValue()&&r.translate(this.attribute("x").toPixels("x",!0),this.attribute("y").toPixels("y",!0));for(var o=-1;o<=1;o++)for(var l=-1;l<=1;l++)r.save(),s.attributes.x=new A.Property("x",o*a.width),s.attributes.y=new A.Property("y",l*a.height),s.render(r),r.restore();return t.createPattern(a,"repeat")}},A.Element.pattern.prototype=new A.Element.ElementBase,A.Element.marker=function(t){this.base=A.Element.ElementBase,this.base(t),this.baseRender=this.render,this.render=function(t,e,i){if(e){t.translate(e.x,e.y),"auto"==this.attribute("orient").valueOrDefault("auto")&&t.rotate(i),"strokeWidth"==this.attribute("markerUnits").valueOrDefault("strokeWidth")&&t.scale(t.lineWidth,t.lineWidth),t.save();var n=new A.Element.svg;n.attributes.viewBox=new A.Property("viewBox",this.attribute("viewBox").value),n.attributes.refX=new A.Property("refX",this.attribute("refX").value),n.attributes.refY=new A.Property("refY",this.attribute("refY").value),n.attributes.width=new A.Property("width",this.attribute("markerWidth").value),n.attributes.height=new A.Property("height",this.attribute("markerHeight").value),n.attributes.fill=new A.Property("fill",this.attribute("fill").valueOrDefault("black")),n.attributes.stroke=new A.Property("stroke",this.attribute("stroke").valueOrDefault("none")),n.children=this.children,n.render(t),t.restore(),"strokeWidth"==this.attribute("markerUnits").valueOrDefault("strokeWidth")&&t.scale(1/t.lineWidth,1/t.lineWidth),"auto"==this.attribute("orient").valueOrDefault("auto")&&t.rotate(-i),t.translate(-e.x,-e.y)}}},A.Element.marker.prototype=new A.Element.ElementBase,A.Element.defs=function(t){this.base=A.Element.ElementBase,this.base(t),this.render=function(t){}},A.Element.defs.prototype=new A.Element.ElementBase,A.Element.GradientBase=function(t){this.base=A.Element.ElementBase,this.base(t),this.stops=[];for(var e=0;e<this.children.length;e++){var i=this.children[e];"stop"==i.type&&this.stops.push(i)}this.getGradient=function(){},this.gradientUnits=function(){return this.attribute("gradientUnits").valueOrDefault("objectBoundingBox")},this.attributesToInherit=["gradientUnits"],this.inheritStopContainer=function(t){for(var e=0;e<this.attributesToInherit.length;e++){var i=this.attributesToInherit[e];!this.attribute(i).hasValue()&&t.attribute(i).hasValue()&&(this.attribute(i,!0).value=t.attribute(i).value)}},this.createGradient=function(t,e,i){var n=this;this.getHrefAttribute().hasValue()&&(n=this.getHrefAttribute().getDefinition(),this.inheritStopContainer(n));var s=function(t){return i.hasValue()?new A.Property("color",t).addOpacity(i).value:t},a=this.getGradient(t,e);if(null==a)return s(n.stops[n.stops.length-1].color);for(var r=0;r<n.stops.length;r++)a.addColorStop(n.stops[r].offset,s(n.stops[r].color));if(this.attribute("gradientTransform").hasValue()){var o=A.ViewPort.viewPorts[0],l=new A.Element.rect;l.attributes.x=new A.Property("x",-A.MAX_VIRTUAL_PIXELS/3),l.attributes.y=new A.Property("y",-A.MAX_VIRTUAL_PIXELS/3),l.attributes.width=new A.Property("width",A.MAX_VIRTUAL_PIXELS),l.attributes.height=new A.Property("height",A.MAX_VIRTUAL_PIXELS);var h=new A.Element.g;h.attributes.transform=new A.Property("transform",this.attribute("gradientTransform").value),h.children=[l];var u=new A.Element.svg;u.attributes.x=new A.Property("x",0),u.attributes.y=new A.Property("y",0),u.attributes.width=new A.Property("width",o.width),u.attributes.height=new A.Property("height",o.height),u.children=[h];var c=p();c.width=o.width,c.height=o.height;var f=c.getContext("2d");return f.fillStyle=a,u.render(f),f.createPattern(c,"no-repeat")}return a}},A.Element.GradientBase.prototype=new A.Element.ElementBase,A.Element.linearGradient=function(t){this.base=A.Element.GradientBase,this.base(t),this.attributesToInherit.push("x1"),this.attributesToInherit.push("y1"),this.attributesToInherit.push("x2"),this.attributesToInherit.push("y2"),this.getGradient=function(t,e){var i="objectBoundingBox"==this.gradientUnits()?e.getBoundingBox(t):null;this.attribute("x1").hasValue()||this.attribute("y1").hasValue()||this.attribute("x2").hasValue()||this.attribute("y2").hasValue()||(this.attribute("x1",!0).value=0,this.attribute("y1",!0).value=0,this.attribute("x2",!0).value=1,this.attribute("y2",!0).value=0);var n="objectBoundingBox"==this.gradientUnits()?i.x()+i.width()*this.attribute("x1").numValue():this.attribute("x1").toPixels("x"),s="objectBoundingBox"==this.gradientUnits()?i.y()+i.height()*this.attribute("y1").numValue():this.attribute("y1").toPixels("y"),a="objectBoundingBox"==this.gradientUnits()?i.x()+i.width()*this.attribute("x2").numValue():this.attribute("x2").toPixels("x"),r="objectBoundingBox"==this.gradientUnits()?i.y()+i.height()*this.attribute("y2").numValue():this.attribute("y2").toPixels("y");return n==a&&s==r?null:t.createLinearGradient(n,s,a,r)}},A.Element.linearGradient.prototype=new A.Element.GradientBase,A.Element.radialGradient=function(t){this.base=A.Element.GradientBase,this.base(t),this.attributesToInherit.push("cx"),this.attributesToInherit.push("cy"),this.attributesToInherit.push("r"),this.attributesToInherit.push("fx"),this.attributesToInherit.push("fy"),this.getGradient=function(t,e){var i=e.getBoundingBox(t);this.attribute("cx").hasValue()||(this.attribute("cx",!0).value="50%"),this.attribute("cy").hasValue()||(this.attribute("cy",!0).value="50%"),this.attribute("r").hasValue()||(this.attribute("r",!0).value="50%");var n="objectBoundingBox"==this.gradientUnits()?i.x()+i.width()*this.attribute("cx").numValue():this.attribute("cx").toPixels("x"),s="objectBoundingBox"==this.gradientUnits()?i.y()+i.height()*this.attribute("cy").numValue():this.attribute("cy").toPixels("y"),a=n,r=s;this.attribute("fx").hasValue()&&(a="objectBoundingBox"==this.gradientUnits()?i.x()+i.width()*this.attribute("fx").numValue():this.attribute("fx").toPixels("x")),this.attribute("fy").hasValue()&&(r="objectBoundingBox"==this.gradientUnits()?i.y()+i.height()*this.attribute("fy").numValue():this.attribute("fy").toPixels("y"));var o="objectBoundingBox"==this.gradientUnits()?(i.width()+i.height())/2*this.attribute("r").numValue():this.attribute("r").toPixels();return t.createRadialGradient(a,r,0,n,s,o)}},A.Element.radialGradient.prototype=new A.Element.GradientBase,A.Element.stop=function(t){this.base=A.Element.ElementBase,this.base(t),this.offset=this.attribute("offset").numValue(),this.offset<0&&(this.offset=0),1<this.offset&&(this.offset=1);var e=this.style("stop-color",!0);""===e.value&&(e.value="#000"),this.style("stop-opacity").hasValue()&&(e=e.addOpacity(this.style("stop-opacity"))),this.color=e.value},A.Element.stop.prototype=new A.Element.ElementBase,A.Element.AnimateBase=function(t){this.base=A.Element.ElementBase,this.base(t),A.Animations.push(this),this.duration=0,this.begin=this.attribute("begin").toMilliseconds(),this.maxDuration=this.begin+this.attribute("dur").toMilliseconds(),this.getProperty=function(){var t=this.attribute("attributeType").value,e=this.attribute("attributeName").value;return"CSS"==t?this.parent.style(e,!0):this.parent.attribute(e,!0)},this.initialValue=null,this.initialUnits="",this.removed=!1,this.calcValue=function(){return""},this.update=function(t){if(null==this.initialValue&&(this.initialValue=this.getProperty().value,this.initialUnits=this.getProperty().getUnits()),this.duration>this.maxDuration){if("indefinite"==this.attribute("repeatCount").value||"indefinite"==this.attribute("repeatDur").value)this.duration=0;else if("freeze"!=this.attribute("fill").valueOrDefault("remove")||this.frozen){if("remove"==this.attribute("fill").valueOrDefault("remove")&&!this.removed)return this.removed=!0,this.getProperty().value=this.parent.animationFrozen?this.parent.animationFrozenValue:this.initialValue,!0}else this.frozen=!0,this.parent.animationFrozen=!0,this.parent.animationFrozenValue=this.getProperty().value;return!1}this.duration=this.duration+t;var e=!1;if(this.begin<this.duration){var i=this.calcValue();this.attribute("type").hasValue()&&(i=this.attribute("type").value+"("+i+")"),this.getProperty().value=i,e=!0}return e},this.from=this.attribute("from"),this.to=this.attribute("to"),this.values=this.attribute("values"),this.values.hasValue()&&(this.values.value=this.values.value.split(";")),this.progress=function(){var t={progress:(this.duration-this.begin)/(this.maxDuration-this.begin)};if(this.values.hasValue()){var e=t.progress*(this.values.value.length-1),i=Math.floor(e),n=Math.ceil(e);t.from=new A.Property("from",parseFloat(this.values.value[i])),t.to=new A.Property("to",parseFloat(this.values.value[n])),t.progress=(e-i)/(n-i)}else t.from=this.from,t.to=this.to;return t}},A.Element.AnimateBase.prototype=new A.Element.ElementBase,A.Element.animate=function(t){this.base=A.Element.AnimateBase,this.base(t),this.calcValue=function(){var t=this.progress();return t.from.numValue()+(t.to.numValue()-t.from.numValue())*t.progress+this.initialUnits}},A.Element.animate.prototype=new A.Element.AnimateBase,A.Element.animateColor=function(t){this.base=A.Element.AnimateBase,this.base(t),this.calcValue=function(){var t=this.progress(),e=new m(t.from.value),i=new m(t.to.value);if(e.ok&&i.ok){var n=e.r+(i.r-e.r)*t.progress,s=e.g+(i.g-e.g)*t.progress,a=e.b+(i.b-e.b)*t.progress;return"rgb("+parseInt(n,10)+","+parseInt(s,10)+","+parseInt(a,10)+")"}return this.attribute("from").value}},A.Element.animateColor.prototype=new A.Element.AnimateBase,A.Element.animateTransform=function(t){this.base=A.Element.AnimateBase,this.base(t),this.calcValue=function(){for(var t=this.progress(),e=A.ToNumberArray(t.from.value),i=A.ToNumberArray(t.to.value),n="",s=0;s<e.length;s++)n+=e[s]+(i[s]-e[s])*t.progress+" ";return n}},A.Element.animateTransform.prototype=new A.Element.animate,A.Element.font=function(t){this.base=A.Element.ElementBase,this.base(t),this.horizAdvX=this.attribute("horiz-adv-x").numValue(),this.isRTL=!1,this.isArabic=!1,this.fontFace=null,this.missingGlyph=null,this.glyphs=[];for(var e=0;e<this.children.length;e++){var i=this.children[e];"font-face"==i.type?(this.fontFace=i).style("font-family").hasValue()&&(A.Definitions[i.style("font-family").value]=this):"missing-glyph"==i.type?this.missingGlyph=i:"glyph"==i.type&&(""!=i.arabicForm?(this.isRTL=!0,this.isArabic=!0,void 0===this.glyphs[i.unicode]&&(this.glyphs[i.unicode]=[]),this.glyphs[i.unicode][i.arabicForm]=i):this.glyphs[i.unicode]=i)}},A.Element.font.prototype=new A.Element.ElementBase,A.Element.fontface=function(t){this.base=A.Element.ElementBase,this.base(t),this.ascent=this.attribute("ascent").value,this.descent=this.attribute("descent").value,this.unitsPerEm=this.attribute("units-per-em").numValue()},A.Element.fontface.prototype=new A.Element.ElementBase,A.Element.missingglyph=function(t){this.base=A.Element.path,this.base(t),this.horizAdvX=0},A.Element.missingglyph.prototype=new A.Element.path,A.Element.glyph=function(t){this.base=A.Element.path,this.base(t),this.horizAdvX=this.attribute("horiz-adv-x").numValue(),this.unicode=this.attribute("unicode").value,this.arabicForm=this.attribute("arabic-form").value},A.Element.glyph.prototype=new A.Element.path,A.Element.text=function(t){this.captureTextNodes=!0,this.base=A.Element.RenderedElementBase,this.base(t),this.baseSetContext=this.setContext,this.setContext=function(t){this.baseSetContext(t);var e=this.style("dominant-baseline").toTextBaseline();null==e&&(e=this.style("alignment-baseline").toTextBaseline()),null!=e&&(t.textBaseline=e)},this.initializeCoordinates=function(t){this.x=this.attribute("x").toPixels("x"),this.y=this.attribute("y").toPixels("y"),this.attribute("dx").hasValue()&&(this.x+=this.attribute("dx").toPixels("x")),this.attribute("dy").hasValue()&&(this.y+=this.attribute("dy").toPixels("y")),this.x+=this.getAnchorDelta(t,this,0)},this.getBoundingBox=function(t){this.initializeCoordinates(t);for(var e=null,i=0;i<this.children.length;i++){var n=this.getChildBoundingBox(t,this,this,i);null==e?e=n:e.addBoundingBox(n)}return e},this.renderChildren=function(t){this.initializeCoordinates(t);for(var e=0;e<this.children.length;e++)this.renderChild(t,this,this,e)},this.getAnchorDelta=function(t,e,i){var n=this.style("text-anchor").valueOrDefault("start");if("start"!=n){for(var s=0,a=i;a<e.children.length;a++){var r=e.children[a];if(i<a&&r.attribute("x").hasValue())break;s+=r.measureTextRecursive(t)}return-1*("end"==n?s:s/2)}return 0},this.adjustChildCoordinates=function(t,e,i,n){var s=i.children[n];return s.attribute("x").hasValue()?(s.x=s.attribute("x").toPixels("x")+e.getAnchorDelta(t,i,n),s.attribute("dx").hasValue()&&(s.x+=s.attribute("dx").toPixels("x"))):(s.attribute("dx").hasValue()&&(e.x+=s.attribute("dx").toPixels("x")),s.x=e.x),e.x=s.x+s.measureText(t),s.attribute("y").hasValue()?(s.y=s.attribute("y").toPixels("y"),s.attribute("dy").hasValue()&&(s.y+=s.attribute("dy").toPixels("y"))):(s.attribute("dy").hasValue()&&(e.y+=s.attribute("dy").toPixels("y")),s.y=e.y),e.y=s.y,s},this.getChildBoundingBox=function(t,e,i,n){var s=this.adjustChildCoordinates(t,e,i,n),a=s.getBoundingBox(t);for(n=0;n<s.children.length;n++){var r=e.getChildBoundingBox(t,e,s,n);a.addBoundingBox(r)}return a},this.renderChild=function(t,e,i,n){var s=this.adjustChildCoordinates(t,e,i,n);for(s.render(t),n=0;n<s.children.length;n++)e.renderChild(t,e,s,n)}},A.Element.text.prototype=new A.Element.RenderedElementBase,A.Element.TextElementBase=function(t){this.base=A.Element.RenderedElementBase,this.base(t),this.getGlyph=function(t,e,i){var n=e[i],s=null;if(t.isArabic){var a="isolated";(0==i||" "==e[i-1])&&i<e.length-2&&" "!=e[i+1]&&(a="terminal"),0<i&&" "!=e[i-1]&&i<e.length-2&&" "!=e[i+1]&&(a="medial"),0<i&&" "!=e[i-1]&&(i==e.length-1||" "==e[i+1])&&(a="initial"),void 0!==t.glyphs[n]&&null==(s=t.glyphs[n][a])&&"glyph"==t.glyphs[n].type&&(s=t.glyphs[n])}else s=t.glyphs[n];return null==s&&(s=t.missingGlyph),s},this.renderChildren=function(t){var e=this.parent.style("font-family").getDefinition();if(null==e)"stroke"==t.paintOrder?(""!=t.strokeStyle&&t.strokeText(A.compressSpaces(this.getText()),this.x,this.y),""!=t.fillStyle&&t.fillText(A.compressSpaces(this.getText()),this.x,this.y)):(""!=t.fillStyle&&t.fillText(A.compressSpaces(this.getText()),this.x,this.y),""!=t.strokeStyle&&t.strokeText(A.compressSpaces(this.getText()),this.x,this.y));else{var i=this.parent.style("font-size").numValueOrDefault(A.Font.Parse(A.ctx.font).fontSize),n=this.parent.style("font-style").valueOrDefault(A.Font.Parse(A.ctx.font).fontStyle),s=this.getText();e.isRTL&&(s=s.split("").reverse().join(""));for(var a=A.ToNumberArray(this.parent.attribute("dx").value),r=0;r<s.length;r++){var o=this.getGlyph(e,s,r),l=i/e.fontFace.unitsPerEm;t.translate(this.x,this.y),t.scale(l,-l);var h=t.lineWidth;t.lineWidth=t.lineWidth*e.fontFace.unitsPerEm/i,"italic"==n&&t.transform(1,0,.4,1,0,0),o.render(t),"italic"==n&&t.transform(1,0,-.4,1,0,0),t.lineWidth=h,t.scale(1/l,-1/l),t.translate(-this.x,-this.y),this.x+=i*(o.horizAdvX||e.horizAdvX)/e.fontFace.unitsPerEm,void 0===a[r]||isNaN(a[r])||(this.x+=a[r])}}},this.getText=function(){},this.measureTextRecursive=function(t){for(var e=this.measureText(t),i=0;i<this.children.length;i++)e+=this.children[i].measureTextRecursive(t);return e},this.measureText=function(t){var e=this.parent.style("font-family").getDefinition();if(null!=e){var i=this.parent.style("font-size").numValueOrDefault(A.Font.Parse(A.ctx.font).fontSize),n=0,s=this.getText();e.isRTL&&(s=s.split("").reverse().join(""));for(var a=A.ToNumberArray(this.parent.attribute("dx").value),r=0;r<s.length;r++)n+=(this.getGlyph(e,s,r).horizAdvX||e.horizAdvX)*i/e.fontFace.unitsPerEm,void 0===a[r]||isNaN(a[r])||(n+=a[r]);return n}var o=A.compressSpaces(this.getText());if(!t.measureText)return 10*o.length;t.save(),this.setContext(t,!0);var l=t.measureText(o).width;return t.restore(),l},this.getBoundingBox=function(t){var e=this.parent.style("font-size").numValueOrDefault(A.Font.Parse(A.ctx.font).fontSize);return new A.BoundingBox(this.x,this.y-e,this.x+this.measureText(t),this.y)}},A.Element.TextElementBase.prototype=new A.Element.RenderedElementBase,A.Element.tspan=function(t){this.captureTextNodes=!0,this.base=A.Element.TextElementBase,this.base(t),this.text=A.compressSpaces(t.value||t.text||t.textContent||""),this.getText=function(){return 0<this.children.length?"":this.text}},A.Element.tspan.prototype=new A.Element.TextElementBase,A.Element.tref=function(t){this.base=A.Element.TextElementBase,this.base(t),this.getText=function(){var t=this.getHrefAttribute().getDefinition();if(null!=t)return t.children[0].getText()}},A.Element.tref.prototype=new A.Element.TextElementBase,A.Element.a=function(t){this.base=A.Element.TextElementBase,this.base(t),this.hasText=0<t.childNodes.length;for(var e=0;e<t.childNodes.length;e++)3!=t.childNodes[e].nodeType&&(this.hasText=!1);this.text=this.hasText?t.childNodes[0].value||t.childNodes[0].data:"",this.getText=function(){return this.text},this.baseRenderChildren=this.renderChildren,this.renderChildren=function(t){if(this.hasText){this.baseRenderChildren(t);var e=new A.Property("fontSize",A.Font.Parse(A.ctx.font).fontSize);A.Mouse.checkBoundingBox(this,new A.BoundingBox(this.x,this.y-e.toPixels("y"),this.x+this.measureText(t),this.y))}else if(0<this.children.length){var i=new A.Element.g;i.children=this.children,i.parent=this,i.render(t)}},this.onclick=function(){u.open(this.getHrefAttribute().value)},this.onmousemove=function(){A.ctx.canvas.style.cursor="pointer"}},A.Element.a.prototype=new A.Element.TextElementBase,A.Element.image=function(t){this.base=A.Element.RenderedElementBase,this.base(t);var e=this.getHrefAttribute().value;if(""!=e){var a=e.match(/\.svg$/);if(A.Images.push(this),this.loaded=!1,a)this.img=A.ajax(e),this.loaded=!0;else{this.img=document.createElement("img"),1==A.opts.useCORS&&(this.img.crossOrigin="Anonymous");var r=this;this.img.onload=function(){r.loaded=!0},this.img.onerror=function(){A.log('ERROR: image "'+e+'" not found'),r.loaded=!0},this.img.src=e}this.renderChildren=function(t){var e=this.attribute("x").toPixels("x"),i=this.attribute("y").toPixels("y"),n=this.attribute("width").toPixels("x"),s=this.attribute("height").toPixels("y");0!=n&&0!=s&&(t.save(),a?t.drawSvg(this.img,e,i,n,s):(t.translate(e,i),A.AspectRatio(t,this.attribute("preserveAspectRatio").value,n,this.img.width,s,this.img.height,0,0),r.loaded&&(void 0===this.img.complete||this.img.complete)&&t.drawImage(this.img,0,0)),t.restore())},this.getBoundingBox=function(){var t=this.attribute("x").toPixels("x"),e=this.attribute("y").toPixels("y"),i=this.attribute("width").toPixels("x"),n=this.attribute("height").toPixels("y");return new A.BoundingBox(t,e,t+i,e+n)}}},A.Element.image.prototype=new A.Element.RenderedElementBase,A.Element.g=function(t){this.base=A.Element.RenderedElementBase,this.base(t),this.getBoundingBox=function(t){for(var e=new A.BoundingBox,i=0;i<this.children.length;i++)e.addBoundingBox(this.children[i].getBoundingBox(t));return e}},A.Element.g.prototype=new A.Element.RenderedElementBase,A.Element.symbol=function(t){this.base=A.Element.RenderedElementBase,this.base(t),this.render=function(t){}},A.Element.symbol.prototype=new A.Element.RenderedElementBase,A.Element.style=function(t){this.base=A.Element.ElementBase,this.base(t);for(var e="",i=0;i<t.childNodes.length;i++)e+=t.childNodes[i].data;e=e.replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm,"");var n=(e=A.compressSpaces(e)).split("}");for(i=0;i<n.length;i++)if(""!=A.trim(n[i]))for(var s=n[i].split("{"),a=s[0].split(","),r=s[1].split(";"),o=0;o<a.length;o++){var l=A.trim(a[o]);if(""!=l){for(var h=A.Styles[l]||{},u=0;u<r.length;u++){var c=r[u].indexOf(":"),f=r[u].substr(0,c),m=r[u].substr(c+1,r[u].length-c);null!=f&&null!=m&&(h[A.trim(f)]=new A.Property(A.trim(f),A.trim(m)))}if(A.Styles[l]=h,A.StylesSpecificity[l]=w(l),"@font-face"==l)for(var p=h["font-family"].value.replace(/"/g,""),d=h.src.value.split(","),y=0;y<d.length;y++)if(0<d[y].indexOf('format("svg")'))for(var v=d[y].indexOf("url"),g=d[y].indexOf(")",v),x=d[y].substr(v+5,g-v-6),b=A.parseXml(A.ajax(x)).getElementsByTagName("font"),P=0;P<b.length;P++){var E=A.CreateElement(b[P]);A.Definitions[p]=E}}}},A.Element.style.prototype=new A.Element.ElementBase,A.Element.use=function(t){this.base=A.Element.RenderedElementBase,this.base(t),this.baseSetContext=this.setContext,this.setContext=function(t){this.baseSetContext(t),this.attribute("x").hasValue()&&t.translate(this.attribute("x").toPixels("x"),0),this.attribute("y").hasValue()&&t.translate(0,this.attribute("y").toPixels("y"))};var n=this.getHrefAttribute().getDefinition();this.path=function(t){null!=n&&n.path(t)},this.elementTransform=function(){if(null!=n&&n.style("transform",!1,!0).hasValue())return new A.Transform(n.style("transform",!1,!0).value)},this.getBoundingBox=function(t){if(null!=n)return n.getBoundingBox(t)},this.renderChildren=function(t){if(null!=n){var e=n;"symbol"==n.type&&((e=new A.Element.svg).type="svg",e.attributes.viewBox=new A.Property("viewBox",n.attribute("viewBox").value),e.attributes.preserveAspectRatio=new A.Property("preserveAspectRatio",n.attribute("preserveAspectRatio").value),e.attributes.overflow=new A.Property("overflow",n.attribute("overflow").value),e.children=n.children),"svg"==e.type&&(this.attribute("width").hasValue()&&(e.attributes.width=new A.Property("width",this.attribute("width").value)),this.attribute("height").hasValue()&&(e.attributes.height=new A.Property("height",this.attribute("height").value)));var i=e.parent;e.parent=null,e.render(t),e.parent=i}}},A.Element.use.prototype=new A.Element.RenderedElementBase,A.Element.mask=function(t){this.base=A.Element.ElementBase,this.base(t),this.apply=function(t,e){var i=this.attribute("x").toPixels("x"),n=this.attribute("y").toPixels("y"),s=this.attribute("width").toPixels("x"),a=this.attribute("height").toPixels("y");if(0==s&&0==a){for(var r=new A.BoundingBox,o=0;o<this.children.length;o++)r.addBoundingBox(this.children[o].getBoundingBox(t));i=Math.floor(r.x1),n=Math.floor(r.y1),s=Math.floor(r.width()),a=Math.floor(r.height())}var l=e.attribute("mask").value;e.attribute("mask").value="";var h=p();h.width=i+s,h.height=n+a;var u=h.getContext("2d");this.renderChildren(u);var c=p();c.width=i+s,c.height=n+a;var f=c.getContext("2d");e.render(f),f.globalCompositeOperation="destination-in",f.fillStyle=u.createPattern(h,"no-repeat"),f.fillRect(0,0,i+s,n+a),t.fillStyle=f.createPattern(c,"no-repeat"),t.fillRect(0,0,i+s,n+a),e.attribute("mask").value=l},this.render=function(t){}},A.Element.mask.prototype=new A.Element.ElementBase,A.Element.clipPath=function(t){this.base=A.Element.ElementBase,this.base(t),this.apply=function(t){var e="undefined"!=typeof CanvasRenderingContext2D,i=t.beginPath,n=t.closePath;e&&(CanvasRenderingContext2D.prototype.beginPath=function(){},CanvasRenderingContext2D.prototype.closePath=function(){}),i.call(t);for(var s=0;s<this.children.length;s++){var a=this.children[s];if(void 0!==a.path){var r=void 0!==a.elementTransform&&a.elementTransform();!r&&a.style("transform",!1,!0).hasValue()&&(r=new A.Transform(a.style("transform",!1,!0).value)),r&&r.apply(t),a.path(t),e&&(CanvasRenderingContext2D.prototype.closePath=n),r&&r.unapply(t)}}n.call(t),t.clip(),e&&(CanvasRenderingContext2D.prototype.beginPath=i,CanvasRenderingContext2D.prototype.closePath=n)},this.render=function(t){}},A.Element.clipPath.prototype=new A.Element.ElementBase,A.Element.filter=function(t){this.base=A.Element.ElementBase,this.base(t),this.apply=function(t,e){var i=e.getBoundingBox(t),n=Math.floor(i.x1),s=Math.floor(i.y1),a=Math.floor(i.width()),r=Math.floor(i.height()),o=e.style("filter").value;e.style("filter").value="";for(var l=0,h=0,u=0;u<this.children.length;u++){var c=this.children[u].extraFilterDistance||0;l=Math.max(l,c),h=Math.max(h,c)}var f=p();f.width=a+2*l,f.height=r+2*h;var m=f.getContext("2d");for(m.translate(-n+l,-s+h),e.render(m),u=0;u<this.children.length;u++)"function"==typeof this.children[u].apply&&this.children[u].apply(m,0,0,a+2*l,r+2*h);t.drawImage(f,0,0,a+2*l,r+2*h,n-l,s-h,a+2*l,r+2*h),e.style("filter",!0).value=o},this.render=function(t){}},A.Element.filter.prototype=new A.Element.ElementBase,A.Element.feMorphology=function(t){this.base=A.Element.ElementBase,this.base(t),this.apply=function(t,e,i,n,s){}},A.Element.feMorphology.prototype=new A.Element.ElementBase,A.Element.feComposite=function(t){this.base=A.Element.ElementBase,this.base(t),this.apply=function(t,e,i,n,s){}},A.Element.feComposite.prototype=new A.Element.ElementBase,A.Element.feColorMatrix=function(t){this.base=A.Element.ElementBase,this.base(t);var n=A.ToNumberArray(this.attribute("values").value);switch(this.attribute("type").valueOrDefault("matrix")){case"saturate":var e=n[0];n=[.213+.787*e,.715-.715*e,.072-.072*e,0,0,.213-.213*e,.715+.285*e,.072-.072*e,0,0,.213-.213*e,.715-.715*e,.072+.928*e,0,0,0,0,0,1,0,0,0,0,0,1];break;case"hueRotate":var s=n[0]*Math.PI/180,i=function(t,e,i){return t+Math.cos(s)*e+Math.sin(s)*i};n=[i(.213,.787,-.213),i(.715,-.715,-.715),i(.072,-.072,.928),0,0,i(.213,-.213,.143),i(.715,.285,.14),i(.072,-.072,-.283),0,0,i(.213,-.213,-.787),i(.715,-.715,.715),i(.072,.928,.072),0,0,0,0,0,1,0,0,0,0,0,1];break;case"luminanceToAlpha":n=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,.2125,.7154,.0721,0,0,0,0,0,0,1]}function u(t,e,i,n,s,a){return t[i*n*4+4*e+a]}function c(t,e,i,n,s,a,r){t[i*n*4+4*e+a]=r}function f(t,e){var i=n[t];return i*(i<0?e-255:e)}this.apply=function(t,e,i,n,s){var a=t.getImageData(0,0,n,s);for(i=0;i<s;i++)for(e=0;e<n;e++){var r=u(a.data,e,i,n,0,0),o=u(a.data,e,i,n,0,1),l=u(a.data,e,i,n,0,2),h=u(a.data,e,i,n,0,3);c(a.data,e,i,n,0,0,f(0,r)+f(1,o)+f(2,l)+f(3,h)+f(4,1)),c(a.data,e,i,n,0,1,f(5,r)+f(6,o)+f(7,l)+f(8,h)+f(9,1)),c(a.data,e,i,n,0,2,f(10,r)+f(11,o)+f(12,l)+f(13,h)+f(14,1)),c(a.data,e,i,n,0,3,f(15,r)+f(16,o)+f(17,l)+f(18,h)+f(19,1))}t.clearRect(0,0,n,s),t.putImageData(a,0,0)}},A.Element.feColorMatrix.prototype=new A.Element.ElementBase,A.Element.feGaussianBlur=function(t){this.base=A.Element.ElementBase,this.base(t),this.blurRadius=Math.floor(this.attribute("stdDeviation").numValue()),this.extraFilterDistance=this.blurRadius,this.apply=function(t,e,i,n,s){d&&void 0!==d.canvasRGBA?(t.canvas.id=A.UniqueId(),t.canvas.style.display="none",document.body.appendChild(t.canvas),d.canvasRGBA(t.canvas,e,i,n,s,this.blurRadius),document.body.removeChild(t.canvas)):A.log("ERROR: StackBlur.js must be included for blur to work")}},A.Element.feGaussianBlur.prototype=new A.Element.ElementBase,A.Element.title=function(t){},A.Element.title.prototype=new A.Element.ElementBase,A.Element.desc=function(t){},A.Element.desc.prototype=new A.Element.ElementBase,A.Element.MISSING=function(t){A.log("ERROR: Element '"+t.nodeName+"' not yet implemented.")},A.Element.MISSING.prototype=new A.Element.ElementBase,A.CreateElement=function(t){var e=t.nodeName.replace(/^[^:]+:/,"");e=e.replace(/\-/g,"");var i=null;return(i=void 0!==A.Element[e]?new A.Element[e](t):new A.Element.MISSING(t)).type=t.nodeName,i},A.load=function(t,e){A.loadXml(t,A.ajax(e))},A.loadXml=function(t,e){A.loadXmlDoc(t,A.parseXml(e))},A.loadXmlDoc=function(a,r){A.init(a);var i=function(t){for(var e=a.canvas;e;)t.x-=e.offsetLeft,t.y-=e.offsetTop,e=e.offsetParent;return u.scrollX&&(t.x+=u.scrollX),u.scrollY&&(t.y+=u.scrollY),t};1!=A.opts.ignoreMouse&&(a.canvas.onclick=function(t){var e=i(new A.Point(null!=t?t.clientX:event.clientX,null!=t?t.clientY:event.clientY));A.Mouse.onclick(e.x,e.y)},a.canvas.onmousemove=function(t){var e=i(new A.Point(null!=t?t.clientX:event.clientX,null!=t?t.clientY:event.clientY));A.Mouse.onmousemove(e.x,e.y)});var o=A.CreateElement(r.documentElement);o.root=!0,o.addStylesFromStyleDefinition();var l=!0,n=function(){A.ViewPort.Clear(),a.canvas.parentNode?A.ViewPort.SetCurrent(a.canvas.parentNode.clientWidth,a.canvas.parentNode.clientHeight):A.ViewPort.SetCurrent(800,600),1!=A.opts.ignoreDimensions&&(o.style("width").hasValue()&&(a.canvas.width=o.style("width").toPixels("x"),a.canvas.style&&(a.canvas.style.width=a.canvas.width+"px")),o.style("height").hasValue()&&(a.canvas.height=o.style("height").toPixels("y"),a.canvas.style&&(a.canvas.style.height=a.canvas.height+"px")));var t=a.canvas.clientWidth||a.canvas.width,e=a.canvas.clientHeight||a.canvas.height;if(1==A.opts.ignoreDimensions&&o.style("width").hasValue()&&o.style("height").hasValue()&&(t=o.style("width").toPixels("x"),e=o.style("height").toPixels("y")),A.ViewPort.SetCurrent(t,e),null!=A.opts.offsetX&&(o.attribute("x",!0).value=A.opts.offsetX),null!=A.opts.offsetY&&(o.attribute("y",!0).value=A.opts.offsetY),null!=A.opts.scaleWidth||null!=A.opts.scaleHeight){var i=null,n=null,s=A.ToNumberArray(o.attribute("viewBox").value);null!=A.opts.scaleWidth&&(o.attribute("width").hasValue()?i=o.attribute("width").toPixels("x")/A.opts.scaleWidth:isNaN(s[2])||(i=s[2]/A.opts.scaleWidth)),null!=A.opts.scaleHeight&&(o.attribute("height").hasValue()?n=o.attribute("height").toPixels("y")/A.opts.scaleHeight:isNaN(s[3])||(n=s[3]/A.opts.scaleHeight)),null==i&&(i=n),null==n&&(n=i),o.attribute("width",!0).value=A.opts.scaleWidth,o.attribute("height",!0).value=A.opts.scaleHeight,o.style("transform",!0,!0).value+=" scale("+1/i+","+1/n+")"}1!=A.opts.ignoreClear&&a.clearRect(0,0,t,e),o.render(a),l&&(l=!1,"function"==typeof A.opts.renderCallback&&A.opts.renderCallback(r))},s=!0;A.ImagesLoaded()&&(s=!1,n()),A.intervalID=setInterval(function(){var t=!1;if(s&&A.ImagesLoaded()&&(t=!(s=!1)),1!=A.opts.ignoreMouse&&(t|=A.Mouse.hasEvents()),1!=A.opts.ignoreAnimation)for(var e=0;e<A.Animations.length;e++)t|=A.Animations[e].update(1e3/A.FRAMERATE);"function"==typeof A.opts.forceRedraw&&1==A.opts.forceRedraw()&&(t=!0),t&&(n(),A.Mouse.runEvents())},1e3/A.FRAMERATE)},A.stop=function(){A.intervalID&&clearInterval(A.intervalID)},A.Mouse=new function(){this.events=[],this.hasEvents=function(){return 0!=this.events.length},this.onclick=function(t,e){this.events.push({type:"onclick",x:t,y:e,run:function(t){t.onclick&&t.onclick()}})},this.onmousemove=function(t,e){this.events.push({type:"onmousemove",x:t,y:e,run:function(t){t.onmousemove&&t.onmousemove()}})},this.eventElements=[],this.checkPath=function(t,e){for(var i=0;i<this.events.length;i++){var n=this.events[i];e.isPointInPath&&e.isPointInPath(n.x,n.y)&&(this.eventElements[i]=t)}},this.checkBoundingBox=function(t,e){for(var i=0;i<this.events.length;i++){var n=this.events[i];e.isPointInBox(n.x,n.y)&&(this.eventElements[i]=t)}},this.runEvents=function(){A.ctx.canvas.style.cursor="";for(var t=0;t<this.events.length;t++)for(var e=this.events[t],i=this.eventElements[t];i;)e.run(i),i=i.parent;this.events=[],this.eventElements=[]}},A}(i||{});"string"==typeof t&&(t=document.getElementById(t)),null!=t.svg&&t.svg.stop(),t.childNodes&&1==t.childNodes.length&&"OBJECT"==t.childNodes[0].nodeName||(t.svg=n);var s=t.getContext("2d");void 0!==e.documentElement?n.loadXmlDoc(s,e):"<"==e.substr(0,1)?n.loadXml(s,e):n.load(s,e)}else for(var a=document.querySelectorAll("svg"),r=0;r<a.length;r++){var o=a[r],l=document.createElement("canvas");l.width=o.clientWidth,l.height=o.clientHeight,o.parentNode.insertBefore(l,o),o.parentNode.removeChild(o);var h=document.createElement("div");h.appendChild(o),c(l,h.innerHTML)}};"undefined"==typeof Element||(void 0!==Element.prototype.matches?f=function(t,e){return t.matches(e)}:void 0!==Element.prototype.webkitMatchesSelector?f=function(t,e){return t.webkitMatchesSelector(e)}:void 0!==Element.prototype.mozMatchesSelector?f=function(t,e){return t.mozMatchesSelector(e)}:void 0!==Element.prototype.msMatchesSelector?f=function(t,e){return t.msMatchesSelector(e)}:void 0!==Element.prototype.oMatchesSelector?f=function(t,e){return t.oMatchesSelector(e)}:("function"!=typeof jQuery&&"function"!=typeof Zepto||(f=function(t,e){return $(t).is(e)}),void 0===f&&"undefined"!=typeof Sizzle&&(f=Sizzle.matchesSelector)));var e=/(\[[^\]]+\])/g,i=/(#[^\s\+>~\.\[:]+)/g,a=/(\.[^\s\+>~\.\[:]+)/g,r=/(::[^\s\+>~\.\[:]+|:first-line|:first-letter|:before|:after)/gi,o=/(:[\w-]+\([^\)]*\))/gi,l=/(:[^\s\+>~\.\[:]+)/g,h=/([^\s\+>~\.\[:]+)/g;function w(n){var s=[0,0,0],t=function(t,e){var i=n.match(t);null!=i&&(s[e]+=i.length,n=n.replace(t," "))};return n=(n=n.replace(/:not\(([^\)]*)\)/g,"     $1 ")).replace(/{[\s\S]*/gm," "),t(e,1),t(i,0),t(a,1),t(r,2),t(o,1),t(l,1),n=(n=n.replace(/[\*\s\+>~]/g," ")).replace(/[#\.]/g," "),t(h,2),s.join("")}"undefined"!=typeof CanvasRenderingContext2D&&(CanvasRenderingContext2D.prototype.drawSvg=function(t,e,i,n,s,a){var r={ignoreMouse:!0,ignoreAnimation:!0,ignoreDimensions:!0,ignoreClear:!0,offsetX:e,offsetY:i,scaleWidth:n,scaleHeight:s};for(var o in a)a.hasOwnProperty(o)&&(r[o]=a[o]);c(this.canvas,t,r)}),t.exports=c}(t={exports:{}},t.exports),t.exports});
 
-// EXTERNAL MODULE: ./src/common/css/supermapol-icons.css
-var supermapol_icons = __webpack_require__(126);
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
 
-// EXTERNAL MODULE: ./src/common/widgets/css/widgets-icon.css
-var widgets_icon = __webpack_require__(119);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/Icon.css
-var Icon = __webpack_require__(114);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/OpenFile.css
-var OpenFile = __webpack_require__(102);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/MessageBox.css
-var MessageBox = __webpack_require__(101);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/DataFlow.css
-var DataFlow = __webpack_require__(100);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/Search.css
-var Search = __webpack_require__(99);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/CommonContainer.css
-var CommonContainer = __webpack_require__(98);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/DropDownBox.css
-var DropDownBox = __webpack_require__(97);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/Select.css
-var Select = __webpack_require__(96);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/CityTabsPage.css
-var CityTabsPage = __webpack_require__(95);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/NavTabsPage.css
-var NavTabsPage = __webpack_require__(94);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/PaginationContainer.css
-var PaginationContainer = __webpack_require__(93);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/PopContainer.css
-var PopContainer = __webpack_require__(92);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/Analysis.css
-var Analysis = __webpack_require__(91);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/DistributedAnalysis.css
-var DistributedAnalysis = __webpack_require__(90);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/ClientComputation.css
-var ClientComputation = __webpack_require__(89);
-
-// EXTERNAL MODULE: ./src/common/widgets/css/DataServiceQuery.css
-var DataServiceQuery = __webpack_require__(88);
-
-// CONCATENATED MODULE: ./src/common/css/index.js
-/* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
- * This program are made available under the terms of the Apache License, Version 2.0
- * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
+(function(l){ true?module.exports=l():undefined})(function(){var l=function(f){return"number"===typeof f&&parseFloat(f)==parseInt(f,10)&&!isNaN(f)};Array.prototype.indexOf||(Array.prototype.indexOf=function(f,a){if(void 0===this||null===this)throw new TypeError('"this" is null or not defined');var b=this.length>>>0;a=+a||0;Infinity===Math.abs(a)&&(a=0);0>a&&(a+=b,0>a&&(a=0));for(;a<b;a++)if(this[a]===f)return a;return-1});return function(f){this.objectID=
+"";this.legendSeparator=this.separator=" - ";this.method="";this.precision=0;this.precisionflag="auto";this.roundlength=2;this.silent=this.debug=this.is_uniqueValues=!1;this.bounds=[];this.ranges=[];this.inner_ranges=null;this.colors=[];this.counter=[];this.stat_cov=this.stat_stddev=this.stat_variance=this.stat_pop=this.stat_min=this.stat_max=this.stat_sum=this.stat_median=this.stat_mean=this.stat_sorted=null;this.log=function(a,b){1!=this.debug&&null==b||console.log(this.objectID+"(object id) :: "+
+a)};this.setBounds=function(a){this.log("Setting bounds ("+a.length+") : "+a.join());this.bounds=[];this.bounds=a};this.setSerie=function(a){this.log("Setting serie ("+a.length+") : "+a.join());this.serie=[];this.serie=a;this.resetStatistics();this.setPrecision()};this.setColors=function(a){this.log("Setting color ramp ("+a.length+") : "+a.join());this.colors=a};this.doCount=function(){if(!this._nodata()){var a=this.sorted();this.counter=[];for(i=0;i<this.bounds.length-1;i++)this.counter[i]=0;for(j=
+0;j<a.length;j++){var b=this.getClass(a[j]);this.counter[b]++}}};this.setPrecision=function(a){"undefined"!==typeof a&&(this.precisionflag="manual",this.precision=a);if("auto"==this.precisionflag)for(a=0;a<this.serie.length;a++){var b=isNaN(this.serie[a]+"")||-1==(this.serie[a]+"").toString().indexOf(".")?0:(this.serie[a]+"").split(".")[1].length;b>this.precision&&(this.precision=b)}this.log("Calling setPrecision(). Mode : "+this.precisionflag+" - Decimals : "+this.precision);this.serie=this.decimalFormat(this.serie)};
+this.decimalFormat=function(a){for(var b=[],c=0;c<a.length;c++){var d=a[c];!isNaN(parseFloat(d))&&isFinite(d)?b[c]=parseFloat(a[c].toFixed(this.precision)):b[c]=a[c]}return b};this.setRanges=function(){this.ranges=[];for(i=0;i<this.bounds.length-1;i++)this.ranges[i]=this.bounds[i]+this.separator+this.bounds[i+1]};this.min=function(){if(!this._nodata())return this.stat_min=Math.min.apply(null,this.serie)};this.max=function(){return this.stat_max=Math.max.apply(null,this.serie)};this.sum=function(){if(!this._nodata()){if(null==
+this.stat_sum)for(i=this.stat_sum=0;i<this.pop();i++)this.stat_sum+=parseFloat(this.serie[i]);return this.stat_sum}};this.pop=function(){if(!this._nodata())return null==this.stat_pop&&(this.stat_pop=this.serie.length),this.stat_pop};this.mean=function(){if(!this._nodata())return null==this.stat_mean&&(this.stat_mean=parseFloat(this.sum()/this.pop())),this.stat_mean};this.median=function(){if(!this._nodata()){if(null==this.stat_median){this.stat_median=0;var a=this.sorted();this.stat_median=a.length%
+2?parseFloat(a[Math.ceil(a.length/2)-1]):(parseFloat(a[a.length/2-1])+parseFloat(a[a.length/2]))/2}return this.stat_median}};this.variance=function(){round="undefined"===typeof round?!0:!1;if(!this._nodata()){if(null==this.stat_variance){for(var a=0,b=0;b<this.pop();b++)a+=Math.pow(this.serie[b]-this.mean(),2);this.stat_variance=a/this.pop();1==round&&(this.stat_variance=Math.round(this.stat_variance*Math.pow(10,this.roundlength))/Math.pow(10,this.roundlength))}return this.stat_variance}};this.stddev=
+function(a){a="undefined"===typeof a?!0:!1;if(!this._nodata())return null==this.stat_stddev&&(this.stat_stddev=Math.sqrt(this.variance()),1==a&&(this.stat_stddev=Math.round(this.stat_stddev*Math.pow(10,this.roundlength))/Math.pow(10,this.roundlength))),this.stat_stddev};this.cov=function(a){a="undefined"===typeof a?!0:!1;if(!this._nodata())return null==this.stat_cov&&(this.stat_cov=this.stddev()/this.mean(),1==a&&(this.stat_cov=Math.round(this.stat_cov*Math.pow(10,this.roundlength))/Math.pow(10,this.roundlength))),
+this.stat_cov};this.resetStatistics=function(){this.stat_cov=this.stat_stddev=this.stat_variance=this.stat_pop=this.stat_min=this.stat_max=this.stat_sum=this.stat_median=this.stat_mean=this.stat_sorted=null};this._nodata=function(){return 0==this.serie.length?(this.silent?this.log("[silent mode] Error. You should first enter a serie!",!0):alert("Error. You should first enter a serie!"),1):0};this._hasNegativeValue=function(){for(i=0;i<this.serie.length;i++)if(0>this.serie[i])return!0;return!1};this._hasZeroValue=
+function(){for(i=0;i<this.serie.length;i++)if(0===parseFloat(this.serie[i]))return!0;return!1};this.sorted=function(){null==this.stat_sorted&&(this.stat_sorted=0==this.is_uniqueValues?this.serie.sort(function(a,b){return a-b}):this.serie.sort(function(a,b){var c=a.toString().toLowerCase(),d=b.toString().toLowerCase();return c<d?-1:c>d?1:0}));return this.stat_sorted};this.info=function(){if(!this._nodata()){var a;a=""+("Population : "+this.pop()+" - [Min : "+this.min()+" | Max : "+this.max()+"]\n");
+a+="Mean : "+this.mean()+" - Median : "+this.median()+"\n";return a+="Variance : "+this.variance()+" - Standard deviation : "+this.stddev()+" - Coefficient of variation : "+this.cov()+"\n"}};this.setClassManually=function(a){if(!this._nodata())if(a[0]!==this.min()||a[a.length-1]!==this.max())if(this.silent)this.log("[silent mode] "+t("Given bounds may not be correct! please check your input.\nMin value : "+this.min()+" / Max value : "+this.max()),!0);else{a=alert;var b="Given bounds may not be correct! please check your input.\nMin value : "+
+this.min()+" / Max value : "+this.max();a(b)}else return this.setBounds(a),this.setRanges(),this.method="manual classification ("+(a.length-1)+" classes)",this.bounds};this.getClassEqInterval=function(a,b,c){if(!this._nodata()){b="undefined"===typeof b?this.min():b;c="undefined"===typeof c?this.max():c;var d=[],e=b;b=(c-b)/a;for(i=0;i<=a;i++)d[i]=e,e+=b;d[a]=c;this.setBounds(d);this.setRanges();this.method="eq. intervals ("+a+" classes)";return this.bounds}};this.getQuantiles=function(a){for(var b=
+this.sorted(),c=[],d=this.pop()/a,e=1;e<a;e++)c.push(b[Math.round(e*d+.49)-1]);return c};this.getClassQuantile=function(a){if(!this._nodata()){var b=this.sorted(),c=this.getQuantiles(a);c.unshift(b[0]);c[b.length-1]!==b[b.length-1]&&c.push(b[b.length-1]);this.setBounds(c);this.setRanges();this.method="quantile ("+a+" classes)";return this.bounds}};this.getClassStdDeviation=function(a,b){if(!this._nodata()){this.max();this.min();var c=[];if(1==a%2){var d=Math.floor(a/2),e=d+1;c[d]=this.mean()-this.stddev()/
+2;c[e]=this.mean()+this.stddev()/2;i=d-1}else e=a/2,c[e]=this.mean(),i=e-1;for(;0<i;i--)d=c[i+1]-this.stddev(),c[i]=d;for(i=e+1;i<a;i++)d=c[i-1]+this.stddev(),c[i]=d;c[0]="undefined"===typeof b?c[1]-this.stddev():this.min();c[a]="undefined"===typeof b?c[a-1]+this.stddev():this.max();this.setBounds(c);this.setRanges();this.method="std deviation ("+a+" classes)";return this.bounds}};this.getClassGeometricProgression=function(a){if(!this._nodata())if(this._hasNegativeValue()||this._hasZeroValue())this.silent?
+this.log("[silent mode] geometric progression can't be applied with a serie containing negative or zero values.",!0):alert("geometric progression can't be applied with a serie containing negative or zero values.");else{var b=[],c=this.min(),d=this.max(),c=Math.log(c)/Math.LN10,d=(Math.log(d)/Math.LN10-c)/a;for(i=0;i<a;i++)b[i]=0==i?c:b[i-1]+d;b=b.map(function(a){return Math.pow(10,a)});b.push(this.max());this.setBounds(b);this.setRanges();this.method="geometric progression ("+a+" classes)";return this.bounds}};
+this.getClassArithmeticProgression=function(a){if(!this._nodata()){var b=0;for(i=1;i<=a;i++)b+=i;var c=[],d=this.min(),b=(this.max()-d)/b;for(i=0;i<=a;i++)c[i]=0==i?d:c[i-1]+i*b;this.setBounds(c);this.setRanges();this.method="arithmetic progression ("+a+" classes)";return this.bounds}};this.getClassJenks=function(a){if(!this._nodata()){dataList=this.sorted();for(var b=[],c=0,d=dataList.length+1;c<d;c++){for(var e=[],k=0,h=a+1;k<h;k++)e.push(0);b.push(e)}c=[];d=0;for(e=dataList.length+1;d<e;d++){for(var k=
+[],h=0,f=a+1;h<f;h++)k.push(0);c.push(k)}d=1;for(e=a+1;d<e;d++){b[0][d]=1;c[0][d]=0;for(var g=1,k=dataList.length+1;g<k;g++)c[g][d]=Infinity;g=0}d=2;for(e=dataList.length+1;d<e;d++){for(var f=h=k=0,l=1,r=d+1;l<r;l++){var p=d-l+1,g=parseFloat(dataList[p-1]),h=h+g*g,k=k+g,f=f+1,g=h-k*k/f,q=p-1;if(0!=q)for(var m=2,u=a+1;m<u;m++)c[d][m]>=g+c[q][m-1]&&(b[d][m]=p,c[d][m]=g+c[q][m-1])}b[d][1]=1;c[d][1]=g}g=dataList.length;c=[];for(d=0;d<=a;d++)c.push(0);c[a]=parseFloat(dataList[dataList.length-1]);c[0]=
+parseFloat(dataList[0]);for(d=a;2<=d;)e=parseInt(b[g][d]-2),c[d-1]=dataList[e],g=parseInt(b[g][d]-1),--d;c[0]==c[1]&&(c[0]=0);this.setBounds(c);this.setRanges();this.method="Jenks ("+a+" classes)";return this.bounds}};this.getClassUniqueValues=function(){if(!this._nodata()){this.is_uniqueValues=!0;var a=this.sorted(),b=[];for(i=0;i<this.pop();i++)-1===b.indexOf(a[i])&&b.push(a[i]);this.bounds=b;this.method="unique values";return b}};this.getClass=function(a){for(i=0;i<this.bounds.length;i++)if(1==
+this.is_uniqueValues){if(a==this.bounds[i])return i}else if(parseFloat(a)<=this.bounds[i+1])return i;return"Unable to get value's class."};this.getRanges=function(){return this.ranges};this.getRangeNum=function(a){var b,c;for(c=0;c<this.ranges.length;c++)if(b=this.ranges[c].split(/ - /),a<=parseFloat(b[1]))return c};this.getInnerRanges=function(){if(null!=this.inner_ranges)return this.inner_ranges;var a=[],b=this.sorted(),c=1;for(i=0;i<b.length;i++){if(0==i)var d=b[i];parseFloat(b[i])>parseFloat(this.bounds[c])&&
+(a[c-1]=""+d+this.separator+b[i-1],d=b[i],c++);if(c==this.bounds.length-1)return a[c-1]=""+d+this.separator+b[b.length-1],this.inner_ranges=a}};this.getSortedlist=function(){return this.sorted().join(", ")};this.getHtmlLegend=function(a,b,c,d,e,f){var h="",n=[];this.doCount();ccolors=null!=a?a:this.colors;lg=null!=b?b:"Legend";getcounter=null!=c?!0:!1;fn=null!=d?d:function(a){return a};null==e&&(e="default");if("discontinuous"==e&&(this.getInnerRanges(),-1!==this.counter.indexOf(0))){this.silent?
+this.log("[silent mode] Geostats cannot apply 'discontinuous' mode to the getHtmlLegend() method because some classes are not populated.\nPlease switch to 'default' or 'distinct' modes. Exit!",!0):alert("Geostats cannot apply 'discontinuous' mode to the getHtmlLegend() method because some classes are not populated.\nPlease switch to 'default' or 'distinct' modes. Exit!");return}"DESC"!==f&&(f="ASC");if(ccolors.length<this.ranges.length)this.silent?this.log("[silent mode] The number of colors should fit the number of ranges. Exit!",
+!0):alert("The number of colors should fit the number of ranges. Exit!");else{if(0==this.is_uniqueValues)for(i=0;i<this.ranges.length;i++)!0===getcounter&&(h=' <span class="geostats-legend-counter">('+this.counter[i]+")</span>"),b=this.ranges[i].split(this.separator),a=parseFloat(b[0]).toFixed(this.precision),b=parseFloat(b[1]).toFixed(this.precision),"distinct"==e&&0!=i&&(l(a)?(a=parseInt(a)+1,"manual"==this.precisionflag&&0!=this.precision&&(a=parseFloat(a).toFixed(this.precision))):(a=parseFloat(a)+
+1/Math.pow(10,this.precision),a=parseFloat(a).toFixed(this.precision))),"discontinuous"==e&&(b=this.inner_ranges[i].split(this.separator),a=parseFloat(b[0]).toFixed(this.precision),b=parseFloat(b[1]).toFixed(this.precision)),a=fn(a)+this.legendSeparator+fn(b),a='<div><div class="geostats-legend-block" style="background-color:'+ccolors[i]+'"></div> '+a+h+"</div>",n.push(a);else for(i=0;i<this.bounds.length;i++)!0===getcounter&&(h=' <span class="geostats-legend-counter">('+this.counter[i]+")</span>"),
+a=fn(this.bounds[i]),a='<div><div class="geostats-legend-block" style="background-color:'+ccolors[i]+'"></div> '+a+h+"</div>",n.push(a);"DESC"===f&&n.reverse();e='<div class="geostats-legend"><div class="geostats-legend-title">'+lg+"</div>";for(i=0;i<n.length;i++)e+=n[i];return e+"</div>"}};this.objectID=(new Date).getUTCMilliseconds();this.log("Creating new geostats object");"undefined"!==typeof f&&0<f.length?(this.serie=f,this.setPrecision(),this.log("Setting serie ("+f.length+") : "+f.join())):
+this.serie=[];this.getJenks=this.getClassJenks;this.getGeometricProgression=this.getClassGeometricProgression;this.getEqInterval=this.getClassEqInterval;this.getQuantile=this.getClassQuantile;this.getStdDeviation=this.getClassStdDeviation;this.getUniqueValues=this.getClassUniqueValues;this.getArithmeticProgression=this.getClassArithmeticProgression}});
 
 
-//微件样式
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(89);
+module.exports = __webpack_require__(90);
+
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(scope, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(40);
+// On some exotic environments, it's not clear which object `setimmediate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(15)))
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
+    "use strict";
+
+    if (global.setImmediate) {
+        return;
+    }
+
+    var nextHandle = 1; // Spec says greater than zero
+    var tasksByHandle = {};
+    var currentlyRunningATask = false;
+    var doc = global.document;
+    var registerImmediate;
+
+    function setImmediate(callback) {
+      // Callback can either be a function or a string
+      if (typeof callback !== "function") {
+        callback = new Function("" + callback);
+      }
+      // Copy function arguments
+      var args = new Array(arguments.length - 1);
+      for (var i = 0; i < args.length; i++) {
+          args[i] = arguments[i + 1];
+      }
+      // Store and register the task
+      var task = { callback: callback, args: args };
+      tasksByHandle[nextHandle] = task;
+      registerImmediate(nextHandle);
+      return nextHandle++;
+    }
+
+    function clearImmediate(handle) {
+        delete tasksByHandle[handle];
+    }
+
+    function run(task) {
+        var callback = task.callback;
+        var args = task.args;
+        switch (args.length) {
+        case 0:
+            callback();
+            break;
+        case 1:
+            callback(args[0]);
+            break;
+        case 2:
+            callback(args[0], args[1]);
+            break;
+        case 3:
+            callback(args[0], args[1], args[2]);
+            break;
+        default:
+            callback.apply(undefined, args);
+            break;
+        }
+    }
+
+    function runIfPresent(handle) {
+        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
+        // So if we're currently running a task, we'll need to delay this invocation.
+        if (currentlyRunningATask) {
+            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
+            // "too much recursion" error.
+            setTimeout(runIfPresent, 0, handle);
+        } else {
+            var task = tasksByHandle[handle];
+            if (task) {
+                currentlyRunningATask = true;
+                try {
+                    run(task);
+                } finally {
+                    clearImmediate(handle);
+                    currentlyRunningATask = false;
+                }
+            }
+        }
+    }
+
+    function installNextTickImplementation() {
+        registerImmediate = function(handle) {
+            process.nextTick(function () { runIfPresent(handle); });
+        };
+    }
+
+    function canUsePostMessage() {
+        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
+        // where `global.postMessage` means something completely different and can't be used for this purpose.
+        if (global.postMessage && !global.importScripts) {
+            var postMessageIsAsynchronous = true;
+            var oldOnMessage = global.onmessage;
+            global.onmessage = function() {
+                postMessageIsAsynchronous = false;
+            };
+            global.postMessage("", "*");
+            global.onmessage = oldOnMessage;
+            return postMessageIsAsynchronous;
+        }
+    }
+
+    function installPostMessageImplementation() {
+        // Installs an event handler on `global` for the `message` event: see
+        // * https://developer.mozilla.org/en/DOM/window.postMessage
+        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
+
+        var messagePrefix = "setImmediate$" + Math.random() + "$";
+        var onGlobalMessage = function(event) {
+            if (event.source === global &&
+                typeof event.data === "string" &&
+                event.data.indexOf(messagePrefix) === 0) {
+                runIfPresent(+event.data.slice(messagePrefix.length));
+            }
+        };
+
+        if (global.addEventListener) {
+            global.addEventListener("message", onGlobalMessage, false);
+        } else {
+            global.attachEvent("onmessage", onGlobalMessage);
+        }
+
+        registerImmediate = function(handle) {
+            global.postMessage(messagePrefix + handle, "*");
+        };
+    }
+
+    function installMessageChannelImplementation() {
+        var channel = new MessageChannel();
+        channel.port1.onmessage = function(event) {
+            var handle = event.data;
+            runIfPresent(handle);
+        };
+
+        registerImmediate = function(handle) {
+            channel.port2.postMessage(handle);
+        };
+    }
+
+    function installReadyStateChangeImplementation() {
+        var html = doc.documentElement;
+        registerImmediate = function(handle) {
+            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
+            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
+            var script = doc.createElement("script");
+            script.onreadystatechange = function () {
+                runIfPresent(handle);
+                script.onreadystatechange = null;
+                html.removeChild(script);
+                script = null;
+            };
+            html.appendChild(script);
+        };
+    }
+
+    function installSetTimeoutImplementation() {
+        registerImmediate = function(handle) {
+            setTimeout(runIfPresent, 0, handle);
+        };
+    }
+
+    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
+    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
+    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
+
+    // Don't get fooled by e.g. browserify environments.
+    if ({}.toString.call(global.process) === "[object process]") {
+        // For Node.js before 0.9
+        installNextTickImplementation();
+
+    } else if (canUsePostMessage()) {
+        // For non-IE10 modern browsers
+        installPostMessageImplementation();
+
+    } else if (global.MessageChannel) {
+        // For web workers, where supported
+        installMessageChannelImplementation();
+
+    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
+        // For IE 6–8
+        installReadyStateChangeImplementation();
+
+    } else {
+        // For older browsers
+        installSetTimeoutImplementation();
+    }
+
+    attachTo.setImmediate = setImmediate;
+    attachTo.clearImmediate = clearImmediate;
+}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(15), __webpack_require__(41)))
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
 
 
 
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+(function(self) {
+  'use strict';
+
+  // if __disableNativeFetch is set to true, the it will always polyfill fetch
+  // with Ajax.
+  if (!self.__disableNativeFetch && self.fetch) {
+    return
+  }
+
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = String(name)
+    }
+    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value)
+    }
+    return value
+  }
+
+  function Headers(headers) {
+    this.map = {}
+
+    if (headers instanceof Headers) {
+      headers.forEach(function(value, name) {
+        this.append(name, value)
+      }, this)
+
+    } else if (headers) {
+      Object.getOwnPropertyNames(headers).forEach(function(name) {
+        this.append(name, headers[name])
+      }, this)
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    name = normalizeName(name)
+    value = normalizeValue(value)
+    var list = this.map[name]
+    if (!list) {
+      list = []
+      this.map[name] = list
+    }
+    list.push(value)
+  }
+
+  Headers.prototype['delete'] = function(name) {
+    delete this.map[normalizeName(name)]
+  }
+
+  Headers.prototype.get = function(name) {
+    var values = this.map[normalizeName(name)]
+    return values ? values[0] : null
+  }
+
+  Headers.prototype.getAll = function(name) {
+    return this.map[normalizeName(name)] || []
+  }
+
+  Headers.prototype.has = function(name) {
+    return this.map.hasOwnProperty(normalizeName(name))
+  }
+
+  Headers.prototype.set = function(name, value) {
+    this.map[normalizeName(name)] = [normalizeValue(value)]
+  }
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    Object.getOwnPropertyNames(this.map).forEach(function(name) {
+      this.map[name].forEach(function(value) {
+        callback.call(thisArg, value, name, this)
+      }, this)
+    }, this)
+  }
+
+  function consumed(body) {
+    if (body.bodyUsed) {
+      return Promise.reject(new TypeError('Already read'))
+    }
+    body.bodyUsed = true
+  }
+
+  function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+      reader.onload = function() {
+        resolve(reader.result)
+      }
+      reader.onerror = function() {
+        reject(reader.error)
+      }
+    })
+  }
+
+  function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader()
+    reader.readAsArrayBuffer(blob)
+    return fileReaderReady(reader)
+  }
+
+  function readBlobAsText(blob, options) {
+    var reader = new FileReader()
+    var contentType = options.headers.map['content-type'] ? options.headers.map['content-type'].toString() : ''
+    var regex = /charset\=[0-9a-zA-Z\-\_]*;?/
+    var _charset = blob.type.match(regex) || contentType.match(regex)
+    var args = [blob]
+
+    if(_charset) {
+      args.push(_charset[0].replace(/^charset\=/, '').replace(/;$/, ''))
+    }
+
+    reader.readAsText.apply(reader, args)
+    return fileReaderReady(reader)
+  }
+
+  var support = {
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob();
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  }
+
+  function Body() {
+    this.bodyUsed = false
 
 
+    this._initBody = function(body, options) {
+      this._bodyInit = body
+      if (typeof body === 'string') {
+        this._bodyText = body
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body
+        this._options = options
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body
+      } else if (!body) {
+        this._bodyText = ''
+      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
+        // Only support ArrayBuffers for POST method.
+        // Receiving ArrayBuffers happens via Blobs, instead.
+      } else {
+        throw new Error('unsupported BodyInit type')
+      }
+    }
+
+    if (support.blob) {
+      this.blob = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
+      }
+
+      this.arrayBuffer = function() {
+        return this.blob().then(readBlobAsArrayBuffer)
+      }
+
+      this.text = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return readBlobAsText(this._bodyBlob, this._options)
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as text')
+        } else {
+          return Promise.resolve(this._bodyText)
+        }
+      }
+    } else {
+      this.text = function() {
+        var rejected = consumed(this)
+        return rejected ? rejected : Promise.resolve(this._bodyText)
+      }
+    }
+
+    if (support.formData) {
+      this.formData = function() {
+        return this.text().then(decode)
+      }
+    }
+
+    this.json = function() {
+      return this.text().then(JSON.parse)
+    }
+
+    return this
+  }
+
+  // HTTP methods whose capitalization should be normalized
+  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+  function normalizeMethod(method) {
+    var upcased = method.toUpperCase()
+    return (methods.indexOf(upcased) > -1) ? upcased : method
+  }
+
+  function Request(input, options) {
+    options = options || {}
+    var body = options.body
+    if (Request.prototype.isPrototypeOf(input)) {
+      if (input.bodyUsed) {
+        throw new TypeError('Already read')
+      }
+      this.url = input.url
+      this.credentials = input.credentials
+      if (!options.headers) {
+        this.headers = new Headers(input.headers)
+      }
+      this.method = input.method
+      this.mode = input.mode
+      if (!body) {
+        body = input._bodyInit
+        input.bodyUsed = true
+      }
+    } else {
+      this.url = input
+    }
+
+    this.credentials = options.credentials || this.credentials || 'omit'
+    if (options.headers || !this.headers) {
+      this.headers = new Headers(options.headers)
+    }
+    this.method = normalizeMethod(options.method || this.method || 'GET')
+    this.mode = options.mode || this.mode || null
+    this.referrer = null
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(body, options)
+  }
+
+  Request.prototype.clone = function() {
+    return new Request(this)
+  }
+
+  function decode(body) {
+    var form = new FormData()
+    body.trim().split('&').forEach(function(bytes) {
+      if (bytes) {
+        var split = bytes.split('=')
+        var name = split.shift().replace(/\+/g, ' ')
+        var value = split.join('=').replace(/\+/g, ' ')
+        form.append(decodeURIComponent(name), decodeURIComponent(value))
+      }
+    })
+    return form
+  }
+
+  function headers(xhr) {
+    var head = new Headers()
+    var pairs = xhr.getAllResponseHeaders().trim().split('\n')
+    pairs.forEach(function(header) {
+      var split = header.trim().split(':')
+      var key = split.shift().trim()
+      var value = split.join(':').trim()
+      head.append(key, value)
+    })
+    return head
+  }
+
+  Body.call(Request.prototype)
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {}
+    }
+
+    this._initBody(bodyInit, options)
+    this.type = 'default'
+    this.status = options.status
+    this.ok = this.status >= 200 && this.status < 300
+    this.statusText = options.statusText
+    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
+    this.url = options.url || ''
+  }
+
+  Body.call(Response.prototype)
+
+  Response.prototype.clone = function() {
+    return new Response(this._bodyInit, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url: this.url
+    })
+  }
+
+  Response.error = function() {
+    var response = new Response(null, {status: 0, statusText: ''})
+    response.type = 'error'
+    return response
+  }
+
+  var redirectStatuses = [301, 302, 303, 307, 308]
+
+  Response.redirect = function(url, status) {
+    if (redirectStatuses.indexOf(status) === -1) {
+      throw new RangeError('Invalid status code')
+    }
+
+    return new Response(null, {status: status, headers: {location: url}})
+  }
+
+  self.Headers = Headers;
+  self.Request = Request;
+  self.Response = Response;
+
+  self.fetch = function(input, init) {
+    return new Promise(function(resolve, reject) {
+      var request
+      if (Request.prototype.isPrototypeOf(input) && !init) {
+        request = input
+      } else {
+        request = new Request(input, init)
+      }
+
+      var xhr = new XMLHttpRequest()
+
+      function responseURL() {
+        if ('responseURL' in xhr) {
+          return xhr.responseURL
+        }
+
+        // Avoid security warnings on getResponseHeader when not allowed by CORS
+        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+          return xhr.getResponseHeader('X-Request-URL')
+        }
+
+        return;
+      }
+
+      var __onLoadHandled = false;
+
+      function onload() {
+        if (xhr.readyState !== 4) {
+          return
+        }
+        var status = (xhr.status === 1223) ? 204 : xhr.status
+        if (status < 100 || status > 599) {
+          if (__onLoadHandled) { return; } else { __onLoadHandled = true; }
+          reject(new TypeError('Network request failed'))
+          return
+        }
+        var options = {
+          status: status,
+          statusText: xhr.statusText,
+          headers: headers(xhr),
+          url: responseURL()
+        }
+        var body = 'response' in xhr ? xhr.response : xhr.responseText;
+
+        if (__onLoadHandled) { return; } else { __onLoadHandled = true; }
+        resolve(new Response(body, options))
+      }
+      xhr.onreadystatechange = onload;
+      xhr.onload = onload;
+      xhr.onerror = function() {
+        if (__onLoadHandled) { return; } else { __onLoadHandled = true; }
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.open(request.method, request.url, true)
+
+      // `withCredentials` should be setted after calling `.open` in IE10
+      // http://stackoverflow.com/a/19667959/1219343
+      try {
+        if (request.credentials === 'include') {
+          if ('withCredentials' in xhr) {
+            xhr.withCredentials = true;
+          } else {
+            console && console.warn && console.warn('withCredentials is not supported, you can ignore this warning');
+          }
+        }
+      } catch (e) {
+        console && console.warn && console.warn('set withCredentials error:' + e);
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob'
+      }
+
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value)
+      })
+
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+    })
+  }
+  self.fetch.polyfill = true
+
+  // Support CommonJS
+  if ( true && module.exports) {
+    module.exports = self.fetch;
+  }
+})(typeof self !== 'undefined' ? self : this);
 
 
+/***/ }),
+/* 43 */
+/***/ (function(module, exports) {
+
+/*
+	Based on rgbcolor.js by Stoyan Stefanov <sstoo@gmail.com>
+	http://www.phpied.com/rgb-color-parser-in-javascript/
+*/
+
+module.exports = function(color_string) {
+    this.ok = false;
+    this.alpha = 1.0;
+
+    // strip any leading #
+    if (color_string.charAt(0) == '#') { // remove # if any
+        color_string = color_string.substr(1,6);
+    }
+
+    color_string = color_string.replace(/ /g,'');
+    color_string = color_string.toLowerCase();
+
+    // before getting into regexps, try simple matches
+    // and overwrite the input
+    var simple_colors = {
+        aliceblue: 'f0f8ff',
+        antiquewhite: 'faebd7',
+        aqua: '00ffff',
+        aquamarine: '7fffd4',
+        azure: 'f0ffff',
+        beige: 'f5f5dc',
+        bisque: 'ffe4c4',
+        black: '000000',
+        blanchedalmond: 'ffebcd',
+        blue: '0000ff',
+        blueviolet: '8a2be2',
+        brown: 'a52a2a',
+        burlywood: 'deb887',
+        cadetblue: '5f9ea0',
+        chartreuse: '7fff00',
+        chocolate: 'd2691e',
+        coral: 'ff7f50',
+        cornflowerblue: '6495ed',
+        cornsilk: 'fff8dc',
+        crimson: 'dc143c',
+        cyan: '00ffff',
+        darkblue: '00008b',
+        darkcyan: '008b8b',
+        darkgoldenrod: 'b8860b',
+        darkgray: 'a9a9a9',
+        darkgreen: '006400',
+        darkkhaki: 'bdb76b',
+        darkmagenta: '8b008b',
+        darkolivegreen: '556b2f',
+        darkorange: 'ff8c00',
+        darkorchid: '9932cc',
+        darkred: '8b0000',
+        darksalmon: 'e9967a',
+        darkseagreen: '8fbc8f',
+        darkslateblue: '483d8b',
+        darkslategray: '2f4f4f',
+        darkturquoise: '00ced1',
+        darkviolet: '9400d3',
+        deeppink: 'ff1493',
+        deepskyblue: '00bfff',
+        dimgray: '696969',
+        dodgerblue: '1e90ff',
+        feldspar: 'd19275',
+        firebrick: 'b22222',
+        floralwhite: 'fffaf0',
+        forestgreen: '228b22',
+        fuchsia: 'ff00ff',
+        gainsboro: 'dcdcdc',
+        ghostwhite: 'f8f8ff',
+        gold: 'ffd700',
+        goldenrod: 'daa520',
+        gray: '808080',
+        green: '008000',
+        greenyellow: 'adff2f',
+        honeydew: 'f0fff0',
+        hotpink: 'ff69b4',
+        indianred : 'cd5c5c',
+        indigo : '4b0082',
+        ivory: 'fffff0',
+        khaki: 'f0e68c',
+        lavender: 'e6e6fa',
+        lavenderblush: 'fff0f5',
+        lawngreen: '7cfc00',
+        lemonchiffon: 'fffacd',
+        lightblue: 'add8e6',
+        lightcoral: 'f08080',
+        lightcyan: 'e0ffff',
+        lightgoldenrodyellow: 'fafad2',
+        lightgrey: 'd3d3d3',
+        lightgreen: '90ee90',
+        lightpink: 'ffb6c1',
+        lightsalmon: 'ffa07a',
+        lightseagreen: '20b2aa',
+        lightskyblue: '87cefa',
+        lightslateblue: '8470ff',
+        lightslategray: '778899',
+        lightsteelblue: 'b0c4de',
+        lightyellow: 'ffffe0',
+        lime: '00ff00',
+        limegreen: '32cd32',
+        linen: 'faf0e6',
+        magenta: 'ff00ff',
+        maroon: '800000',
+        mediumaquamarine: '66cdaa',
+        mediumblue: '0000cd',
+        mediumorchid: 'ba55d3',
+        mediumpurple: '9370d8',
+        mediumseagreen: '3cb371',
+        mediumslateblue: '7b68ee',
+        mediumspringgreen: '00fa9a',
+        mediumturquoise: '48d1cc',
+        mediumvioletred: 'c71585',
+        midnightblue: '191970',
+        mintcream: 'f5fffa',
+        mistyrose: 'ffe4e1',
+        moccasin: 'ffe4b5',
+        navajowhite: 'ffdead',
+        navy: '000080',
+        oldlace: 'fdf5e6',
+        olive: '808000',
+        olivedrab: '6b8e23',
+        orange: 'ffa500',
+        orangered: 'ff4500',
+        orchid: 'da70d6',
+        palegoldenrod: 'eee8aa',
+        palegreen: '98fb98',
+        paleturquoise: 'afeeee',
+        palevioletred: 'd87093',
+        papayawhip: 'ffefd5',
+        peachpuff: 'ffdab9',
+        peru: 'cd853f',
+        pink: 'ffc0cb',
+        plum: 'dda0dd',
+        powderblue: 'b0e0e6',
+        purple: '800080',
+        rebeccapurple: '663399',
+        red: 'ff0000',
+        rosybrown: 'bc8f8f',
+        royalblue: '4169e1',
+        saddlebrown: '8b4513',
+        salmon: 'fa8072',
+        sandybrown: 'f4a460',
+        seagreen: '2e8b57',
+        seashell: 'fff5ee',
+        sienna: 'a0522d',
+        silver: 'c0c0c0',
+        skyblue: '87ceeb',
+        slateblue: '6a5acd',
+        slategray: '708090',
+        snow: 'fffafa',
+        springgreen: '00ff7f',
+        steelblue: '4682b4',
+        tan: 'd2b48c',
+        teal: '008080',
+        thistle: 'd8bfd8',
+        tomato: 'ff6347',
+        turquoise: '40e0d0',
+        violet: 'ee82ee',
+        violetred: 'd02090',
+        wheat: 'f5deb3',
+        white: 'ffffff',
+        whitesmoke: 'f5f5f5',
+        yellow: 'ffff00',
+        yellowgreen: '9acd32'
+    };
+    color_string = simple_colors[color_string] || color_string;
+    // emd of simple type-in colors
+
+    // array of color definition objects
+    var color_defs = [
+        {
+            re: /^rgba\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3}),\s*((?:\d?\.)?\d)\)$/,
+            example: ['rgba(123, 234, 45, 0.8)', 'rgba(255,234,245,1.0)'],
+            process: function (bits){
+                return [
+                    parseInt(bits[1]),
+                    parseInt(bits[2]),
+                    parseInt(bits[3]),
+                    parseFloat(bits[4])
+                ];
+            }
+        },
+        {
+            re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+            example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
+            process: function (bits){
+                return [
+                    parseInt(bits[1]),
+                    parseInt(bits[2]),
+                    parseInt(bits[3])
+                ];
+            }
+        },
+        {
+            re: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+            example: ['#00ff00', '336699'],
+            process: function (bits){
+                return [
+                    parseInt(bits[1], 16),
+                    parseInt(bits[2], 16),
+                    parseInt(bits[3], 16)
+                ];
+            }
+        },
+        {
+            re: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+            example: ['#fb0', 'f0f'],
+            process: function (bits){
+                return [
+                    parseInt(bits[1] + bits[1], 16),
+                    parseInt(bits[2] + bits[2], 16),
+                    parseInt(bits[3] + bits[3], 16)
+                ];
+            }
+        }
+    ];
+
+    // search through the definitions to find a match
+    for (var i = 0; i < color_defs.length; i++) {
+        var re = color_defs[i].re;
+        var processor = color_defs[i].process;
+        var bits = re.exec(color_string);
+        if (bits) {
+            var channels = processor(bits);
+            this.r = channels[0];
+            this.g = channels[1];
+            this.b = channels[2];
+            if (channels.length > 3) {
+                this.alpha = channels[3];
+            }
+            this.ok = true;
+        }
+
+    }
+
+    // validate/cleanup values
+    this.r = (this.r < 0 || isNaN(this.r)) ? 0 : ((this.r > 255) ? 255 : this.r);
+    this.g = (this.g < 0 || isNaN(this.g)) ? 0 : ((this.g > 255) ? 255 : this.g);
+    this.b = (this.b < 0 || isNaN(this.b)) ? 0 : ((this.b > 255) ? 255 : this.b);
+    this.alpha = (this.alpha < 0) ? 0 : ((this.alpha > 1.0 || isNaN(this.alpha)) ? 1.0 : this.alpha);
+
+    // some getters
+    this.toRGB = function () {
+        return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
+    }
+    this.toRGBA = function () {
+        return 'rgba(' + this.r + ', ' + this.g + ', ' + this.b + ', ' + this.alpha + ')';
+    }
+    this.toHex = function () {
+        var r = this.r.toString(16);
+        var g = this.g.toString(16);
+        var b = this.b.toString(16);
+        if (r.length == 1) r = '0' + r;
+        if (g.length == 1) g = '0' + g;
+        if (b.length == 1) b = '0' + b;
+        return '#' + r + g + b;
+    }
+
+    // help
+    this.getHelpXML = function () {
+
+        var examples = new Array();
+        // add regexps
+        for (var i = 0; i < color_defs.length; i++) {
+            var example = color_defs[i].example;
+            for (var j = 0; j < example.length; j++) {
+                examples[examples.length] = example[j];
+            }
+        }
+        // add type-in colors
+        for (var sc in simple_colors) {
+            examples[examples.length] = sc;
+        }
+
+        var xml = document.createElement('ul');
+        xml.setAttribute('id', 'rgbcolor-examples');
+        for (var i = 0; i < examples.length; i++) {
+            try {
+                var list_item = document.createElement('li');
+                var list_color = new RGBColor(examples[i]);
+                var example_div = document.createElement('div');
+                example_div.style.cssText =
+                        'margin: 3px; '
+                        + 'border: 1px solid black; '
+                        + 'background:' + list_color.toHex() + '; '
+                        + 'color:' + list_color.toHex()
+                ;
+                example_div.appendChild(document.createTextNode('test'));
+                var list_item_value = document.createTextNode(
+                    ' ' + examples[i] + ' -> ' + list_color.toRGB() + ' -> ' + list_color.toHex()
+                );
+                list_item.appendChild(example_div);
+                list_item.appendChild(list_item_value);
+                xml.appendChild(list_item);
+
+            } catch(e){}
+        }
+        return xml;
+
+    }
+
+}
 
 
+/***/ }),
+/* 44 */
+/***/ (function(module, exports) {
+
+/*
+    StackBlur - a fast almost Gaussian Blur For Canvas
+
+    Version:     0.5
+    Author:        Mario Klingemann
+    Contact:     mario@quasimondo.com
+    Website:    http://www.quasimondo.com/StackBlurForCanvas
+    Twitter:    @quasimondo
+
+    In case you find this class useful - especially in commercial projects -
+    I am not totally unhappy for a small donation to my PayPal account
+    mario@quasimondo.de
+
+    Or support me on flattr:
+    https://flattr.com/thing/72791/StackBlur-a-fast-almost-Gaussian-Blur-Effect-for-CanvasJavascript
+
+    Copyright (c) 2010 Mario Klingemann
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal in the Software without
+    restriction, including without limitation the rights to use,
+    copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following
+    conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.
+    */
 
 
+var mul_table = [
+    512,512,456,512,328,456,335,512,405,328,271,456,388,335,292,512,
+    454,405,364,328,298,271,496,456,420,388,360,335,312,292,273,512,
+    482,454,428,405,383,364,345,328,312,298,284,271,259,496,475,456,
+    437,420,404,388,374,360,347,335,323,312,302,292,282,273,265,512,
+    497,482,468,454,441,428,417,405,394,383,373,364,354,345,337,328,
+    320,312,305,298,291,284,278,271,265,259,507,496,485,475,465,456,
+    446,437,428,420,412,404,396,388,381,374,367,360,354,347,341,335,
+    329,323,318,312,307,302,297,292,287,282,278,273,269,265,261,512,
+    505,497,489,482,475,468,461,454,447,441,435,428,422,417,411,405,
+    399,394,389,383,378,373,368,364,359,354,350,345,341,337,332,328,
+    324,320,316,312,309,305,301,298,294,291,287,284,281,278,274,271,
+    268,265,262,259,257,507,501,496,491,485,480,475,470,465,460,456,
+    451,446,442,437,433,428,424,420,416,412,408,404,400,396,392,388,
+    385,381,377,374,370,367,363,360,357,354,350,347,344,341,338,335,
+    332,329,326,323,320,318,315,312,310,307,304,302,299,297,294,292,
+    289,287,285,282,280,278,275,273,271,269,267,265,263,261,259];
 
 
+var shg_table = [
+    9, 11, 12, 13, 13, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17,
+    17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19,
+    19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20,
+    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21,
+    21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21,
+    21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22,
+    22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22,
+    22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23,
+    23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+    23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+    23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
+    23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
+    24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
+    24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
+    24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
+    24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24 ];
 
 
+function processImage(img, canvas, radius, blurAlphaChannel)
+{
+    if (typeof(img) == 'string') {
+        var img = document.getElementById(img);
+    }
+    else if (typeof HTMLImageElement !== 'undefined' && !img instanceof HTMLImageElement) {
+        return;
+    }
+    var w = img.naturalWidth;
+    var h = img.naturalHeight;
+
+    if (typeof(canvas) == 'string') {
+        var canvas = document.getElementById(canvas);
+    }
+    else if (typeof HTMLCanvasElement !== 'undefined' && !canvas instanceof HTMLCanvasElement) {
+        return;
+    }
+
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
+    canvas.width = w;
+    canvas.height = h;
+
+    var context = canvas.getContext('2d');
+    context.clearRect(0, 0, w, h);
+    context.drawImage(img, 0, 0);
+
+    if (isNaN(radius) || radius < 1) return;
+
+    if (blurAlphaChannel)
+        processCanvasRGBA(canvas, 0, 0, w, h, radius);
+    else
+        processCanvasRGB(canvas, 0, 0, w, h, radius);
+}
+
+function getImageDataFromCanvas(canvas, top_x, top_y, width, height)
+{
+    if (typeof(canvas) == 'string')
+        var canvas  = document.getElementById(canvas);
+    else if (typeof HTMLCanvasElement !== 'undefined' && !canvas instanceof HTMLCanvasElement)
+        return;
+
+    var context = canvas.getContext('2d');
+    var imageData;
+
+    try {
+        try {
+            imageData = context.getImageData(top_x, top_y, width, height);
+        } catch(e) {
+            throw new Error("unable to access local image data: " + e);
+            return;
+        }
+    } catch(e) {
+        throw new Error("unable to access image data: " + e);
+    }
+
+    return imageData;
+}
+
+function processCanvasRGBA(canvas, top_x, top_y, width, height, radius)
+{
+    if (isNaN(radius) || radius < 1) return;
+    radius |= 0;
+
+    var imageData = getImageDataFromCanvas(canvas, top_x, top_y, width, height);
+
+    imageData = processImageDataRGBA(imageData, top_x, top_y, width, height, radius);
+
+    canvas.getContext('2d').putImageData(imageData, top_x, top_y);
+}
+
+function processImageDataRGBA(imageData, top_x, top_y, width, height, radius)
+{
+    var pixels = imageData.data;
+
+    var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum, a_sum,
+        r_out_sum, g_out_sum, b_out_sum, a_out_sum,
+        r_in_sum, g_in_sum, b_in_sum, a_in_sum,
+        pr, pg, pb, pa, rbs;
+
+    var div = radius + radius + 1;
+    var w4 = width << 2;
+    var widthMinus1  = width - 1;
+    var heightMinus1 = height - 1;
+    var radiusPlus1  = radius + 1;
+    var sumFactor = radiusPlus1 * (radiusPlus1 + 1) / 2;
+
+    var stackStart = new BlurStack();
+    var stack = stackStart;
+    for (i = 1; i < div; i++)
+    {
+        stack = stack.next = new BlurStack();
+        if (i == radiusPlus1) var stackEnd = stack;
+    }
+    stack.next = stackStart;
+    var stackIn = null;
+    var stackOut = null;
+
+    yw = yi = 0;
+
+    var mul_sum = mul_table[radius];
+    var shg_sum = shg_table[radius];
+
+    for (y = 0; y < height; y++)
+    {
+        r_in_sum = g_in_sum = b_in_sum = a_in_sum = r_sum = g_sum = b_sum = a_sum = 0;
+
+        r_out_sum = radiusPlus1 * (pr = pixels[yi]);
+        g_out_sum = radiusPlus1 * (pg = pixels[yi+1]);
+        b_out_sum = radiusPlus1 * (pb = pixels[yi+2]);
+        a_out_sum = radiusPlus1 * (pa = pixels[yi+3]);
+
+        r_sum += sumFactor * pr;
+        g_sum += sumFactor * pg;
+        b_sum += sumFactor * pb;
+        a_sum += sumFactor * pa;
+
+        stack = stackStart;
+
+        for (i = 0; i < radiusPlus1; i++)
+        {
+            stack.r = pr;
+            stack.g = pg;
+            stack.b = pb;
+            stack.a = pa;
+            stack = stack.next;
+        }
+
+        for (i = 1; i < radiusPlus1; i++)
+        {
+            p = yi + ((widthMinus1 < i ? widthMinus1 : i) << 2);
+            r_sum += (stack.r = (pr = pixels[p])) * (rbs = radiusPlus1 - i);
+            g_sum += (stack.g = (pg = pixels[p+1])) * rbs;
+            b_sum += (stack.b = (pb = pixels[p+2])) * rbs;
+            a_sum += (stack.a = (pa = pixels[p+3])) * rbs;
+
+            r_in_sum += pr;
+            g_in_sum += pg;
+            b_in_sum += pb;
+            a_in_sum += pa;
+
+            stack = stack.next;
+        }
 
 
-// EXTERNAL MODULE: ./src/openlayers/css/ChangeTileVersion.css
-var ChangeTileVersion = __webpack_require__(87);
+        stackIn = stackStart;
+        stackOut = stackEnd;
+        for (x = 0; x < width; x++)
+        {
+            pixels[yi+3] = pa = (a_sum * mul_sum) >> shg_sum;
+            if (pa != 0)
+            {
+                pa = 255 / pa;
+                pixels[yi]   = ((r_sum * mul_sum) >> shg_sum) * pa;
+                pixels[yi+1] = ((g_sum * mul_sum) >> shg_sum) * pa;
+                pixels[yi+2] = ((b_sum * mul_sum) >> shg_sum) * pa;
+            } else {
+                pixels[yi] = pixels[yi+1] = pixels[yi+2] = 0;
+            }
 
-// CONCATENATED MODULE: ./src/openlayers/css/index.js
-/* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
- * This program are made available under the terms of the Apache License, Version 2.0
- * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
+            r_sum -= r_out_sum;
+            g_sum -= g_out_sum;
+            b_sum -= b_out_sum;
+            a_sum -= a_out_sum;
+
+            r_out_sum -= stackIn.r;
+            g_out_sum -= stackIn.g;
+            b_out_sum -= stackIn.b;
+            a_out_sum -= stackIn.a;
+
+            p =  (yw + ((p = x + radius + 1) < widthMinus1 ? p : widthMinus1)) << 2;
+
+            r_in_sum += (stackIn.r = pixels[p]);
+            g_in_sum += (stackIn.g = pixels[p+1]);
+            b_in_sum += (stackIn.b = pixels[p+2]);
+            a_in_sum += (stackIn.a = pixels[p+3]);
+
+            r_sum += r_in_sum;
+            g_sum += g_in_sum;
+            b_sum += b_in_sum;
+            a_sum += a_in_sum;
+
+            stackIn = stackIn.next;
+
+            r_out_sum += (pr = stackOut.r);
+            g_out_sum += (pg = stackOut.g);
+            b_out_sum += (pb = stackOut.b);
+            a_out_sum += (pa = stackOut.a);
+
+            r_in_sum -= pr;
+            g_in_sum -= pg;
+            b_in_sum -= pb;
+            a_in_sum -= pa;
+
+            stackOut = stackOut.next;
+
+            yi += 4;
+        }
+        yw += width;
+    }
+
+
+    for (x = 0; x < width; x++)
+    {
+        g_in_sum = b_in_sum = a_in_sum = r_in_sum = g_sum = b_sum = a_sum = r_sum = 0;
+
+        yi = x << 2;
+        r_out_sum = radiusPlus1 * (pr = pixels[yi]);
+        g_out_sum = radiusPlus1 * (pg = pixels[yi+1]);
+        b_out_sum = radiusPlus1 * (pb = pixels[yi+2]);
+        a_out_sum = radiusPlus1 * (pa = pixels[yi+3]);
+
+        r_sum += sumFactor * pr;
+        g_sum += sumFactor * pg;
+        b_sum += sumFactor * pb;
+        a_sum += sumFactor * pa;
+
+        stack = stackStart;
+
+        for (i = 0; i < radiusPlus1; i++)
+        {
+            stack.r = pr;
+            stack.g = pg;
+            stack.b = pb;
+            stack.a = pa;
+            stack = stack.next;
+        }
+
+        yp = width;
+
+        for (i = 1; i <= radius; i++)
+        {
+            yi = (yp + x) << 2;
+
+            r_sum += (stack.r = (pr = pixels[yi])) * (rbs = radiusPlus1 - i);
+            g_sum += (stack.g = (pg = pixels[yi+1])) * rbs;
+            b_sum += (stack.b = (pb = pixels[yi+2])) * rbs;
+            a_sum += (stack.a = (pa = pixels[yi+3])) * rbs;
+
+            r_in_sum += pr;
+            g_in_sum += pg;
+            b_in_sum += pb;
+            a_in_sum += pa;
+
+            stack = stack.next;
+
+            if(i < heightMinus1)
+            {
+                yp += width;
+            }
+        }
+
+        yi = x;
+        stackIn = stackStart;
+        stackOut = stackEnd;
+        for (y = 0; y < height; y++)
+        {
+            p = yi << 2;
+            pixels[p+3] = pa = (a_sum * mul_sum) >> shg_sum;
+            if (pa > 0)
+            {
+                pa = 255 / pa;
+                pixels[p]   = ((r_sum * mul_sum) >> shg_sum) * pa;
+                pixels[p+1] = ((g_sum * mul_sum) >> shg_sum) * pa;
+                pixels[p+2] = ((b_sum * mul_sum) >> shg_sum) * pa;
+            } else {
+                pixels[p] = pixels[p+1] = pixels[p+2] = 0;
+            }
+
+            r_sum -= r_out_sum;
+            g_sum -= g_out_sum;
+            b_sum -= b_out_sum;
+            a_sum -= a_out_sum;
+
+            r_out_sum -= stackIn.r;
+            g_out_sum -= stackIn.g;
+            b_out_sum -= stackIn.b;
+            a_out_sum -= stackIn.a;
+
+            p = (x + (((p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1) * width)) << 2;
+
+            r_sum += (r_in_sum += (stackIn.r = pixels[p]));
+            g_sum += (g_in_sum += (stackIn.g = pixels[p+1]));
+            b_sum += (b_in_sum += (stackIn.b = pixels[p+2]));
+            a_sum += (a_in_sum += (stackIn.a = pixels[p+3]));
+
+            stackIn = stackIn.next;
+
+            r_out_sum += (pr = stackOut.r);
+            g_out_sum += (pg = stackOut.g);
+            b_out_sum += (pb = stackOut.b);
+            a_out_sum += (pa = stackOut.a);
+
+            r_in_sum -= pr;
+            g_in_sum -= pg;
+            b_in_sum -= pb;
+            a_in_sum -= pa;
+
+            stackOut = stackOut.next;
+
+            yi += width;
+        }
+    }
+    return imageData;
+}
+
+function processCanvasRGB(canvas, top_x, top_y, width, height, radius)
+{
+    if (isNaN(radius) || radius < 1) return;
+    radius |= 0;
+
+    var imageData = getImageDataFromCanvas(canvas, top_x, top_y, width, height);
+    imageData = processImageDataRGB(imageData, top_x, top_y, width, height, radius);
+
+    canvas.getContext('2d').putImageData(imageData, top_x, top_y);
+}
+
+function processImageDataRGB(imageData, top_x, top_y, width, height, radius)
+{
+    var pixels = imageData.data;
+
+    var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum,
+        r_out_sum, g_out_sum, b_out_sum,
+        r_in_sum, g_in_sum, b_in_sum,
+        pr, pg, pb, rbs;
+
+    var div = radius + radius + 1;
+    var w4 = width << 2;
+    var widthMinus1  = width - 1;
+    var heightMinus1 = height - 1;
+    var radiusPlus1  = radius + 1;
+    var sumFactor = radiusPlus1 * (radiusPlus1 + 1) / 2;
+
+    var stackStart = new BlurStack();
+    var stack = stackStart;
+    for (i = 1; i < div; i++)
+    {
+        stack = stack.next = new BlurStack();
+        if (i == radiusPlus1) var stackEnd = stack;
+    }
+    stack.next = stackStart;
+    var stackIn = null;
+    var stackOut = null;
+
+    yw = yi = 0;
+
+    var mul_sum = mul_table[radius];
+    var shg_sum = shg_table[radius];
+
+    for (y = 0; y < height; y++)
+    {
+        r_in_sum = g_in_sum = b_in_sum = r_sum = g_sum = b_sum = 0;
+
+        r_out_sum = radiusPlus1 * (pr = pixels[yi]);
+        g_out_sum = radiusPlus1 * (pg = pixels[yi+1]);
+        b_out_sum = radiusPlus1 * (pb = pixels[yi+2]);
+
+        r_sum += sumFactor * pr;
+        g_sum += sumFactor * pg;
+        b_sum += sumFactor * pb;
+
+        stack = stackStart;
+
+        for (i = 0; i < radiusPlus1; i++)
+        {
+            stack.r = pr;
+            stack.g = pg;
+            stack.b = pb;
+            stack = stack.next;
+        }
+
+        for (i = 1; i < radiusPlus1; i++)
+        {
+            p = yi + ((widthMinus1 < i ? widthMinus1 : i) << 2);
+            r_sum += (stack.r = (pr = pixels[p])) * (rbs = radiusPlus1 - i);
+            g_sum += (stack.g = (pg = pixels[p+1])) * rbs;
+            b_sum += (stack.b = (pb = pixels[p+2])) * rbs;
+
+            r_in_sum += pr;
+            g_in_sum += pg;
+            b_in_sum += pb;
+
+            stack = stack.next;
+        }
+
+
+        stackIn = stackStart;
+        stackOut = stackEnd;
+        for (x = 0; x < width; x++)
+        {
+            pixels[yi]   = (r_sum * mul_sum) >> shg_sum;
+            pixels[yi+1] = (g_sum * mul_sum) >> shg_sum;
+            pixels[yi+2] = (b_sum * mul_sum) >> shg_sum;
+
+            r_sum -= r_out_sum;
+            g_sum -= g_out_sum;
+            b_sum -= b_out_sum;
+
+            r_out_sum -= stackIn.r;
+            g_out_sum -= stackIn.g;
+            b_out_sum -= stackIn.b;
+
+            p =  (yw + ((p = x + radius + 1) < widthMinus1 ? p : widthMinus1)) << 2;
+
+            r_in_sum += (stackIn.r = pixels[p]);
+            g_in_sum += (stackIn.g = pixels[p+1]);
+            b_in_sum += (stackIn.b = pixels[p+2]);
+
+            r_sum += r_in_sum;
+            g_sum += g_in_sum;
+            b_sum += b_in_sum;
+
+            stackIn = stackIn.next;
+
+            r_out_sum += (pr = stackOut.r);
+            g_out_sum += (pg = stackOut.g);
+            b_out_sum += (pb = stackOut.b);
+
+            r_in_sum -= pr;
+            g_in_sum -= pg;
+            b_in_sum -= pb;
+
+            stackOut = stackOut.next;
+
+            yi += 4;
+        }
+        yw += width;
+    }
+
+
+    for (x = 0; x < width; x++)
+    {
+        g_in_sum = b_in_sum = r_in_sum = g_sum = b_sum = r_sum = 0;
+
+        yi = x << 2;
+        r_out_sum = radiusPlus1 * (pr = pixels[yi]);
+        g_out_sum = radiusPlus1 * (pg = pixels[yi+1]);
+        b_out_sum = radiusPlus1 * (pb = pixels[yi+2]);
+
+        r_sum += sumFactor * pr;
+        g_sum += sumFactor * pg;
+        b_sum += sumFactor * pb;
+
+        stack = stackStart;
+
+        for (i = 0; i < radiusPlus1; i++)
+        {
+            stack.r = pr;
+            stack.g = pg;
+            stack.b = pb;
+            stack = stack.next;
+        }
+
+        yp = width;
+
+        for (i = 1; i <= radius; i++)
+        {
+            yi = (yp + x) << 2;
+
+            r_sum += (stack.r = (pr = pixels[yi])) * (rbs = radiusPlus1 - i);
+            g_sum += (stack.g = (pg = pixels[yi+1])) * rbs;
+            b_sum += (stack.b = (pb = pixels[yi+2])) * rbs;
+
+            r_in_sum += pr;
+            g_in_sum += pg;
+            b_in_sum += pb;
+
+            stack = stack.next;
+
+            if(i < heightMinus1)
+            {
+                yp += width;
+            }
+        }
+
+        yi = x;
+        stackIn = stackStart;
+        stackOut = stackEnd;
+        for (y = 0; y < height; y++)
+        {
+            p = yi << 2;
+            pixels[p]   = (r_sum * mul_sum) >> shg_sum;
+            pixels[p+1] = (g_sum * mul_sum) >> shg_sum;
+            pixels[p+2] = (b_sum * mul_sum) >> shg_sum;
+
+            r_sum -= r_out_sum;
+            g_sum -= g_out_sum;
+            b_sum -= b_out_sum;
+
+            r_out_sum -= stackIn.r;
+            g_out_sum -= stackIn.g;
+            b_out_sum -= stackIn.b;
+
+            p = (x + (((p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1) * width)) << 2;
+
+            r_sum += (r_in_sum += (stackIn.r = pixels[p]));
+            g_sum += (g_in_sum += (stackIn.g = pixels[p+1]));
+            b_sum += (b_in_sum += (stackIn.b = pixels[p+2]));
+
+            stackIn = stackIn.next;
+
+            r_out_sum += (pr = stackOut.r);
+            g_out_sum += (pg = stackOut.g);
+            b_out_sum += (pb = stackOut.b);
+
+            r_in_sum -= pr;
+            g_in_sum -= pg;
+            b_in_sum -= pb;
+
+            stackOut = stackOut.next;
+
+            yi += width;
+        }
+    }
+
+    return imageData;
+}
+
+function BlurStack()
+{
+    this.r = 0;
+    this.g = 0;
+    this.b = 0;
+    this.a = 0;
+    this.next = null;
+}
+
+module.exports = {
+    image: processImage,
+    canvasRGBA: processCanvasRGBA,
+    canvasRGB: processCanvasRGB,
+    imageDataRGBA: processImageDataRGBA,
+    imageDataRGB: processImageDataRGB
+};
+
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports) {
+
+function getObjectType(obj) {
+  return Object.prototype.toString.call(obj);
+}
+function isDate(obj) {
+  return getObjectType(obj) === '[object Date]';
+}
+function isString(obj) {
+  return getObjectType(obj) === '[object String]';
+}
+function isDateString(obj) {
+  return isString(obj) && !isNaN(Date.parse(obj))
+}
+function isNumber(obj) {
+  return typeof obj === 'number'
+}
+function parseDateFromString(str) {
+  return Date.parse(str)
+}
+module.exports = {
+  getObjectType: getObjectType,
+  isDate: isDate,
+  isString: isString,
+  isDateString: isDateString,
+  parseDateFromString: parseDateFromString,
+  isNumber: isNumber
+}
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var proj = __webpack_require__(16);
+var transform = __webpack_require__(28);
+var wgs84 = proj('WGS84');
+
+function transformer(from, to, coords) {
+  var transformedArray;
+  if (Array.isArray(coords)) {
+    transformedArray = transform(from, to, coords);
+    if (coords.length === 3) {
+      return [transformedArray.x, transformedArray.y, transformedArray.z];
+    }
+    else {
+      return [transformedArray.x, transformedArray.y];
+    }
+  }
+  else {
+    return transform(from, to, coords);
+  }
+}
+
+function checkProj(item) {
+  if (item instanceof proj) {
+    return item;
+  }
+  if (item.oProj) {
+    return item.oProj;
+  }
+  return proj(item);
+}
+function proj4(fromProj, toProj, coord) {
+  fromProj = checkProj(fromProj);
+  var single = false;
+  var obj;
+  if (typeof toProj === 'undefined') {
+    toProj = fromProj;
+    fromProj = wgs84;
+    single = true;
+  }
+  else if (typeof toProj.x !== 'undefined' || Array.isArray(toProj)) {
+    coord = toProj;
+    toProj = fromProj;
+    fromProj = wgs84;
+    single = true;
+  }
+  toProj = checkProj(toProj);
+  if (coord) {
+    return transformer(fromProj, toProj, coord);
+  }
+  else {
+    obj = {
+      forward: function(coords) {
+        return transformer(fromProj, toProj, coords);
+      },
+      inverse: function(coords) {
+        return transformer(toProj, fromProj, coords);
+      }
+    };
+    if (single) {
+      obj.oProj = toProj;
+    }
+    return obj;
+  }
+}
+module.exports = proj4;
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var defs = __webpack_require__(25);
+var wkt = __webpack_require__(27);
+var projStr = __webpack_require__(26);
+function testObj(code){
+  return typeof code === 'string';
+}
+function testDef(code){
+  return code in defs;
+}
+function testWKT(code){
+  var codeWords = ['GEOGCS','GEOCCS','PROJCS','LOCAL_CS'];
+  return codeWords.reduce(function(a,b){
+    return a+1+code.indexOf(b);
+  },0);
+}
+function testProj(code){
+  return code[0] === '+';
+}
+function parse(code){
+  if (testObj(code)) {
+    //check to see if this is a WKT string
+    if (testDef(code)) {
+      return defs[code];
+    }
+    else if (testWKT(code)) {
+      return wkt(code);
+    }
+    else if (testProj(code)) {
+      return projStr(code);
+    }
+  }else{
+    return code;
+  }
+}
+
+module.exports = parse;
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports) {
+
+module.exports = function(defs) {
+  defs('EPSG:4326', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
+  defs('EPSG:4269', "+title=NAD83 (long/lat) +proj=longlat +a=6378137.0 +b=6356752.31414036 +ellps=GRS80 +datum=NAD83 +units=degrees");
+  defs('EPSG:3857', "+title=WGS 84 / Pseudo-Mercator +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs");
+
+  defs.WGS84 = defs['EPSG:4326'];
+  defs['EPSG:3785'] = defs['EPSG:3857']; // maintain backward compat, official code is 3857
+  defs.GOOGLE = defs['EPSG:3857'];
+  defs['EPSG:900913'] = defs['EPSG:3857'];
+  defs['EPSG:102113'] = defs['EPSG:3857'];
+};
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports) {
+
+exports.greenwich = 0.0; //"0dE",
+exports.lisbon = -9.131906111111; //"9d07'54.862\"W",
+exports.paris = 2.337229166667; //"2d20'14.025\"E",
+exports.bogota = -74.080916666667; //"74d04'51.3\"W",
+exports.madrid = -3.687938888889; //"3d41'16.58\"W",
+exports.rome = 12.452333333333; //"12d27'8.4\"E",
+exports.bern = 7.439583333333; //"7d26'22.5\"E",
+exports.jakarta = 106.807719444444; //"106d48'27.79\"E",
+exports.ferro = -17.666666666667; //"17d40'W",
+exports.brussels = 4.367975; //"4d22'4.71\"E",
+exports.stockholm = 18.058277777778; //"18d3'29.8\"E",
+exports.athens = 23.7163375; //"23d42'58.815\"E",
+exports.oslo = 10.722916666667; //"10d43'22.5\"E"
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports) {
+
+exports.ft = {to_meter: 0.3048};
+exports['us-ft'] = {to_meter: 1200 / 3937};
+
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var projs = [
+  __webpack_require__(52),
+  __webpack_require__(53)
+];
+var names = {};
+var projStore = [];
+
+function add(proj, i) {
+  var len = projStore.length;
+  if (!proj.names) {
+    console.log(i);
+    return true;
+  }
+  projStore[len] = proj;
+  proj.names.forEach(function(n) {
+    names[n.toLowerCase()] = len;
+  });
+  return this;
+}
+
+exports.add = add;
+
+exports.get = function(name) {
+  if (!name) {
+    return false;
+  }
+  var n = name.toLowerCase();
+  if (typeof names[n] !== 'undefined' && projStore[names[n]]) {
+    return projStore[names[n]];
+  }
+};
+exports.start = function() {
+  projs.forEach(add);
+};
+
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var msfnz = __webpack_require__(2);
+var HALF_PI = Math.PI/2;
+var EPSLN = 1.0e-10;
+var R2D = 57.29577951308232088;
+var adjust_lon = __webpack_require__(1);
+var FORTPI = Math.PI/4;
+var tsfnz = __webpack_require__(12);
+var phi2z = __webpack_require__(13);
+exports.init = function() {
+  var con = this.b / this.a;
+  this.es = 1 - con * con;
+  if(!('x0' in this)){
+    this.x0 = 0;
+  }
+  if(!('y0' in this)){
+    this.y0 = 0;
+  }
+  this.e = Math.sqrt(this.es);
+  if (this.lat_ts) {
+    if (this.sphere) {
+      this.k0 = Math.cos(this.lat_ts);
+    }
+    else {
+      this.k0 = msfnz(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts));
+    }
+  }
+  else {
+    if (!this.k0) {
+      if (this.k) {
+        this.k0 = this.k;
+      }
+      else {
+        this.k0 = 1;
+      }
+    }
+  }
+};
+
+/* Mercator forward equations--mapping lat,long to x,y
+  --------------------------------------------------*/
+
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+  // convert to radians
+  if (lat * R2D > 90 && lat * R2D < -90 && lon * R2D > 180 && lon * R2D < -180) {
+    return null;
+  }
+
+  var x, y;
+  if (Math.abs(Math.abs(lat) - HALF_PI) <= EPSLN) {
+    return null;
+  }
+  else {
+    if (this.sphere) {
+      x = this.x0 + this.a * this.k0 * adjust_lon(lon - this.long0);
+      y = this.y0 + this.a * this.k0 * Math.log(Math.tan(FORTPI + 0.5 * lat));
+    }
+    else {
+      var sinphi = Math.sin(lat);
+      var ts = tsfnz(this.e, lat, sinphi);
+      x = this.x0 + this.a * this.k0 * adjust_lon(lon - this.long0);
+      y = this.y0 - this.a * this.k0 * Math.log(ts);
+    }
+    p.x = x;
+    p.y = y;
+    return p;
+  }
+};
+
+
+/* Mercator inverse equations--mapping x,y to lat/long
+  --------------------------------------------------*/
+exports.inverse = function(p) {
+
+  var x = p.x - this.x0;
+  var y = p.y - this.y0;
+  var lon, lat;
+
+  if (this.sphere) {
+    lat = HALF_PI - 2 * Math.atan(Math.exp(-y / (this.a * this.k0)));
+  }
+  else {
+    var ts = Math.exp(-y / (this.a * this.k0));
+    lat = phi2z(this.e, ts);
+    if (lat === -9999) {
+      return null;
+    }
+  }
+  lon = adjust_lon(this.long0 + x / (this.a * this.k0));
+
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+
+exports.names = ["Mercator", "Popular Visualisation Pseudo Mercator", "Mercator_1SP", "Mercator_Auxiliary_Sphere", "merc"];
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports) {
+
+exports.init = function() {
+  //no-op for longlat
+};
+
+function identity(pt) {
+  return pt;
+}
+exports.forward = identity;
+exports.inverse = identity;
+exports.names = ["longlat", "identity"];
+
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Datum = __webpack_require__(55);
+var Ellipsoid = __webpack_require__(56);
+var extend = __webpack_require__(17);
+var datum = __webpack_require__(57);
+var EPSLN = 1.0e-10;
+// ellipoid pj_set_ell.c
+var SIXTH = 0.1666666666666666667;
+/* 1/6 */
+var RA4 = 0.04722222222222222222;
+/* 17/360 */
+var RA6 = 0.02215608465608465608;
+module.exports = function(json) {
+  // DGR 2011-03-20 : nagrids -> nadgrids
+  if (json.datumCode && json.datumCode !== 'none') {
+    var datumDef = Datum[json.datumCode];
+    if (datumDef) {
+      json.datum_params = datumDef.towgs84 ? datumDef.towgs84.split(',') : null;
+      json.ellps = datumDef.ellipse;
+      json.datumName = datumDef.datumName ? datumDef.datumName : json.datumCode;
+    }
+  }
+  if (!json.a) { // do we have an ellipsoid?
+    var ellipse = Ellipsoid[json.ellps] ? Ellipsoid[json.ellps] : Ellipsoid.WGS84;
+    extend(json, ellipse);
+  }
+  if (json.rf && !json.b) {
+    json.b = (1.0 - 1.0 / json.rf) * json.a;
+  }
+  if (json.rf === 0 || Math.abs(json.a - json.b) < EPSLN) {
+    json.sphere = true;
+    json.b = json.a;
+  }
+  json.a2 = json.a * json.a; // used in geocentric
+  json.b2 = json.b * json.b; // used in geocentric
+  json.es = (json.a2 - json.b2) / json.a2; // e ^ 2
+  json.e = Math.sqrt(json.es); // eccentricity
+  if (json.R_A) {
+    json.a *= 1 - json.es * (SIXTH + json.es * (RA4 + json.es * RA6));
+    json.a2 = json.a * json.a;
+    json.b2 = json.b * json.b;
+    json.es = 0;
+  }
+  json.ep2 = (json.a2 - json.b2) / json.b2; // used in geocentric
+  if (!json.k0) {
+    json.k0 = 1.0; //default value
+  }
+  //DGR 2010-11-12: axis
+  if (!json.axis) {
+    json.axis = "enu";
+  }
+
+  if (!json.datum) {
+    json.datum = datum(json);
+  }
+  return json;
+};
+
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports) {
+
+exports.wgs84 = {
+  towgs84: "0,0,0",
+  ellipse: "WGS84",
+  datumName: "WGS84"
+};
+exports.ch1903 = {
+  towgs84: "674.374,15.056,405.346",
+  ellipse: "bessel",
+  datumName: "swiss"
+};
+exports.ggrs87 = {
+  towgs84: "-199.87,74.79,246.62",
+  ellipse: "GRS80",
+  datumName: "Greek_Geodetic_Reference_System_1987"
+};
+exports.nad83 = {
+  towgs84: "0,0,0",
+  ellipse: "GRS80",
+  datumName: "North_American_Datum_1983"
+};
+exports.nad27 = {
+  nadgrids: "@conus,@alaska,@ntv2_0.gsb,@ntv1_can.dat",
+  ellipse: "clrk66",
+  datumName: "North_American_Datum_1927"
+};
+exports.potsdam = {
+  towgs84: "606.0,23.0,413.0",
+  ellipse: "bessel",
+  datumName: "Potsdam Rauenberg 1950 DHDN"
+};
+exports.carthage = {
+  towgs84: "-263.0,6.0,431.0",
+  ellipse: "clark80",
+  datumName: "Carthage 1934 Tunisia"
+};
+exports.hermannskogel = {
+  towgs84: "653.0,-212.0,449.0",
+  ellipse: "bessel",
+  datumName: "Hermannskogel"
+};
+exports.ire65 = {
+  towgs84: "482.530,-130.596,564.557,-1.042,-0.214,-0.631,8.15",
+  ellipse: "mod_airy",
+  datumName: "Ireland 1965"
+};
+exports.rassadiran = {
+  towgs84: "-133.63,-157.5,-158.62",
+  ellipse: "intl",
+  datumName: "Rassadiran"
+};
+exports.nzgd49 = {
+  towgs84: "59.47,-5.04,187.44,0.47,-0.1,1.024,-4.5993",
+  ellipse: "intl",
+  datumName: "New Zealand Geodetic Datum 1949"
+};
+exports.osgb36 = {
+  towgs84: "446.448,-125.157,542.060,0.1502,0.2470,0.8421,-20.4894",
+  ellipse: "airy",
+  datumName: "Airy 1830"
+};
+exports.s_jtsk = {
+  towgs84: "589,76,480",
+  ellipse: 'bessel',
+  datumName: 'S-JTSK (Ferro)'
+};
+exports.beduaram = {
+  towgs84: '-106,-87,188',
+  ellipse: 'clrk80',
+  datumName: 'Beduaram'
+};
+exports.gunung_segara = {
+  towgs84: '-403,684,41',
+  ellipse: 'bessel',
+  datumName: 'Gunung Segara Jakarta'
+};
+exports.rnb72 = {
+  towgs84: "106.869,-52.2978,103.724,-0.33657,0.456955,-1.84218,1",
+  ellipse: "intl",
+  datumName: "Reseau National Belge 1972"
+};
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports) {
+
+exports.MERIT = {
+  a: 6378137.0,
+  rf: 298.257,
+  ellipseName: "MERIT 1983"
+};
+exports.SGS85 = {
+  a: 6378136.0,
+  rf: 298.257,
+  ellipseName: "Soviet Geodetic System 85"
+};
+exports.GRS80 = {
+  a: 6378137.0,
+  rf: 298.257222101,
+  ellipseName: "GRS 1980(IUGG, 1980)"
+};
+exports.IAU76 = {
+  a: 6378140.0,
+  rf: 298.257,
+  ellipseName: "IAU 1976"
+};
+exports.airy = {
+  a: 6377563.396,
+  b: 6356256.910,
+  ellipseName: "Airy 1830"
+};
+exports.APL4 = {
+  a: 6378137,
+  rf: 298.25,
+  ellipseName: "Appl. Physics. 1965"
+};
+exports.NWL9D = {
+  a: 6378145.0,
+  rf: 298.25,
+  ellipseName: "Naval Weapons Lab., 1965"
+};
+exports.mod_airy = {
+  a: 6377340.189,
+  b: 6356034.446,
+  ellipseName: "Modified Airy"
+};
+exports.andrae = {
+  a: 6377104.43,
+  rf: 300.0,
+  ellipseName: "Andrae 1876 (Den., Iclnd.)"
+};
+exports.aust_SA = {
+  a: 6378160.0,
+  rf: 298.25,
+  ellipseName: "Australian Natl & S. Amer. 1969"
+};
+exports.GRS67 = {
+  a: 6378160.0,
+  rf: 298.2471674270,
+  ellipseName: "GRS 67(IUGG 1967)"
+};
+exports.bessel = {
+  a: 6377397.155,
+  rf: 299.1528128,
+  ellipseName: "Bessel 1841"
+};
+exports.bess_nam = {
+  a: 6377483.865,
+  rf: 299.1528128,
+  ellipseName: "Bessel 1841 (Namibia)"
+};
+exports.clrk66 = {
+  a: 6378206.4,
+  b: 6356583.8,
+  ellipseName: "Clarke 1866"
+};
+exports.clrk80 = {
+  a: 6378249.145,
+  rf: 293.4663,
+  ellipseName: "Clarke 1880 mod."
+};
+exports.clrk58 = {
+  a: 6378293.645208759,
+  rf: 294.2606763692654,
+  ellipseName: "Clarke 1858"
+};
+exports.CPM = {
+  a: 6375738.7,
+  rf: 334.29,
+  ellipseName: "Comm. des Poids et Mesures 1799"
+};
+exports.delmbr = {
+  a: 6376428.0,
+  rf: 311.5,
+  ellipseName: "Delambre 1810 (Belgium)"
+};
+exports.engelis = {
+  a: 6378136.05,
+  rf: 298.2566,
+  ellipseName: "Engelis 1985"
+};
+exports.evrst30 = {
+  a: 6377276.345,
+  rf: 300.8017,
+  ellipseName: "Everest 1830"
+};
+exports.evrst48 = {
+  a: 6377304.063,
+  rf: 300.8017,
+  ellipseName: "Everest 1948"
+};
+exports.evrst56 = {
+  a: 6377301.243,
+  rf: 300.8017,
+  ellipseName: "Everest 1956"
+};
+exports.evrst69 = {
+  a: 6377295.664,
+  rf: 300.8017,
+  ellipseName: "Everest 1969"
+};
+exports.evrstSS = {
+  a: 6377298.556,
+  rf: 300.8017,
+  ellipseName: "Everest (Sabah & Sarawak)"
+};
+exports.fschr60 = {
+  a: 6378166.0,
+  rf: 298.3,
+  ellipseName: "Fischer (Mercury Datum) 1960"
+};
+exports.fschr60m = {
+  a: 6378155.0,
+  rf: 298.3,
+  ellipseName: "Fischer 1960"
+};
+exports.fschr68 = {
+  a: 6378150.0,
+  rf: 298.3,
+  ellipseName: "Fischer 1968"
+};
+exports.helmert = {
+  a: 6378200.0,
+  rf: 298.3,
+  ellipseName: "Helmert 1906"
+};
+exports.hough = {
+  a: 6378270.0,
+  rf: 297.0,
+  ellipseName: "Hough"
+};
+exports.intl = {
+  a: 6378388.0,
+  rf: 297.0,
+  ellipseName: "International 1909 (Hayford)"
+};
+exports.kaula = {
+  a: 6378163.0,
+  rf: 298.24,
+  ellipseName: "Kaula 1961"
+};
+exports.lerch = {
+  a: 6378139.0,
+  rf: 298.257,
+  ellipseName: "Lerch 1979"
+};
+exports.mprts = {
+  a: 6397300.0,
+  rf: 191.0,
+  ellipseName: "Maupertius 1738"
+};
+exports.new_intl = {
+  a: 6378157.5,
+  b: 6356772.2,
+  ellipseName: "New International 1967"
+};
+exports.plessis = {
+  a: 6376523.0,
+  rf: 6355863.0,
+  ellipseName: "Plessis 1817 (France)"
+};
+exports.krass = {
+  a: 6378245.0,
+  rf: 298.3,
+  ellipseName: "Krassovsky, 1942"
+};
+exports.SEasia = {
+  a: 6378155.0,
+  b: 6356773.3205,
+  ellipseName: "Southeast Asia"
+};
+exports.walbeck = {
+  a: 6376896.0,
+  b: 6355834.8467,
+  ellipseName: "Walbeck"
+};
+exports.WGS60 = {
+  a: 6378165.0,
+  rf: 298.3,
+  ellipseName: "WGS 60"
+};
+exports.WGS66 = {
+  a: 6378145.0,
+  rf: 298.25,
+  ellipseName: "WGS 66"
+};
+exports.WGS7 = {
+  a: 6378135.0,
+  rf: 298.26,
+  ellipseName: "WGS 72"
+};
+exports.WGS84 = {
+  a: 6378137.0,
+  rf: 298.257223563,
+  ellipseName: "WGS 84"
+};
+exports.sphere = {
+  a: 6370997.0,
+  b: 6370997.0,
+  ellipseName: "Normal Sphere (r=6370997)"
+};
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports) {
+
+var HALF_PI = Math.PI/2;
+var PJD_3PARAM = 1;
+var PJD_7PARAM = 2;
+var PJD_GRIDSHIFT = 3;
+var PJD_WGS84 = 4; // WGS84 or equivalent
+var PJD_NODATUM = 5; // WGS84 or equivalent
+var SEC_TO_RAD = 4.84813681109535993589914102357e-6;
+var AD_C = 1.0026000;
+var COS_67P5 = 0.38268343236508977;
+var datum = function(proj) {
+  if (!(this instanceof datum)) {
+    return new datum(proj);
+  }
+  this.datum_type = PJD_WGS84; //default setting
+  if (!proj) {
+    return;
+  }
+  if (proj.datumCode && proj.datumCode === 'none') {
+    this.datum_type = PJD_NODATUM;
+  }
+
+  if (proj.datum_params) {
+    this.datum_params = proj.datum_params.map(parseFloat);
+    if (this.datum_params[0] !== 0 || this.datum_params[1] !== 0 || this.datum_params[2] !== 0) {
+      this.datum_type = PJD_3PARAM;
+    }
+    if (this.datum_params.length > 3) {
+      if (this.datum_params[3] !== 0 || this.datum_params[4] !== 0 || this.datum_params[5] !== 0 || this.datum_params[6] !== 0) {
+        this.datum_type = PJD_7PARAM;
+        this.datum_params[3] *= SEC_TO_RAD;
+        this.datum_params[4] *= SEC_TO_RAD;
+        this.datum_params[5] *= SEC_TO_RAD;
+        this.datum_params[6] = (this.datum_params[6] / 1000000.0) + 1.0;
+      }
+    }
+  }
+
+  // DGR 2011-03-21 : nadgrids support
+  this.datum_type = proj.grids ? PJD_GRIDSHIFT : this.datum_type;
+
+  this.a = proj.a; //datum object also uses these values
+  this.b = proj.b;
+  this.es = proj.es;
+  this.ep2 = proj.ep2;
+  if (this.datum_type === PJD_GRIDSHIFT) {
+    this.grids = proj.grids;
+  }
+};
+datum.prototype = {
+
+
+  /****************************************************************/
+  // cs_compare_datums()
+  //   Returns TRUE if the two datums match, otherwise FALSE.
+  compare_datums: function(dest) {
+    if (this.datum_type !== dest.datum_type) {
+      return false; // false, datums are not equal
+    }
+    else if (this.a !== dest.a || Math.abs(this.es - dest.es) > 0.000000000050) {
+      // the tolerence for es is to ensure that GRS80 and WGS84
+      // are considered identical
+      return false;
+    }
+    else if (this.datum_type === PJD_3PARAM) {
+      return (this.datum_params[0] === dest.datum_params[0] && this.datum_params[1] === dest.datum_params[1] && this.datum_params[2] === dest.datum_params[2]);
+    }
+    else if (this.datum_type === PJD_7PARAM) {
+      return (this.datum_params[0] === dest.datum_params[0] && this.datum_params[1] === dest.datum_params[1] && this.datum_params[2] === dest.datum_params[2] && this.datum_params[3] === dest.datum_params[3] && this.datum_params[4] === dest.datum_params[4] && this.datum_params[5] === dest.datum_params[5] && this.datum_params[6] === dest.datum_params[6]);
+    }
+    else if (this.datum_type === PJD_GRIDSHIFT || dest.datum_type === PJD_GRIDSHIFT) {
+      //alert("ERROR: Grid shift transformations are not implemented.");
+      //return false
+      //DGR 2012-07-29 lazy ...
+      return this.nadgrids === dest.nadgrids;
+    }
+    else {
+      return true; // datums are equal
+    }
+  }, // cs_compare_datums()
+
+  /*
+   * The function Convert_Geodetic_To_Geocentric converts geodetic coordinates
+   * (latitude, longitude, and height) to geocentric coordinates (X, Y, Z),
+   * according to the current ellipsoid parameters.
+   *
+   *    Latitude  : Geodetic latitude in radians                     (input)
+   *    Longitude : Geodetic longitude in radians                    (input)
+   *    Height    : Geodetic height, in meters                       (input)
+   *    X         : Calculated Geocentric X coordinate, in meters    (output)
+   *    Y         : Calculated Geocentric Y coordinate, in meters    (output)
+   *    Z         : Calculated Geocentric Z coordinate, in meters    (output)
+   *
+   */
+  geodetic_to_geocentric: function(p) {
+    var Longitude = p.x;
+    var Latitude = p.y;
+    var Height = p.z ? p.z : 0; //Z value not always supplied
+    var X; // output
+    var Y;
+    var Z;
+
+    var Error_Code = 0; //  GEOCENT_NO_ERROR;
+    var Rn; /*  Earth radius at location  */
+    var Sin_Lat; /*  Math.sin(Latitude)  */
+    var Sin2_Lat; /*  Square of Math.sin(Latitude)  */
+    var Cos_Lat; /*  Math.cos(Latitude)  */
+
+    /*
+     ** Don't blow up if Latitude is just a little out of the value
+     ** range as it may just be a rounding issue.  Also removed longitude
+     ** test, it should be wrapped by Math.cos() and Math.sin().  NFW for PROJ.4, Sep/2001.
+     */
+    if (Latitude < -HALF_PI && Latitude > -1.001 * HALF_PI) {
+      Latitude = -HALF_PI;
+    }
+    else if (Latitude > HALF_PI && Latitude < 1.001 * HALF_PI) {
+      Latitude = HALF_PI;
+    }
+    else if ((Latitude < -HALF_PI) || (Latitude > HALF_PI)) {
+      /* Latitude out of range */
+      //..reportError('geocent:lat out of range:' + Latitude);
+      return null;
+    }
+
+    if (Longitude > Math.PI) {
+      Longitude -= (2 * Math.PI);
+    }
+    Sin_Lat = Math.sin(Latitude);
+    Cos_Lat = Math.cos(Latitude);
+    Sin2_Lat = Sin_Lat * Sin_Lat;
+    Rn = this.a / (Math.sqrt(1.0e0 - this.es * Sin2_Lat));
+    X = (Rn + Height) * Cos_Lat * Math.cos(Longitude);
+    Y = (Rn + Height) * Cos_Lat * Math.sin(Longitude);
+    Z = ((Rn * (1 - this.es)) + Height) * Sin_Lat;
+
+    p.x = X;
+    p.y = Y;
+    p.z = Z;
+    return Error_Code;
+  }, // cs_geodetic_to_geocentric()
+
+
+  geocentric_to_geodetic: function(p) {
+    /* local defintions and variables */
+    /* end-criterium of loop, accuracy of sin(Latitude) */
+    var genau = 1e-12;
+    var genau2 = (genau * genau);
+    var maxiter = 30;
+
+    var P; /* distance between semi-minor axis and location */
+    var RR; /* distance between center and location */
+    var CT; /* sin of geocentric latitude */
+    var ST; /* cos of geocentric latitude */
+    var RX;
+    var RK;
+    var RN; /* Earth radius at location */
+    var CPHI0; /* cos of start or old geodetic latitude in iterations */
+    var SPHI0; /* sin of start or old geodetic latitude in iterations */
+    var CPHI; /* cos of searched geodetic latitude */
+    var SPHI; /* sin of searched geodetic latitude */
+    var SDPHI; /* end-criterium: addition-theorem of sin(Latitude(iter)-Latitude(iter-1)) */
+    var At_Pole; /* indicates location is in polar region */
+    var iter; /* # of continous iteration, max. 30 is always enough (s.a.) */
+
+    var X = p.x;
+    var Y = p.y;
+    var Z = p.z ? p.z : 0.0; //Z value not always supplied
+    var Longitude;
+    var Latitude;
+    var Height;
+
+    At_Pole = false;
+    P = Math.sqrt(X * X + Y * Y);
+    RR = Math.sqrt(X * X + Y * Y + Z * Z);
+
+    /*      special cases for latitude and longitude */
+    if (P / this.a < genau) {
+
+      /*  special case, if P=0. (X=0., Y=0.) */
+      At_Pole = true;
+      Longitude = 0.0;
+
+      /*  if (X,Y,Z)=(0.,0.,0.) then Height becomes semi-minor axis
+       *  of ellipsoid (=center of mass), Latitude becomes PI/2 */
+      if (RR / this.a < genau) {
+        Latitude = HALF_PI;
+        Height = -this.b;
+        return;
+      }
+    }
+    else {
+      /*  ellipsoidal (geodetic) longitude
+       *  interval: -PI < Longitude <= +PI */
+      Longitude = Math.atan2(Y, X);
+    }
+
+    /* --------------------------------------------------------------
+     * Following iterative algorithm was developped by
+     * "Institut for Erdmessung", University of Hannover, July 1988.
+     * Internet: www.ife.uni-hannover.de
+     * Iterative computation of CPHI,SPHI and Height.
+     * Iteration of CPHI and SPHI to 10**-12 radian resp.
+     * 2*10**-7 arcsec.
+     * --------------------------------------------------------------
+     */
+    CT = Z / RR;
+    ST = P / RR;
+    RX = 1.0 / Math.sqrt(1.0 - this.es * (2.0 - this.es) * ST * ST);
+    CPHI0 = ST * (1.0 - this.es) * RX;
+    SPHI0 = CT * RX;
+    iter = 0;
+
+    /* loop to find sin(Latitude) resp. Latitude
+     * until |sin(Latitude(iter)-Latitude(iter-1))| < genau */
+    do {
+      iter++;
+      RN = this.a / Math.sqrt(1.0 - this.es * SPHI0 * SPHI0);
+
+      /*  ellipsoidal (geodetic) height */
+      Height = P * CPHI0 + Z * SPHI0 - RN * (1.0 - this.es * SPHI0 * SPHI0);
+
+      RK = this.es * RN / (RN + Height);
+      RX = 1.0 / Math.sqrt(1.0 - RK * (2.0 - RK) * ST * ST);
+      CPHI = ST * (1.0 - RK) * RX;
+      SPHI = CT * RX;
+      SDPHI = SPHI * CPHI0 - CPHI * SPHI0;
+      CPHI0 = CPHI;
+      SPHI0 = SPHI;
+    }
+    while (SDPHI * SDPHI > genau2 && iter < maxiter);
+
+    /*      ellipsoidal (geodetic) latitude */
+    Latitude = Math.atan(SPHI / Math.abs(CPHI));
+
+    p.x = Longitude;
+    p.y = Latitude;
+    p.z = Height;
+    return p;
+  }, // cs_geocentric_to_geodetic()
+
+  /** Convert_Geocentric_To_Geodetic
+   * The method used here is derived from 'An Improved Algorithm for
+   * Geocentric to Geodetic Coordinate Conversion', by Ralph Toms, Feb 1996
+   */
+  geocentric_to_geodetic_noniter: function(p) {
+    var X = p.x;
+    var Y = p.y;
+    var Z = p.z ? p.z : 0; //Z value not always supplied
+    var Longitude;
+    var Latitude;
+    var Height;
+
+    var W; /* distance from Z axis */
+    var W2; /* square of distance from Z axis */
+    var T0; /* initial estimate of vertical component */
+    var T1; /* corrected estimate of vertical component */
+    var S0; /* initial estimate of horizontal component */
+    var S1; /* corrected estimate of horizontal component */
+    var Sin_B0; /* Math.sin(B0), B0 is estimate of Bowring aux variable */
+    var Sin3_B0; /* cube of Math.sin(B0) */
+    var Cos_B0; /* Math.cos(B0) */
+    var Sin_p1; /* Math.sin(phi1), phi1 is estimated latitude */
+    var Cos_p1; /* Math.cos(phi1) */
+    var Rn; /* Earth radius at location */
+    var Sum; /* numerator of Math.cos(phi1) */
+    var At_Pole; /* indicates location is in polar region */
+
+    X = parseFloat(X); // cast from string to float
+    Y = parseFloat(Y);
+    Z = parseFloat(Z);
+
+    At_Pole = false;
+    if (X !== 0.0) {
+      Longitude = Math.atan2(Y, X);
+    }
+    else {
+      if (Y > 0) {
+        Longitude = HALF_PI;
+      }
+      else if (Y < 0) {
+        Longitude = -HALF_PI;
+      }
+      else {
+        At_Pole = true;
+        Longitude = 0.0;
+        if (Z > 0.0) { /* north pole */
+          Latitude = HALF_PI;
+        }
+        else if (Z < 0.0) { /* south pole */
+          Latitude = -HALF_PI;
+        }
+        else { /* center of earth */
+          Latitude = HALF_PI;
+          Height = -this.b;
+          return;
+        }
+      }
+    }
+    W2 = X * X + Y * Y;
+    W = Math.sqrt(W2);
+    T0 = Z * AD_C;
+    S0 = Math.sqrt(T0 * T0 + W2);
+    Sin_B0 = T0 / S0;
+    Cos_B0 = W / S0;
+    Sin3_B0 = Sin_B0 * Sin_B0 * Sin_B0;
+    T1 = Z + this.b * this.ep2 * Sin3_B0;
+    Sum = W - this.a * this.es * Cos_B0 * Cos_B0 * Cos_B0;
+    S1 = Math.sqrt(T1 * T1 + Sum * Sum);
+    Sin_p1 = T1 / S1;
+    Cos_p1 = Sum / S1;
+    Rn = this.a / Math.sqrt(1.0 - this.es * Sin_p1 * Sin_p1);
+    if (Cos_p1 >= COS_67P5) {
+      Height = W / Cos_p1 - Rn;
+    }
+    else if (Cos_p1 <= -COS_67P5) {
+      Height = W / -Cos_p1 - Rn;
+    }
+    else {
+      Height = Z / Sin_p1 + Rn * (this.es - 1.0);
+    }
+    if (At_Pole === false) {
+      Latitude = Math.atan(Sin_p1 / Cos_p1);
+    }
+
+    p.x = Longitude;
+    p.y = Latitude;
+    p.z = Height;
+    return p;
+  }, // geocentric_to_geodetic_noniter()
+
+  /****************************************************************/
+  // pj_geocentic_to_wgs84( p )
+  //  p = point to transform in geocentric coordinates (x,y,z)
+  geocentric_to_wgs84: function(p) {
+
+    if (this.datum_type === PJD_3PARAM) {
+      // if( x[io] === HUGE_VAL )
+      //    continue;
+      p.x += this.datum_params[0];
+      p.y += this.datum_params[1];
+      p.z += this.datum_params[2];
+
+    }
+    else if (this.datum_type === PJD_7PARAM) {
+      var Dx_BF = this.datum_params[0];
+      var Dy_BF = this.datum_params[1];
+      var Dz_BF = this.datum_params[2];
+      var Rx_BF = this.datum_params[3];
+      var Ry_BF = this.datum_params[4];
+      var Rz_BF = this.datum_params[5];
+      var M_BF = this.datum_params[6];
+      // if( x[io] === HUGE_VAL )
+      //    continue;
+      var x_out = M_BF * (p.x - Rz_BF * p.y + Ry_BF * p.z) + Dx_BF;
+      var y_out = M_BF * (Rz_BF * p.x + p.y - Rx_BF * p.z) + Dy_BF;
+      var z_out = M_BF * (-Ry_BF * p.x + Rx_BF * p.y + p.z) + Dz_BF;
+      p.x = x_out;
+      p.y = y_out;
+      p.z = z_out;
+    }
+  }, // cs_geocentric_to_wgs84
+
+  /****************************************************************/
+  // pj_geocentic_from_wgs84()
+  //  coordinate system definition,
+  //  point to transform in geocentric coordinates (x,y,z)
+  geocentric_from_wgs84: function(p) {
+
+    if (this.datum_type === PJD_3PARAM) {
+      //if( x[io] === HUGE_VAL )
+      //    continue;
+      p.x -= this.datum_params[0];
+      p.y -= this.datum_params[1];
+      p.z -= this.datum_params[2];
+
+    }
+    else if (this.datum_type === PJD_7PARAM) {
+      var Dx_BF = this.datum_params[0];
+      var Dy_BF = this.datum_params[1];
+      var Dz_BF = this.datum_params[2];
+      var Rx_BF = this.datum_params[3];
+      var Ry_BF = this.datum_params[4];
+      var Rz_BF = this.datum_params[5];
+      var M_BF = this.datum_params[6];
+      var x_tmp = (p.x - Dx_BF) / M_BF;
+      var y_tmp = (p.y - Dy_BF) / M_BF;
+      var z_tmp = (p.z - Dz_BF) / M_BF;
+      //if( x[io] === HUGE_VAL )
+      //    continue;
+
+      p.x = x_tmp + Rz_BF * y_tmp - Ry_BF * z_tmp;
+      p.y = -Rz_BF * x_tmp + y_tmp + Rx_BF * z_tmp;
+      p.z = Ry_BF * x_tmp - Rx_BF * y_tmp + z_tmp;
+    } //cs_geocentric_from_wgs84()
+  }
+};
+
+/** point object, nothing fancy, just allows values to be
+    passed back and forth by reference rather than by value.
+    Other point classes may be used as long as they have
+    x and y properties, which will get modified in the transform method.
+*/
+module.exports = datum;
+
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports) {
+
+var PJD_3PARAM = 1;
+var PJD_7PARAM = 2;
+var PJD_GRIDSHIFT = 3;
+var PJD_NODATUM = 5; // WGS84 or equivalent
+var SRS_WGS84_SEMIMAJOR = 6378137; // only used in grid shift transforms
+var SRS_WGS84_ESQUARED = 0.006694379990141316; //DGR: 2012-07-29
+module.exports = function(source, dest, point) {
+  var wp, i, l;
+
+  function checkParams(fallback) {
+    return (fallback === PJD_3PARAM || fallback === PJD_7PARAM);
+  }
+  // Short cut if the datums are identical.
+  if (source.compare_datums(dest)) {
+    return point; // in this case, zero is sucess,
+    // whereas cs_compare_datums returns 1 to indicate TRUE
+    // confusing, should fix this
+  }
+
+  // Explicitly skip datum transform by setting 'datum=none' as parameter for either source or dest
+  if (source.datum_type === PJD_NODATUM || dest.datum_type === PJD_NODATUM) {
+    return point;
+  }
+
+  //DGR: 2012-07-29 : add nadgrids support (begin)
+  var src_a = source.a;
+  var src_es = source.es;
+
+  var dst_a = dest.a;
+  var dst_es = dest.es;
+
+  var fallback = source.datum_type;
+  // If this datum requires grid shifts, then apply it to geodetic coordinates.
+  if (fallback === PJD_GRIDSHIFT) {
+    if (this.apply_gridshift(source, 0, point) === 0) {
+      source.a = SRS_WGS84_SEMIMAJOR;
+      source.es = SRS_WGS84_ESQUARED;
+    }
+    else {
+      // try 3 or 7 params transformation or nothing ?
+      if (!source.datum_params) {
+        source.a = src_a;
+        source.es = source.es;
+        return point;
+      }
+      wp = 1;
+      for (i = 0, l = source.datum_params.length; i < l; i++) {
+        wp *= source.datum_params[i];
+      }
+      if (wp === 0) {
+        source.a = src_a;
+        source.es = source.es;
+        return point;
+      }
+      if (source.datum_params.length > 3) {
+        fallback = PJD_7PARAM;
+      }
+      else {
+        fallback = PJD_3PARAM;
+      }
+    }
+  }
+  if (dest.datum_type === PJD_GRIDSHIFT) {
+    dest.a = SRS_WGS84_SEMIMAJOR;
+    dest.es = SRS_WGS84_ESQUARED;
+  }
+  // Do we need to go through geocentric coordinates?
+  if (source.es !== dest.es || source.a !== dest.a || checkParams(fallback) || checkParams(dest.datum_type)) {
+    //DGR: 2012-07-29 : add nadgrids support (end)
+    // Convert to geocentric coordinates.
+    source.geodetic_to_geocentric(point);
+    // CHECK_RETURN;
+    // Convert between datums
+    if (checkParams(source.datum_type)) {
+      source.geocentric_to_wgs84(point);
+      // CHECK_RETURN;
+    }
+    if (checkParams(dest.datum_type)) {
+      dest.geocentric_from_wgs84(point);
+      // CHECK_RETURN;
+    }
+    // Convert back to geodetic coordinates
+    dest.geocentric_to_geodetic(point);
+    // CHECK_RETURN;
+  }
+  // Apply grid shift to destination if required
+  if (dest.datum_type === PJD_GRIDSHIFT) {
+    this.apply_gridshift(dest, 1, point);
+    // CHECK_RETURN;
+  }
+
+  source.a = src_a;
+  source.es = src_es;
+  dest.a = dst_a;
+  dest.es = dst_es;
+
+  return point;
+};
 
 
 
 /***/ }),
-/* 37 */
+/* 59 */
+/***/ (function(module, exports) {
+
+module.exports = function(crs, denorm, point) {
+  var xin = point.x,
+    yin = point.y,
+    zin = point.z || 0.0;
+  var v, t, i;
+  for (i = 0; i < 3; i++) {
+    if (denorm && i === 2 && point.z === undefined) {
+      continue;
+    }
+    if (i === 0) {
+      v = xin;
+      t = 'x';
+    }
+    else if (i === 1) {
+      v = yin;
+      t = 'y';
+    }
+    else {
+      v = zin;
+      t = 'z';
+    }
+    switch (crs.axis[i]) {
+    case 'e':
+      point[t] = v;
+      break;
+    case 'w':
+      point[t] = -v;
+      break;
+    case 'n':
+      point[t] = v;
+      break;
+    case 's':
+      point[t] = -v;
+      break;
+    case 'u':
+      if (point[t] !== undefined) {
+        point.z = v;
+      }
+      break;
+    case 'd':
+      if (point[t] !== undefined) {
+        point.z = -v;
+      }
+      break;
+    default:
+      //console.log("ERROR: unknow axis ("+crs.axis[i]+") - check definition of "+crs.projName);
+      return null;
+    }
+  }
+  return point;
+};
+
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var mgrs = __webpack_require__(30);
+
+function Point(x, y, z) {
+  if (!(this instanceof Point)) {
+    return new Point(x, y, z);
+  }
+  if (Array.isArray(x)) {
+    this.x = x[0];
+    this.y = x[1];
+    this.z = x[2] || 0.0;
+  } else if(typeof x === 'object') {
+    this.x = x.x;
+    this.y = x.y;
+    this.z = x.z || 0.0;
+  } else if (typeof x === 'string' && typeof y === 'undefined') {
+    var coords = x.split(',');
+    this.x = parseFloat(coords[0], 10);
+    this.y = parseFloat(coords[1], 10);
+    this.z = parseFloat(coords[2], 10) || 0.0;
+  } else {
+    this.x = x;
+    this.y = y;
+    this.z = z || 0.0;
+  }
+  console.warn('proj4.Point will be removed in version 3, use proj4.toPoint');
+}
+
+Point.fromMGRS = function(mgrsStr) {
+  return new Point(mgrs.toPoint(mgrsStr));
+};
+Point.prototype.toMGRS = function(accuracy) {
+  return mgrs.forward([this.x, this.y], accuracy);
+};
+module.exports = Point;
+
+
+/***/ }),
+/* 61 */
+/***/ (function(module) {
+
+module.exports = {"_from":"proj4@2.3.15","_id":"proj4@2.3.15","_inBundle":false,"_integrity":"sha1-WtBui8owvg/6OJpJ5FZfUfBtCJ4=","_location":"/proj4","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"proj4@2.3.15","name":"proj4","escapedName":"proj4","rawSpec":"2.3.15","saveSpec":null,"fetchSpec":"2.3.15"},"_requiredBy":["/"],"_resolved":"https://registry.npmjs.org/proj4/-/proj4-2.3.15.tgz","_shasum":"5ad06e8bca30be0ffa389a49e4565f51f06d089e","_spec":"proj4@2.3.15","_where":"E:\\Working\\webMap\\iclientWebmap\\iClient-JavaScript","author":"","bugs":{"url":"https://github.com/proj4js/proj4js/issues"},"bundleDependencies":false,"contributors":[{"name":"Mike Adair","email":"madair@dmsolutions.ca"},{"name":"Richard Greenwood","email":"rich@greenwoodmap.com"},{"name":"Calvin Metcalf","email":"calvin.metcalf@gmail.com"},{"name":"Richard Marsden","url":"http://www.winwaed.com"},{"name":"T. Mittan"},{"name":"D. Steinwand"},{"name":"S. Nelson"}],"dependencies":{"mgrs":"~0.0.2"},"deprecated":false,"description":"Proj4js is a JavaScript library to transform point coordinates from one coordinate system to another, including datum transformations.","devDependencies":{"browserify":"~12.0.1","chai":"~1.8.1","curl":"git://github.com/cujojs/curl.git","grunt":"~0.4.2","grunt-browserify":"~4.0.1","grunt-cli":"~0.1.13","grunt-contrib-connect":"~0.6.0","grunt-contrib-jshint":"~0.8.0","grunt-contrib-uglify":"~0.11.1","grunt-mocha-phantomjs":"~0.4.0","istanbul":"~0.2.4","mocha":"~1.17.1","tin":"~0.4.0"},"directories":{"test":"test","doc":"docs"},"homepage":"https://github.com/proj4js/proj4js#readme","jam":{"main":"dist/proj4.js","include":["dist/proj4.js","README.md","AUTHORS","LICENSE.md"]},"license":"MIT","main":"lib/index.js","name":"proj4","repository":{"type":"git","url":"git://github.com/proj4js/proj4js.git"},"scripts":{"test":"./node_modules/istanbul/lib/cli.js test ./node_modules/mocha/bin/_mocha test/test.js"},"version":"2.3.15"};
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var projs = [
+  __webpack_require__(31),
+  __webpack_require__(63),
+  __webpack_require__(64),
+  __webpack_require__(67),
+  __webpack_require__(68),
+  __webpack_require__(69),
+  __webpack_require__(70),
+  __webpack_require__(71),
+  __webpack_require__(72),
+  __webpack_require__(73),
+  __webpack_require__(74),
+  __webpack_require__(75),
+  __webpack_require__(76),
+  __webpack_require__(78),
+  __webpack_require__(79),
+  __webpack_require__(80),
+  __webpack_require__(81),
+  __webpack_require__(82),
+  __webpack_require__(85),
+  __webpack_require__(86),
+  __webpack_require__(87),
+  __webpack_require__(88)
+];
+module.exports = function(proj4){
+  projs.forEach(function(proj){
+    proj4.Proj.projections.add(proj);
+  });
+};
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var D2R = 0.01745329251994329577;
+var tmerc = __webpack_require__(31);
+exports.dependsOn = 'tmerc';
+exports.init = function() {
+  if (!this.zone) {
+    return;
+  }
+  this.lat0 = 0;
+  this.long0 = ((6 * Math.abs(this.zone)) - 183) * D2R;
+  this.x0 = 500000;
+  this.y0 = this.utmSouth ? 10000000 : 0;
+  this.k0 = 0.9996;
+
+  tmerc.init.apply(this);
+  this.forward = tmerc.forward;
+  this.inverse = tmerc.inverse;
+};
+exports.names = ["Universal Transverse Mercator System", "utm"];
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var gauss = __webpack_require__(65);
+var adjust_lon = __webpack_require__(1);
+exports.init = function() {
+  gauss.init.apply(this);
+  if (!this.rc) {
+    return;
+  }
+  this.sinc0 = Math.sin(this.phic0);
+  this.cosc0 = Math.cos(this.phic0);
+  this.R2 = 2 * this.rc;
+  if (!this.title) {
+    this.title = "Oblique Stereographic Alternative";
+  }
+};
+
+exports.forward = function(p) {
+  var sinc, cosc, cosl, k;
+  p.x = adjust_lon(p.x - this.long0);
+  gauss.forward.apply(this, [p]);
+  sinc = Math.sin(p.y);
+  cosc = Math.cos(p.y);
+  cosl = Math.cos(p.x);
+  k = this.k0 * this.R2 / (1 + this.sinc0 * sinc + this.cosc0 * cosc * cosl);
+  p.x = k * cosc * Math.sin(p.x);
+  p.y = k * (this.cosc0 * sinc - this.sinc0 * cosc * cosl);
+  p.x = this.a * p.x + this.x0;
+  p.y = this.a * p.y + this.y0;
+  return p;
+};
+
+exports.inverse = function(p) {
+  var sinc, cosc, lon, lat, rho;
+  p.x = (p.x - this.x0) / this.a;
+  p.y = (p.y - this.y0) / this.a;
+
+  p.x /= this.k0;
+  p.y /= this.k0;
+  if ((rho = Math.sqrt(p.x * p.x + p.y * p.y))) {
+    var c = 2 * Math.atan2(rho, this.R2);
+    sinc = Math.sin(c);
+    cosc = Math.cos(c);
+    lat = Math.asin(cosc * this.sinc0 + p.y * sinc * this.cosc0 / rho);
+    lon = Math.atan2(p.x * sinc, rho * this.cosc0 * cosc - p.y * this.sinc0 * sinc);
+  }
+  else {
+    lat = this.phic0;
+    lon = 0;
+  }
+
+  p.x = lon;
+  p.y = lat;
+  gauss.inverse.apply(this, [p]);
+  p.x = adjust_lon(p.x + this.long0);
+  return p;
+};
+
+exports.names = ["Stereographic_North_Pole", "Oblique_Stereographic", "Polar_Stereographic", "sterea","Oblique Stereographic Alternative"];
+
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var FORTPI = Math.PI/4;
+var srat = __webpack_require__(66);
+var HALF_PI = Math.PI/2;
+var MAX_ITER = 20;
+exports.init = function() {
+  var sphi = Math.sin(this.lat0);
+  var cphi = Math.cos(this.lat0);
+  cphi *= cphi;
+  this.rc = Math.sqrt(1 - this.es) / (1 - this.es * sphi * sphi);
+  this.C = Math.sqrt(1 + this.es * cphi * cphi / (1 - this.es));
+  this.phic0 = Math.asin(sphi / this.C);
+  this.ratexp = 0.5 * this.C * this.e;
+  this.K = Math.tan(0.5 * this.phic0 + FORTPI) / (Math.pow(Math.tan(0.5 * this.lat0 + FORTPI), this.C) * srat(this.e * sphi, this.ratexp));
+};
+
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+
+  p.y = 2 * Math.atan(this.K * Math.pow(Math.tan(0.5 * lat + FORTPI), this.C) * srat(this.e * Math.sin(lat), this.ratexp)) - HALF_PI;
+  p.x = this.C * lon;
+  return p;
+};
+
+exports.inverse = function(p) {
+  var DEL_TOL = 1e-14;
+  var lon = p.x / this.C;
+  var lat = p.y;
+  var num = Math.pow(Math.tan(0.5 * lat + FORTPI) / this.K, 1 / this.C);
+  for (var i = MAX_ITER; i > 0; --i) {
+    lat = 2 * Math.atan(num * srat(this.e * Math.sin(p.y), - 0.5 * this.e)) - HALF_PI;
+    if (Math.abs(lat - p.y) < DEL_TOL) {
+      break;
+    }
+    p.y = lat;
+  }
+  /* convergence failed */
+  if (!i) {
+    return null;
+  }
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["gauss"];
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports) {
+
+module.exports = function(esinp, exp) {
+  return (Math.pow((1 - esinp) / (1 + esinp), exp));
+};
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var HALF_PI = Math.PI/2;
+var EPSLN = 1.0e-10;
+var sign = __webpack_require__(5);
+var msfnz = __webpack_require__(2);
+var tsfnz = __webpack_require__(12);
+var phi2z = __webpack_require__(13);
+var adjust_lon = __webpack_require__(1);
+exports.ssfn_ = function(phit, sinphi, eccen) {
+  sinphi *= eccen;
+  return (Math.tan(0.5 * (HALF_PI + phit)) * Math.pow((1 - sinphi) / (1 + sinphi), 0.5 * eccen));
+};
+
+exports.init = function() {
+  this.coslat0 = Math.cos(this.lat0);
+  this.sinlat0 = Math.sin(this.lat0);
+  if (this.sphere) {
+    if (this.k0 === 1 && !isNaN(this.lat_ts) && Math.abs(this.coslat0) <= EPSLN) {
+      this.k0 = 0.5 * (1 + sign(this.lat0) * Math.sin(this.lat_ts));
+    }
+  }
+  else {
+    if (Math.abs(this.coslat0) <= EPSLN) {
+      if (this.lat0 > 0) {
+        //North pole
+        //trace('stere:north pole');
+        this.con = 1;
+      }
+      else {
+        //South pole
+        //trace('stere:south pole');
+        this.con = -1;
+      }
+    }
+    this.cons = Math.sqrt(Math.pow(1 + this.e, 1 + this.e) * Math.pow(1 - this.e, 1 - this.e));
+    if (this.k0 === 1 && !isNaN(this.lat_ts) && Math.abs(this.coslat0) <= EPSLN) {
+      this.k0 = 0.5 * this.cons * msfnz(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts)) / tsfnz(this.e, this.con * this.lat_ts, this.con * Math.sin(this.lat_ts));
+    }
+    this.ms1 = msfnz(this.e, this.sinlat0, this.coslat0);
+    this.X0 = 2 * Math.atan(this.ssfn_(this.lat0, this.sinlat0, this.e)) - HALF_PI;
+    this.cosX0 = Math.cos(this.X0);
+    this.sinX0 = Math.sin(this.X0);
+  }
+};
+
+// Stereographic forward equations--mapping lat,long to x,y
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+  var sinlat = Math.sin(lat);
+  var coslat = Math.cos(lat);
+  var A, X, sinX, cosX, ts, rh;
+  var dlon = adjust_lon(lon - this.long0);
+
+  if (Math.abs(Math.abs(lon - this.long0) - Math.PI) <= EPSLN && Math.abs(lat + this.lat0) <= EPSLN) {
+    //case of the origine point
+    //trace('stere:this is the origin point');
+    p.x = NaN;
+    p.y = NaN;
+    return p;
+  }
+  if (this.sphere) {
+    //trace('stere:sphere case');
+    A = 2 * this.k0 / (1 + this.sinlat0 * sinlat + this.coslat0 * coslat * Math.cos(dlon));
+    p.x = this.a * A * coslat * Math.sin(dlon) + this.x0;
+    p.y = this.a * A * (this.coslat0 * sinlat - this.sinlat0 * coslat * Math.cos(dlon)) + this.y0;
+    return p;
+  }
+  else {
+    X = 2 * Math.atan(this.ssfn_(lat, sinlat, this.e)) - HALF_PI;
+    cosX = Math.cos(X);
+    sinX = Math.sin(X);
+    if (Math.abs(this.coslat0) <= EPSLN) {
+      ts = tsfnz(this.e, lat * this.con, this.con * sinlat);
+      rh = 2 * this.a * this.k0 * ts / this.cons;
+      p.x = this.x0 + rh * Math.sin(lon - this.long0);
+      p.y = this.y0 - this.con * rh * Math.cos(lon - this.long0);
+      //trace(p.toString());
+      return p;
+    }
+    else if (Math.abs(this.sinlat0) < EPSLN) {
+      //Eq
+      //trace('stere:equateur');
+      A = 2 * this.a * this.k0 / (1 + cosX * Math.cos(dlon));
+      p.y = A * sinX;
+    }
+    else {
+      //other case
+      //trace('stere:normal case');
+      A = 2 * this.a * this.k0 * this.ms1 / (this.cosX0 * (1 + this.sinX0 * sinX + this.cosX0 * cosX * Math.cos(dlon)));
+      p.y = A * (this.cosX0 * sinX - this.sinX0 * cosX * Math.cos(dlon)) + this.y0;
+    }
+    p.x = A * cosX * Math.sin(dlon) + this.x0;
+  }
+  //trace(p.toString());
+  return p;
+};
+
+
+//* Stereographic inverse equations--mapping x,y to lat/long
+exports.inverse = function(p) {
+  p.x -= this.x0;
+  p.y -= this.y0;
+  var lon, lat, ts, ce, Chi;
+  var rh = Math.sqrt(p.x * p.x + p.y * p.y);
+  if (this.sphere) {
+    var c = 2 * Math.atan(rh / (0.5 * this.a * this.k0));
+    lon = this.long0;
+    lat = this.lat0;
+    if (rh <= EPSLN) {
+      p.x = lon;
+      p.y = lat;
+      return p;
+    }
+    lat = Math.asin(Math.cos(c) * this.sinlat0 + p.y * Math.sin(c) * this.coslat0 / rh);
+    if (Math.abs(this.coslat0) < EPSLN) {
+      if (this.lat0 > 0) {
+        lon = adjust_lon(this.long0 + Math.atan2(p.x, - 1 * p.y));
+      }
+      else {
+        lon = adjust_lon(this.long0 + Math.atan2(p.x, p.y));
+      }
+    }
+    else {
+      lon = adjust_lon(this.long0 + Math.atan2(p.x * Math.sin(c), rh * this.coslat0 * Math.cos(c) - p.y * this.sinlat0 * Math.sin(c)));
+    }
+    p.x = lon;
+    p.y = lat;
+    return p;
+  }
+  else {
+    if (Math.abs(this.coslat0) <= EPSLN) {
+      if (rh <= EPSLN) {
+        lat = this.lat0;
+        lon = this.long0;
+        p.x = lon;
+        p.y = lat;
+        //trace(p.toString());
+        return p;
+      }
+      p.x *= this.con;
+      p.y *= this.con;
+      ts = rh * this.cons / (2 * this.a * this.k0);
+      lat = this.con * phi2z(this.e, ts);
+      lon = this.con * adjust_lon(this.con * this.long0 + Math.atan2(p.x, - 1 * p.y));
+    }
+    else {
+      ce = 2 * Math.atan(rh * this.cosX0 / (2 * this.a * this.k0 * this.ms1));
+      lon = this.long0;
+      if (rh <= EPSLN) {
+        Chi = this.X0;
+      }
+      else {
+        Chi = Math.asin(Math.cos(ce) * this.sinX0 + p.y * Math.sin(ce) * this.cosX0 / rh);
+        lon = adjust_lon(this.long0 + Math.atan2(p.x * Math.sin(ce), rh * this.cosX0 * Math.cos(ce) - p.y * this.sinX0 * Math.sin(ce)));
+      }
+      lat = -1 * phi2z(this.e, Math.tan(0.5 * (HALF_PI + Chi)));
+    }
+  }
+  p.x = lon;
+  p.y = lat;
+
+  //trace(p.toString());
+  return p;
+
+};
+exports.names = ["stere", "Stereographic_South_Pole", "Polar Stereographic (variant B)"];
+
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports) {
+
+/*
+  references:
+    Formules et constantes pour le Calcul pour la
+    projection cylindrique conforme à axe oblique et pour la transformation entre
+    des systèmes de référence.
+    http://www.swisstopo.admin.ch/internet/swisstopo/fr/home/topics/survey/sys/refsys/switzerland.parsysrelated1.31216.downloadList.77004.DownloadFile.tmp/swissprojectionfr.pdf
+  */
+exports.init = function() {
+  var phy0 = this.lat0;
+  this.lambda0 = this.long0;
+  var sinPhy0 = Math.sin(phy0);
+  var semiMajorAxis = this.a;
+  var invF = this.rf;
+  var flattening = 1 / invF;
+  var e2 = 2 * flattening - Math.pow(flattening, 2);
+  var e = this.e = Math.sqrt(e2);
+  this.R = this.k0 * semiMajorAxis * Math.sqrt(1 - e2) / (1 - e2 * Math.pow(sinPhy0, 2));
+  this.alpha = Math.sqrt(1 + e2 / (1 - e2) * Math.pow(Math.cos(phy0), 4));
+  this.b0 = Math.asin(sinPhy0 / this.alpha);
+  var k1 = Math.log(Math.tan(Math.PI / 4 + this.b0 / 2));
+  var k2 = Math.log(Math.tan(Math.PI / 4 + phy0 / 2));
+  var k3 = Math.log((1 + e * sinPhy0) / (1 - e * sinPhy0));
+  this.K = k1 - this.alpha * k2 + this.alpha * e / 2 * k3;
+};
+
+
+exports.forward = function(p) {
+  var Sa1 = Math.log(Math.tan(Math.PI / 4 - p.y / 2));
+  var Sa2 = this.e / 2 * Math.log((1 + this.e * Math.sin(p.y)) / (1 - this.e * Math.sin(p.y)));
+  var S = -this.alpha * (Sa1 + Sa2) + this.K;
+
+  // spheric latitude
+  var b = 2 * (Math.atan(Math.exp(S)) - Math.PI / 4);
+
+  // spheric longitude
+  var I = this.alpha * (p.x - this.lambda0);
+
+  // psoeudo equatorial rotation
+  var rotI = Math.atan(Math.sin(I) / (Math.sin(this.b0) * Math.tan(b) + Math.cos(this.b0) * Math.cos(I)));
+
+  var rotB = Math.asin(Math.cos(this.b0) * Math.sin(b) - Math.sin(this.b0) * Math.cos(b) * Math.cos(I));
+
+  p.y = this.R / 2 * Math.log((1 + Math.sin(rotB)) / (1 - Math.sin(rotB))) + this.y0;
+  p.x = this.R * rotI + this.x0;
+  return p;
+};
+
+exports.inverse = function(p) {
+  var Y = p.x - this.x0;
+  var X = p.y - this.y0;
+
+  var rotI = Y / this.R;
+  var rotB = 2 * (Math.atan(Math.exp(X / this.R)) - Math.PI / 4);
+
+  var b = Math.asin(Math.cos(this.b0) * Math.sin(rotB) + Math.sin(this.b0) * Math.cos(rotB) * Math.cos(rotI));
+  var I = Math.atan(Math.sin(rotI) / (Math.cos(this.b0) * Math.cos(rotI) - Math.sin(this.b0) * Math.tan(rotB)));
+
+  var lambda = this.lambda0 + I / this.alpha;
+
+  var S = 0;
+  var phy = b;
+  var prevPhy = -1000;
+  var iteration = 0;
+  while (Math.abs(phy - prevPhy) > 0.0000001) {
+    if (++iteration > 20) {
+      //...reportError("omercFwdInfinity");
+      return;
+    }
+    //S = Math.log(Math.tan(Math.PI / 4 + phy / 2));
+    S = 1 / this.alpha * (Math.log(Math.tan(Math.PI / 4 + b / 2)) - this.K) + this.e * Math.log(Math.tan(Math.PI / 4 + Math.asin(this.e * Math.sin(phy)) / 2));
+    prevPhy = phy;
+    phy = 2 * Math.atan(Math.exp(S)) - Math.PI / 2;
+  }
+
+  p.x = lambda;
+  p.y = phy;
+  return p;
+};
+
+exports.names = ["somerc"];
+
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var tsfnz = __webpack_require__(12);
+var adjust_lon = __webpack_require__(1);
+var phi2z = __webpack_require__(13);
+var HALF_PI = Math.PI/2;
+var FORTPI = Math.PI/4;
+var EPSLN = 1.0e-10;
+
+/* Initialize the Oblique Mercator  projection
+    ------------------------------------------*/
+exports.init = function() {
+  this.no_off = this.no_off || false;
+  this.no_rot = this.no_rot || false;
+
+  if (isNaN(this.k0)) {
+    this.k0 = 1;
+  }
+  var sinlat = Math.sin(this.lat0);
+  var coslat = Math.cos(this.lat0);
+  var con = this.e * sinlat;
+
+  this.bl = Math.sqrt(1 + this.es / (1 - this.es) * Math.pow(coslat, 4));
+  this.al = this.a * this.bl * this.k0 * Math.sqrt(1 - this.es) / (1 - con * con);
+  var t0 = tsfnz(this.e, this.lat0, sinlat);
+  var dl = this.bl / coslat * Math.sqrt((1 - this.es) / (1 - con * con));
+  if (dl * dl < 1) {
+    dl = 1;
+  }
+  var fl;
+  var gl;
+  if (!isNaN(this.longc)) {
+    //Central point and azimuth method
+
+    if (this.lat0 >= 0) {
+      fl = dl + Math.sqrt(dl * dl - 1);
+    }
+    else {
+      fl = dl - Math.sqrt(dl * dl - 1);
+    }
+    this.el = fl * Math.pow(t0, this.bl);
+    gl = 0.5 * (fl - 1 / fl);
+    this.gamma0 = Math.asin(Math.sin(this.alpha) / dl);
+    this.long0 = this.longc - Math.asin(gl * Math.tan(this.gamma0)) / this.bl;
+
+  }
+  else {
+    //2 points method
+    var t1 = tsfnz(this.e, this.lat1, Math.sin(this.lat1));
+    var t2 = tsfnz(this.e, this.lat2, Math.sin(this.lat2));
+    if (this.lat0 >= 0) {
+      this.el = (dl + Math.sqrt(dl * dl - 1)) * Math.pow(t0, this.bl);
+    }
+    else {
+      this.el = (dl - Math.sqrt(dl * dl - 1)) * Math.pow(t0, this.bl);
+    }
+    var hl = Math.pow(t1, this.bl);
+    var ll = Math.pow(t2, this.bl);
+    fl = this.el / hl;
+    gl = 0.5 * (fl - 1 / fl);
+    var jl = (this.el * this.el - ll * hl) / (this.el * this.el + ll * hl);
+    var pl = (ll - hl) / (ll + hl);
+    var dlon12 = adjust_lon(this.long1 - this.long2);
+    this.long0 = 0.5 * (this.long1 + this.long2) - Math.atan(jl * Math.tan(0.5 * this.bl * (dlon12)) / pl) / this.bl;
+    this.long0 = adjust_lon(this.long0);
+    var dlon10 = adjust_lon(this.long1 - this.long0);
+    this.gamma0 = Math.atan(Math.sin(this.bl * (dlon10)) / gl);
+    this.alpha = Math.asin(dl * Math.sin(this.gamma0));
+  }
+
+  if (this.no_off) {
+    this.uc = 0;
+  }
+  else {
+    if (this.lat0 >= 0) {
+      this.uc = this.al / this.bl * Math.atan2(Math.sqrt(dl * dl - 1), Math.cos(this.alpha));
+    }
+    else {
+      this.uc = -1 * this.al / this.bl * Math.atan2(Math.sqrt(dl * dl - 1), Math.cos(this.alpha));
+    }
+  }
+
+};
+
+
+/* Oblique Mercator forward equations--mapping lat,long to x,y
+    ----------------------------------------------------------*/
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+  var dlon = adjust_lon(lon - this.long0);
+  var us, vs;
+  var con;
+  if (Math.abs(Math.abs(lat) - HALF_PI) <= EPSLN) {
+    if (lat > 0) {
+      con = -1;
+    }
+    else {
+      con = 1;
+    }
+    vs = this.al / this.bl * Math.log(Math.tan(FORTPI + con * this.gamma0 * 0.5));
+    us = -1 * con * HALF_PI * this.al / this.bl;
+  }
+  else {
+    var t = tsfnz(this.e, lat, Math.sin(lat));
+    var ql = this.el / Math.pow(t, this.bl);
+    var sl = 0.5 * (ql - 1 / ql);
+    var tl = 0.5 * (ql + 1 / ql);
+    var vl = Math.sin(this.bl * (dlon));
+    var ul = (sl * Math.sin(this.gamma0) - vl * Math.cos(this.gamma0)) / tl;
+    if (Math.abs(Math.abs(ul) - 1) <= EPSLN) {
+      vs = Number.POSITIVE_INFINITY;
+    }
+    else {
+      vs = 0.5 * this.al * Math.log((1 - ul) / (1 + ul)) / this.bl;
+    }
+    if (Math.abs(Math.cos(this.bl * (dlon))) <= EPSLN) {
+      us = this.al * this.bl * (dlon);
+    }
+    else {
+      us = this.al * Math.atan2(sl * Math.cos(this.gamma0) + vl * Math.sin(this.gamma0), Math.cos(this.bl * dlon)) / this.bl;
+    }
+  }
+
+  if (this.no_rot) {
+    p.x = this.x0 + us;
+    p.y = this.y0 + vs;
+  }
+  else {
+
+    us -= this.uc;
+    p.x = this.x0 + vs * Math.cos(this.alpha) + us * Math.sin(this.alpha);
+    p.y = this.y0 + us * Math.cos(this.alpha) - vs * Math.sin(this.alpha);
+  }
+  return p;
+};
+
+exports.inverse = function(p) {
+  var us, vs;
+  if (this.no_rot) {
+    vs = p.y - this.y0;
+    us = p.x - this.x0;
+  }
+  else {
+    vs = (p.x - this.x0) * Math.cos(this.alpha) - (p.y - this.y0) * Math.sin(this.alpha);
+    us = (p.y - this.y0) * Math.cos(this.alpha) + (p.x - this.x0) * Math.sin(this.alpha);
+    us += this.uc;
+  }
+  var qp = Math.exp(-1 * this.bl * vs / this.al);
+  var sp = 0.5 * (qp - 1 / qp);
+  var tp = 0.5 * (qp + 1 / qp);
+  var vp = Math.sin(this.bl * us / this.al);
+  var up = (vp * Math.cos(this.gamma0) + sp * Math.sin(this.gamma0)) / tp;
+  var ts = Math.pow(this.el / Math.sqrt((1 + up) / (1 - up)), 1 / this.bl);
+  if (Math.abs(up - 1) < EPSLN) {
+    p.x = this.long0;
+    p.y = HALF_PI;
+  }
+  else if (Math.abs(up + 1) < EPSLN) {
+    p.x = this.long0;
+    p.y = -1 * HALF_PI;
+  }
+  else {
+    p.y = phi2z(this.e, ts);
+    p.x = adjust_lon(this.long0 - Math.atan2(sp * Math.cos(this.gamma0) - vp * Math.sin(this.gamma0), Math.cos(this.bl * us / this.al)) / this.bl);
+  }
+  return p;
+};
+
+exports.names = ["Hotine_Oblique_Mercator", "Hotine Oblique Mercator", "Hotine_Oblique_Mercator_Azimuth_Natural_Origin", "Hotine_Oblique_Mercator_Azimuth_Center", "omerc"];
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var EPSLN = 1.0e-10;
+var msfnz = __webpack_require__(2);
+var tsfnz = __webpack_require__(12);
+var HALF_PI = Math.PI/2;
+var sign = __webpack_require__(5);
+var adjust_lon = __webpack_require__(1);
+var phi2z = __webpack_require__(13);
+exports.init = function() {
+
+  // array of:  r_maj,r_min,lat1,lat2,c_lon,c_lat,false_east,false_north
+  //double c_lat;                   /* center latitude                      */
+  //double c_lon;                   /* center longitude                     */
+  //double lat1;                    /* first standard parallel              */
+  //double lat2;                    /* second standard parallel             */
+  //double r_maj;                   /* major axis                           */
+  //double r_min;                   /* minor axis                           */
+  //double false_east;              /* x offset in meters                   */
+  //double false_north;             /* y offset in meters                   */
+
+  if (!this.lat2) {
+    this.lat2 = this.lat1;
+  } //if lat2 is not defined
+  if (!this.k0) {
+    this.k0 = 1;
+  }
+  this.x0 = this.x0 || 0;
+  this.y0 = this.y0 || 0;
+  // Standard Parallels cannot be equal and on opposite sides of the equator
+  if (Math.abs(this.lat1 + this.lat2) < EPSLN) {
+    return;
+  }
+
+  var temp = this.b / this.a;
+  this.e = Math.sqrt(1 - temp * temp);
+
+  var sin1 = Math.sin(this.lat1);
+  var cos1 = Math.cos(this.lat1);
+  var ms1 = msfnz(this.e, sin1, cos1);
+  var ts1 = tsfnz(this.e, this.lat1, sin1);
+
+  var sin2 = Math.sin(this.lat2);
+  var cos2 = Math.cos(this.lat2);
+  var ms2 = msfnz(this.e, sin2, cos2);
+  var ts2 = tsfnz(this.e, this.lat2, sin2);
+
+  var ts0 = tsfnz(this.e, this.lat0, Math.sin(this.lat0));
+
+  if (Math.abs(this.lat1 - this.lat2) > EPSLN) {
+    this.ns = Math.log(ms1 / ms2) / Math.log(ts1 / ts2);
+  }
+  else {
+    this.ns = sin1;
+  }
+  if (isNaN(this.ns)) {
+    this.ns = sin1;
+  }
+  this.f0 = ms1 / (this.ns * Math.pow(ts1, this.ns));
+  this.rh = this.a * this.f0 * Math.pow(ts0, this.ns);
+  if (!this.title) {
+    this.title = "Lambert Conformal Conic";
+  }
+};
+
+
+// Lambert Conformal conic forward equations--mapping lat,long to x,y
+// -----------------------------------------------------------------
+exports.forward = function(p) {
+
+  var lon = p.x;
+  var lat = p.y;
+
+  // singular cases :
+  if (Math.abs(2 * Math.abs(lat) - Math.PI) <= EPSLN) {
+    lat = sign(lat) * (HALF_PI - 2 * EPSLN);
+  }
+
+  var con = Math.abs(Math.abs(lat) - HALF_PI);
+  var ts, rh1;
+  if (con > EPSLN) {
+    ts = tsfnz(this.e, lat, Math.sin(lat));
+    rh1 = this.a * this.f0 * Math.pow(ts, this.ns);
+  }
+  else {
+    con = lat * this.ns;
+    if (con <= 0) {
+      return null;
+    }
+    rh1 = 0;
+  }
+  var theta = this.ns * adjust_lon(lon - this.long0);
+  p.x = this.k0 * (rh1 * Math.sin(theta)) + this.x0;
+  p.y = this.k0 * (this.rh - rh1 * Math.cos(theta)) + this.y0;
+
+  return p;
+};
+
+// Lambert Conformal Conic inverse equations--mapping x,y to lat/long
+// -----------------------------------------------------------------
+exports.inverse = function(p) {
+
+  var rh1, con, ts;
+  var lat, lon;
+  var x = (p.x - this.x0) / this.k0;
+  var y = (this.rh - (p.y - this.y0) / this.k0);
+  if (this.ns > 0) {
+    rh1 = Math.sqrt(x * x + y * y);
+    con = 1;
+  }
+  else {
+    rh1 = -Math.sqrt(x * x + y * y);
+    con = -1;
+  }
+  var theta = 0;
+  if (rh1 !== 0) {
+    theta = Math.atan2((con * x), (con * y));
+  }
+  if ((rh1 !== 0) || (this.ns > 0)) {
+    con = 1 / this.ns;
+    ts = Math.pow((rh1 / (this.a * this.f0)), con);
+    lat = phi2z(this.e, ts);
+    if (lat === -9999) {
+      return null;
+    }
+  }
+  else {
+    lat = -HALF_PI;
+  }
+  lon = adjust_lon(theta / this.ns + this.long0);
+
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+
+exports.names = ["Lambert Tangential Conformal Conic Projection", "Lambert_Conformal_Conic", "Lambert_Conformal_Conic_2SP", "lcc"];
+
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+exports.init = function() {
+  this.a = 6377397.155;
+  this.es = 0.006674372230614;
+  this.e = Math.sqrt(this.es);
+  if (!this.lat0) {
+    this.lat0 = 0.863937979737193;
+  }
+  if (!this.long0) {
+    this.long0 = 0.7417649320975901 - 0.308341501185665;
+  }
+  /* if scale not set default to 0.9999 */
+  if (!this.k0) {
+    this.k0 = 0.9999;
+  }
+  this.s45 = 0.785398163397448; /* 45 */
+  this.s90 = 2 * this.s45;
+  this.fi0 = this.lat0;
+  this.e2 = this.es;
+  this.e = Math.sqrt(this.e2);
+  this.alfa = Math.sqrt(1 + (this.e2 * Math.pow(Math.cos(this.fi0), 4)) / (1 - this.e2));
+  this.uq = 1.04216856380474;
+  this.u0 = Math.asin(Math.sin(this.fi0) / this.alfa);
+  this.g = Math.pow((1 + this.e * Math.sin(this.fi0)) / (1 - this.e * Math.sin(this.fi0)), this.alfa * this.e / 2);
+  this.k = Math.tan(this.u0 / 2 + this.s45) / Math.pow(Math.tan(this.fi0 / 2 + this.s45), this.alfa) * this.g;
+  this.k1 = this.k0;
+  this.n0 = this.a * Math.sqrt(1 - this.e2) / (1 - this.e2 * Math.pow(Math.sin(this.fi0), 2));
+  this.s0 = 1.37008346281555;
+  this.n = Math.sin(this.s0);
+  this.ro0 = this.k1 * this.n0 / Math.tan(this.s0);
+  this.ad = this.s90 - this.uq;
+};
+
+/* ellipsoid */
+/* calculate xy from lat/lon */
+/* Constants, identical to inverse transform function */
+exports.forward = function(p) {
+  var gfi, u, deltav, s, d, eps, ro;
+  var lon = p.x;
+  var lat = p.y;
+  var delta_lon = adjust_lon(lon - this.long0);
+  /* Transformation */
+  gfi = Math.pow(((1 + this.e * Math.sin(lat)) / (1 - this.e * Math.sin(lat))), (this.alfa * this.e / 2));
+  u = 2 * (Math.atan(this.k * Math.pow(Math.tan(lat / 2 + this.s45), this.alfa) / gfi) - this.s45);
+  deltav = -delta_lon * this.alfa;
+  s = Math.asin(Math.cos(this.ad) * Math.sin(u) + Math.sin(this.ad) * Math.cos(u) * Math.cos(deltav));
+  d = Math.asin(Math.cos(u) * Math.sin(deltav) / Math.cos(s));
+  eps = this.n * d;
+  ro = this.ro0 * Math.pow(Math.tan(this.s0 / 2 + this.s45), this.n) / Math.pow(Math.tan(s / 2 + this.s45), this.n);
+  p.y = ro * Math.cos(eps) / 1;
+  p.x = ro * Math.sin(eps) / 1;
+
+  if (!this.czech) {
+    p.y *= -1;
+    p.x *= -1;
+  }
+  return (p);
+};
+
+/* calculate lat/lon from xy */
+exports.inverse = function(p) {
+  var u, deltav, s, d, eps, ro, fi1;
+  var ok;
+
+  /* Transformation */
+  /* revert y, x*/
+  var tmp = p.x;
+  p.x = p.y;
+  p.y = tmp;
+  if (!this.czech) {
+    p.y *= -1;
+    p.x *= -1;
+  }
+  ro = Math.sqrt(p.x * p.x + p.y * p.y);
+  eps = Math.atan2(p.y, p.x);
+  d = eps / Math.sin(this.s0);
+  s = 2 * (Math.atan(Math.pow(this.ro0 / ro, 1 / this.n) * Math.tan(this.s0 / 2 + this.s45)) - this.s45);
+  u = Math.asin(Math.cos(this.ad) * Math.sin(s) - Math.sin(this.ad) * Math.cos(s) * Math.cos(d));
+  deltav = Math.asin(Math.cos(s) * Math.sin(d) / Math.cos(u));
+  p.x = this.long0 - deltav / this.alfa;
+  fi1 = u;
+  ok = 0;
+  var iter = 0;
+  do {
+    p.y = 2 * (Math.atan(Math.pow(this.k, - 1 / this.alfa) * Math.pow(Math.tan(u / 2 + this.s45), 1 / this.alfa) * Math.pow((1 + this.e * Math.sin(fi1)) / (1 - this.e * Math.sin(fi1)), this.e / 2)) - this.s45);
+    if (Math.abs(fi1 - p.y) < 0.0000000001) {
+      ok = 1;
+    }
+    fi1 = p.y;
+    iter += 1;
+  } while (ok === 0 && iter < 15);
+  if (iter >= 15) {
+    return null;
+  }
+
+  return (p);
+};
+exports.names = ["Krovak", "krovak"];
+
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var mlfn = __webpack_require__(10);
+var e0fn = __webpack_require__(6);
+var e1fn = __webpack_require__(7);
+var e2fn = __webpack_require__(8);
+var e3fn = __webpack_require__(9);
+var gN = __webpack_require__(18);
+var adjust_lon = __webpack_require__(1);
+var adjust_lat = __webpack_require__(11);
+var imlfn = __webpack_require__(19);
+var HALF_PI = Math.PI/2;
+var EPSLN = 1.0e-10;
+exports.init = function() {
+  if (!this.sphere) {
+    this.e0 = e0fn(this.es);
+    this.e1 = e1fn(this.es);
+    this.e2 = e2fn(this.es);
+    this.e3 = e3fn(this.es);
+    this.ml0 = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, this.lat0);
+  }
+};
+
+
+
+/* Cassini forward equations--mapping lat,long to x,y
+  -----------------------------------------------------------------------*/
+exports.forward = function(p) {
+
+  /* Forward equations
+      -----------------*/
+  var x, y;
+  var lam = p.x;
+  var phi = p.y;
+  lam = adjust_lon(lam - this.long0);
+
+  if (this.sphere) {
+    x = this.a * Math.asin(Math.cos(phi) * Math.sin(lam));
+    y = this.a * (Math.atan2(Math.tan(phi), Math.cos(lam)) - this.lat0);
+  }
+  else {
+    //ellipsoid
+    var sinphi = Math.sin(phi);
+    var cosphi = Math.cos(phi);
+    var nl = gN(this.a, this.e, sinphi);
+    var tl = Math.tan(phi) * Math.tan(phi);
+    var al = lam * Math.cos(phi);
+    var asq = al * al;
+    var cl = this.es * cosphi * cosphi / (1 - this.es);
+    var ml = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, phi);
+
+    x = nl * al * (1 - asq * tl * (1 / 6 - (8 - tl + 8 * cl) * asq / 120));
+    y = ml - this.ml0 + nl * sinphi / cosphi * asq * (0.5 + (5 - tl + 6 * cl) * asq / 24);
+
+
+  }
+
+  p.x = x + this.x0;
+  p.y = y + this.y0;
+  return p;
+};
+
+/* Inverse equations
+  -----------------*/
+exports.inverse = function(p) {
+  p.x -= this.x0;
+  p.y -= this.y0;
+  var x = p.x / this.a;
+  var y = p.y / this.a;
+  var phi, lam;
+
+  if (this.sphere) {
+    var dd = y + this.lat0;
+    phi = Math.asin(Math.sin(dd) * Math.cos(x));
+    lam = Math.atan2(Math.tan(x), Math.cos(dd));
+  }
+  else {
+    /* ellipsoid */
+    var ml1 = this.ml0 / this.a + y;
+    var phi1 = imlfn(ml1, this.e0, this.e1, this.e2, this.e3);
+    if (Math.abs(Math.abs(phi1) - HALF_PI) <= EPSLN) {
+      p.x = this.long0;
+      p.y = HALF_PI;
+      if (y < 0) {
+        p.y *= -1;
+      }
+      return p;
+    }
+    var nl1 = gN(this.a, this.e, Math.sin(phi1));
+
+    var rl1 = nl1 * nl1 * nl1 / this.a / this.a * (1 - this.es);
+    var tl1 = Math.pow(Math.tan(phi1), 2);
+    var dl = x * this.a / nl1;
+    var dsq = dl * dl;
+    phi = phi1 - nl1 * Math.tan(phi1) / rl1 * dl * dl * (0.5 - (1 + 3 * tl1) * dl * dl / 24);
+    lam = dl * (1 - dsq * (tl1 / 3 + (1 + 3 * tl1) * tl1 * dsq / 15)) / Math.cos(phi1);
+
+  }
+
+  p.x = adjust_lon(lam + this.long0);
+  p.y = adjust_lat(phi);
+  return p;
+
+};
+exports.names = ["Cassini", "Cassini_Soldner", "cass"];
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var HALF_PI = Math.PI/2;
+var FORTPI = Math.PI/4;
+var EPSLN = 1.0e-10;
+var qsfnz = __webpack_require__(20);
+var adjust_lon = __webpack_require__(1);
+/*
+  reference
+    "New Equal-Area Map Projections for Noncircular Regions", John P. Snyder,
+    The American Cartographer, Vol 15, No. 4, October 1988, pp. 341-355.
+  */
+
+exports.S_POLE = 1;
+exports.N_POLE = 2;
+exports.EQUIT = 3;
+exports.OBLIQ = 4;
+
+
+/* Initialize the Lambert Azimuthal Equal Area projection
+  ------------------------------------------------------*/
+exports.init = function() {
+  var t = Math.abs(this.lat0);
+  if (Math.abs(t - HALF_PI) < EPSLN) {
+    this.mode = this.lat0 < 0 ? this.S_POLE : this.N_POLE;
+  }
+  else if (Math.abs(t) < EPSLN) {
+    this.mode = this.EQUIT;
+  }
+  else {
+    this.mode = this.OBLIQ;
+  }
+  if (this.es > 0) {
+    var sinphi;
+
+    this.qp = qsfnz(this.e, 1);
+    this.mmf = 0.5 / (1 - this.es);
+    this.apa = this.authset(this.es);
+    switch (this.mode) {
+    case this.N_POLE:
+      this.dd = 1;
+      break;
+    case this.S_POLE:
+      this.dd = 1;
+      break;
+    case this.EQUIT:
+      this.rq = Math.sqrt(0.5 * this.qp);
+      this.dd = 1 / this.rq;
+      this.xmf = 1;
+      this.ymf = 0.5 * this.qp;
+      break;
+    case this.OBLIQ:
+      this.rq = Math.sqrt(0.5 * this.qp);
+      sinphi = Math.sin(this.lat0);
+      this.sinb1 = qsfnz(this.e, sinphi) / this.qp;
+      this.cosb1 = Math.sqrt(1 - this.sinb1 * this.sinb1);
+      this.dd = Math.cos(this.lat0) / (Math.sqrt(1 - this.es * sinphi * sinphi) * this.rq * this.cosb1);
+      this.ymf = (this.xmf = this.rq) / this.dd;
+      this.xmf *= this.dd;
+      break;
+    }
+  }
+  else {
+    if (this.mode === this.OBLIQ) {
+      this.sinph0 = Math.sin(this.lat0);
+      this.cosph0 = Math.cos(this.lat0);
+    }
+  }
+};
+
+/* Lambert Azimuthal Equal Area forward equations--mapping lat,long to x,y
+  -----------------------------------------------------------------------*/
+exports.forward = function(p) {
+
+  /* Forward equations
+      -----------------*/
+  var x, y, coslam, sinlam, sinphi, q, sinb, cosb, b, cosphi;
+  var lam = p.x;
+  var phi = p.y;
+
+  lam = adjust_lon(lam - this.long0);
+
+  if (this.sphere) {
+    sinphi = Math.sin(phi);
+    cosphi = Math.cos(phi);
+    coslam = Math.cos(lam);
+    if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
+      y = (this.mode === this.EQUIT) ? 1 + cosphi * coslam : 1 + this.sinph0 * sinphi + this.cosph0 * cosphi * coslam;
+      if (y <= EPSLN) {
+        return null;
+      }
+      y = Math.sqrt(2 / y);
+      x = y * cosphi * Math.sin(lam);
+      y *= (this.mode === this.EQUIT) ? sinphi : this.cosph0 * sinphi - this.sinph0 * cosphi * coslam;
+    }
+    else if (this.mode === this.N_POLE || this.mode === this.S_POLE) {
+      if (this.mode === this.N_POLE) {
+        coslam = -coslam;
+      }
+      if (Math.abs(phi + this.phi0) < EPSLN) {
+        return null;
+      }
+      y = FORTPI - phi * 0.5;
+      y = 2 * ((this.mode === this.S_POLE) ? Math.cos(y) : Math.sin(y));
+      x = y * Math.sin(lam);
+      y *= coslam;
+    }
+  }
+  else {
+    sinb = 0;
+    cosb = 0;
+    b = 0;
+    coslam = Math.cos(lam);
+    sinlam = Math.sin(lam);
+    sinphi = Math.sin(phi);
+    q = qsfnz(this.e, sinphi);
+    if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
+      sinb = q / this.qp;
+      cosb = Math.sqrt(1 - sinb * sinb);
+    }
+    switch (this.mode) {
+    case this.OBLIQ:
+      b = 1 + this.sinb1 * sinb + this.cosb1 * cosb * coslam;
+      break;
+    case this.EQUIT:
+      b = 1 + cosb * coslam;
+      break;
+    case this.N_POLE:
+      b = HALF_PI + phi;
+      q = this.qp - q;
+      break;
+    case this.S_POLE:
+      b = phi - HALF_PI;
+      q = this.qp + q;
+      break;
+    }
+    if (Math.abs(b) < EPSLN) {
+      return null;
+    }
+    switch (this.mode) {
+    case this.OBLIQ:
+    case this.EQUIT:
+      b = Math.sqrt(2 / b);
+      if (this.mode === this.OBLIQ) {
+        y = this.ymf * b * (this.cosb1 * sinb - this.sinb1 * cosb * coslam);
+      }
+      else {
+        y = (b = Math.sqrt(2 / (1 + cosb * coslam))) * sinb * this.ymf;
+      }
+      x = this.xmf * b * cosb * sinlam;
+      break;
+    case this.N_POLE:
+    case this.S_POLE:
+      if (q >= 0) {
+        x = (b = Math.sqrt(q)) * sinlam;
+        y = coslam * ((this.mode === this.S_POLE) ? b : -b);
+      }
+      else {
+        x = y = 0;
+      }
+      break;
+    }
+  }
+
+  p.x = this.a * x + this.x0;
+  p.y = this.a * y + this.y0;
+  return p;
+};
+
+/* Inverse equations
+  -----------------*/
+exports.inverse = function(p) {
+  p.x -= this.x0;
+  p.y -= this.y0;
+  var x = p.x / this.a;
+  var y = p.y / this.a;
+  var lam, phi, cCe, sCe, q, rho, ab;
+
+  if (this.sphere) {
+    var cosz = 0,
+      rh, sinz = 0;
+
+    rh = Math.sqrt(x * x + y * y);
+    phi = rh * 0.5;
+    if (phi > 1) {
+      return null;
+    }
+    phi = 2 * Math.asin(phi);
+    if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
+      sinz = Math.sin(phi);
+      cosz = Math.cos(phi);
+    }
+    switch (this.mode) {
+    case this.EQUIT:
+      phi = (Math.abs(rh) <= EPSLN) ? 0 : Math.asin(y * sinz / rh);
+      x *= sinz;
+      y = cosz * rh;
+      break;
+    case this.OBLIQ:
+      phi = (Math.abs(rh) <= EPSLN) ? this.phi0 : Math.asin(cosz * this.sinph0 + y * sinz * this.cosph0 / rh);
+      x *= sinz * this.cosph0;
+      y = (cosz - Math.sin(phi) * this.sinph0) * rh;
+      break;
+    case this.N_POLE:
+      y = -y;
+      phi = HALF_PI - phi;
+      break;
+    case this.S_POLE:
+      phi -= HALF_PI;
+      break;
+    }
+    lam = (y === 0 && (this.mode === this.EQUIT || this.mode === this.OBLIQ)) ? 0 : Math.atan2(x, y);
+  }
+  else {
+    ab = 0;
+    if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
+      x /= this.dd;
+      y *= this.dd;
+      rho = Math.sqrt(x * x + y * y);
+      if (rho < EPSLN) {
+        p.x = 0;
+        p.y = this.phi0;
+        return p;
+      }
+      sCe = 2 * Math.asin(0.5 * rho / this.rq);
+      cCe = Math.cos(sCe);
+      x *= (sCe = Math.sin(sCe));
+      if (this.mode === this.OBLIQ) {
+        ab = cCe * this.sinb1 + y * sCe * this.cosb1 / rho;
+        q = this.qp * ab;
+        y = rho * this.cosb1 * cCe - y * this.sinb1 * sCe;
+      }
+      else {
+        ab = y * sCe / rho;
+        q = this.qp * ab;
+        y = rho * cCe;
+      }
+    }
+    else if (this.mode === this.N_POLE || this.mode === this.S_POLE) {
+      if (this.mode === this.N_POLE) {
+        y = -y;
+      }
+      q = (x * x + y * y);
+      if (!q) {
+        p.x = 0;
+        p.y = this.phi0;
+        return p;
+      }
+      ab = 1 - q / this.qp;
+      if (this.mode === this.S_POLE) {
+        ab = -ab;
+      }
+    }
+    lam = Math.atan2(x, y);
+    phi = this.authlat(Math.asin(ab), this.apa);
+  }
+
+
+  p.x = adjust_lon(this.long0 + lam);
+  p.y = phi;
+  return p;
+};
+
+/* determine latitude from authalic latitude */
+exports.P00 = 0.33333333333333333333;
+exports.P01 = 0.17222222222222222222;
+exports.P02 = 0.10257936507936507936;
+exports.P10 = 0.06388888888888888888;
+exports.P11 = 0.06640211640211640211;
+exports.P20 = 0.01641501294219154443;
+
+exports.authset = function(es) {
+  var t;
+  var APA = [];
+  APA[0] = es * this.P00;
+  t = es * es;
+  APA[0] += t * this.P01;
+  APA[1] = t * this.P10;
+  t *= es;
+  APA[0] += t * this.P02;
+  APA[1] += t * this.P11;
+  APA[2] = t * this.P20;
+  return APA;
+};
+
+exports.authlat = function(beta, APA) {
+  var t = beta + beta;
+  return (beta + APA[0] * Math.sin(t) + APA[1] * Math.sin(t + t) + APA[2] * Math.sin(t + t + t));
+};
+exports.names = ["Lambert Azimuthal Equal Area", "Lambert_Azimuthal_Equal_Area", "laea"];
+
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var EPSLN = 1.0e-10;
+var msfnz = __webpack_require__(2);
+var qsfnz = __webpack_require__(20);
+var adjust_lon = __webpack_require__(1);
+var asinz = __webpack_require__(3);
+exports.init = function() {
+
+  if (Math.abs(this.lat1 + this.lat2) < EPSLN) {
+    return;
+  }
+  this.temp = this.b / this.a;
+  this.es = 1 - Math.pow(this.temp, 2);
+  this.e3 = Math.sqrt(this.es);
+
+  this.sin_po = Math.sin(this.lat1);
+  this.cos_po = Math.cos(this.lat1);
+  this.t1 = this.sin_po;
+  this.con = this.sin_po;
+  this.ms1 = msfnz(this.e3, this.sin_po, this.cos_po);
+  this.qs1 = qsfnz(this.e3, this.sin_po, this.cos_po);
+
+  this.sin_po = Math.sin(this.lat2);
+  this.cos_po = Math.cos(this.lat2);
+  this.t2 = this.sin_po;
+  this.ms2 = msfnz(this.e3, this.sin_po, this.cos_po);
+  this.qs2 = qsfnz(this.e3, this.sin_po, this.cos_po);
+
+  this.sin_po = Math.sin(this.lat0);
+  this.cos_po = Math.cos(this.lat0);
+  this.t3 = this.sin_po;
+  this.qs0 = qsfnz(this.e3, this.sin_po, this.cos_po);
+
+  if (Math.abs(this.lat1 - this.lat2) > EPSLN) {
+    this.ns0 = (this.ms1 * this.ms1 - this.ms2 * this.ms2) / (this.qs2 - this.qs1);
+  }
+  else {
+    this.ns0 = this.con;
+  }
+  this.c = this.ms1 * this.ms1 + this.ns0 * this.qs1;
+  this.rh = this.a * Math.sqrt(this.c - this.ns0 * this.qs0) / this.ns0;
+};
+
+/* Albers Conical Equal Area forward equations--mapping lat,long to x,y
+  -------------------------------------------------------------------*/
+exports.forward = function(p) {
+
+  var lon = p.x;
+  var lat = p.y;
+
+  this.sin_phi = Math.sin(lat);
+  this.cos_phi = Math.cos(lat);
+
+  var qs = qsfnz(this.e3, this.sin_phi, this.cos_phi);
+  var rh1 = this.a * Math.sqrt(this.c - this.ns0 * qs) / this.ns0;
+  var theta = this.ns0 * adjust_lon(lon - this.long0);
+  var x = rh1 * Math.sin(theta) + this.x0;
+  var y = this.rh - rh1 * Math.cos(theta) + this.y0;
+
+  p.x = x;
+  p.y = y;
+  return p;
+};
+
+
+exports.inverse = function(p) {
+  var rh1, qs, con, theta, lon, lat;
+
+  p.x -= this.x0;
+  p.y = this.rh - p.y + this.y0;
+  if (this.ns0 >= 0) {
+    rh1 = Math.sqrt(p.x * p.x + p.y * p.y);
+    con = 1;
+  }
+  else {
+    rh1 = -Math.sqrt(p.x * p.x + p.y * p.y);
+    con = -1;
+  }
+  theta = 0;
+  if (rh1 !== 0) {
+    theta = Math.atan2(con * p.x, con * p.y);
+  }
+  con = rh1 * this.ns0 / this.a;
+  if (this.sphere) {
+    lat = Math.asin((this.c - con * con) / (2 * this.ns0));
+  }
+  else {
+    qs = (this.c - con * con) / this.ns0;
+    lat = this.phi1z(this.e3, qs);
+  }
+
+  lon = adjust_lon(theta / this.ns0 + this.long0);
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+
+/* Function to compute phi1, the latitude for the inverse of the
+   Albers Conical Equal-Area projection.
+-------------------------------------------*/
+exports.phi1z = function(eccent, qs) {
+  var sinphi, cosphi, con, com, dphi;
+  var phi = asinz(0.5 * qs);
+  if (eccent < EPSLN) {
+    return phi;
+  }
+
+  var eccnts = eccent * eccent;
+  for (var i = 1; i <= 25; i++) {
+    sinphi = Math.sin(phi);
+    cosphi = Math.cos(phi);
+    con = eccent * sinphi;
+    com = 1 - con * con;
+    dphi = 0.5 * com * com / cosphi * (qs / (1 - eccnts) - sinphi / com + 0.5 / eccent * Math.log((1 - con) / (1 + con)));
+    phi = phi + dphi;
+    if (Math.abs(dphi) <= 1e-7) {
+      return phi;
+    }
+  }
+  return null;
+};
+exports.names = ["Albers_Conic_Equal_Area", "Albers", "aea"];
+
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+var EPSLN = 1.0e-10;
+var asinz = __webpack_require__(3);
+
+/*
+  reference:
+    Wolfram Mathworld "Gnomonic Projection"
+    http://mathworld.wolfram.com/GnomonicProjection.html
+    Accessed: 12th November 2009
+  */
+exports.init = function() {
+
+  /* Place parameters in static storage for common use
+      -------------------------------------------------*/
+  this.sin_p14 = Math.sin(this.lat0);
+  this.cos_p14 = Math.cos(this.lat0);
+  // Approximation for projecting points to the horizon (infinity)
+  this.infinity_dist = 1000 * this.a;
+  this.rc = 1;
+};
+
+
+/* Gnomonic forward equations--mapping lat,long to x,y
+    ---------------------------------------------------*/
+exports.forward = function(p) {
+  var sinphi, cosphi; /* sin and cos value        */
+  var dlon; /* delta longitude value      */
+  var coslon; /* cos of longitude        */
+  var ksp; /* scale factor          */
+  var g;
+  var x, y;
+  var lon = p.x;
+  var lat = p.y;
+  /* Forward equations
+      -----------------*/
+  dlon = adjust_lon(lon - this.long0);
+
+  sinphi = Math.sin(lat);
+  cosphi = Math.cos(lat);
+
+  coslon = Math.cos(dlon);
+  g = this.sin_p14 * sinphi + this.cos_p14 * cosphi * coslon;
+  ksp = 1;
+  if ((g > 0) || (Math.abs(g) <= EPSLN)) {
+    x = this.x0 + this.a * ksp * cosphi * Math.sin(dlon) / g;
+    y = this.y0 + this.a * ksp * (this.cos_p14 * sinphi - this.sin_p14 * cosphi * coslon) / g;
+  }
+  else {
+
+    // Point is in the opposing hemisphere and is unprojectable
+    // We still need to return a reasonable point, so we project 
+    // to infinity, on a bearing 
+    // equivalent to the northern hemisphere equivalent
+    // This is a reasonable approximation for short shapes and lines that 
+    // straddle the horizon.
+
+    x = this.x0 + this.infinity_dist * cosphi * Math.sin(dlon);
+    y = this.y0 + this.infinity_dist * (this.cos_p14 * sinphi - this.sin_p14 * cosphi * coslon);
+
+  }
+  p.x = x;
+  p.y = y;
+  return p;
+};
+
+
+exports.inverse = function(p) {
+  var rh; /* Rho */
+  var sinc, cosc;
+  var c;
+  var lon, lat;
+
+  /* Inverse equations
+      -----------------*/
+  p.x = (p.x - this.x0) / this.a;
+  p.y = (p.y - this.y0) / this.a;
+
+  p.x /= this.k0;
+  p.y /= this.k0;
+
+  if ((rh = Math.sqrt(p.x * p.x + p.y * p.y))) {
+    c = Math.atan2(rh, this.rc);
+    sinc = Math.sin(c);
+    cosc = Math.cos(c);
+
+    lat = asinz(cosc * this.sin_p14 + (p.y * sinc * this.cos_p14) / rh);
+    lon = Math.atan2(p.x * sinc, rh * this.cos_p14 * cosc - p.y * this.sin_p14 * sinc);
+    lon = adjust_lon(this.long0 + lon);
+  }
+  else {
+    lat = this.phic0;
+    lon = 0;
+  }
+
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["gnom"];
+
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+var qsfnz = __webpack_require__(20);
+var msfnz = __webpack_require__(2);
+var iqsfnz = __webpack_require__(77);
+/*
+  reference:  
+    "Cartographic Projection Procedures for the UNIX Environment-
+    A User's Manual" by Gerald I. Evenden,
+    USGS Open File Report 90-284and Release 4 Interim Reports (2003)
+*/
+exports.init = function() {
+  //no-op
+  if (!this.sphere) {
+    this.k0 = msfnz(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts));
+  }
+};
+
+
+/* Cylindrical Equal Area forward equations--mapping lat,long to x,y
+    ------------------------------------------------------------*/
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+  var x, y;
+  /* Forward equations
+      -----------------*/
+  var dlon = adjust_lon(lon - this.long0);
+  if (this.sphere) {
+    x = this.x0 + this.a * dlon * Math.cos(this.lat_ts);
+    y = this.y0 + this.a * Math.sin(lat) / Math.cos(this.lat_ts);
+  }
+  else {
+    var qs = qsfnz(this.e, Math.sin(lat));
+    x = this.x0 + this.a * this.k0 * dlon;
+    y = this.y0 + this.a * qs * 0.5 / this.k0;
+  }
+
+  p.x = x;
+  p.y = y;
+  return p;
+};
+
+/* Cylindrical Equal Area inverse equations--mapping x,y to lat/long
+    ------------------------------------------------------------*/
+exports.inverse = function(p) {
+  p.x -= this.x0;
+  p.y -= this.y0;
+  var lon, lat;
+
+  if (this.sphere) {
+    lon = adjust_lon(this.long0 + (p.x / this.a) / Math.cos(this.lat_ts));
+    lat = Math.asin((p.y / this.a) * Math.cos(this.lat_ts));
+  }
+  else {
+    lat = iqsfnz(this.e, 2 * p.y * this.k0 / this.a);
+    lon = adjust_lon(this.long0 + p.x / (this.a * this.k0));
+  }
+
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["cea"];
+
+
+/***/ }),
+/* 77 */
+/***/ (function(module, exports) {
+
+var HALF_PI = Math.PI/2;
+
+module.exports = function(eccent, q) {
+  var temp = 1 - (1 - eccent * eccent) / (2 * eccent) * Math.log((1 - eccent) / (1 + eccent));
+  if (Math.abs(Math.abs(q) - temp) < 1.0E-6) {
+    if (q < 0) {
+      return (-1 * HALF_PI);
+    }
+    else {
+      return HALF_PI;
+    }
+  }
+  //var phi = 0.5* q/(1-eccent*eccent);
+  var phi = Math.asin(0.5 * q);
+  var dphi;
+  var sin_phi;
+  var cos_phi;
+  var con;
+  for (var i = 0; i < 30; i++) {
+    sin_phi = Math.sin(phi);
+    cos_phi = Math.cos(phi);
+    con = eccent * sin_phi;
+    dphi = Math.pow(1 - con * con, 2) / (2 * cos_phi) * (q / (1 - eccent * eccent) - sin_phi / (1 - con * con) + 0.5 / eccent * Math.log((1 - con) / (1 + con)));
+    phi += dphi;
+    if (Math.abs(dphi) <= 0.0000000001) {
+      return phi;
+    }
+  }
+
+  //console.log("IQSFN-CONV:Latitude failed to converge after 30 iterations");
+  return NaN;
+};
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+var adjust_lat = __webpack_require__(11);
+exports.init = function() {
+
+  this.x0 = this.x0 || 0;
+  this.y0 = this.y0 || 0;
+  this.lat0 = this.lat0 || 0;
+  this.long0 = this.long0 || 0;
+  this.lat_ts = this.lat_ts || 0;
+  this.title = this.title || "Equidistant Cylindrical (Plate Carre)";
+
+  this.rc = Math.cos(this.lat_ts);
+};
+
+
+// forward equations--mapping lat,long to x,y
+// -----------------------------------------------------------------
+exports.forward = function(p) {
+
+  var lon = p.x;
+  var lat = p.y;
+
+  var dlon = adjust_lon(lon - this.long0);
+  var dlat = adjust_lat(lat - this.lat0);
+  p.x = this.x0 + (this.a * dlon * this.rc);
+  p.y = this.y0 + (this.a * dlat);
+  return p;
+};
+
+// inverse equations--mapping x,y to lat/long
+// -----------------------------------------------------------------
+exports.inverse = function(p) {
+
+  var x = p.x;
+  var y = p.y;
+
+  p.x = adjust_lon(this.long0 + ((x - this.x0) / (this.a * this.rc)));
+  p.y = adjust_lat(this.lat0 + ((y - this.y0) / (this.a)));
+  return p;
+};
+exports.names = ["Equirectangular", "Equidistant_Cylindrical", "eqc"];
+
+
+/***/ }),
+/* 79 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var e0fn = __webpack_require__(6);
+var e1fn = __webpack_require__(7);
+var e2fn = __webpack_require__(8);
+var e3fn = __webpack_require__(9);
+var adjust_lon = __webpack_require__(1);
+var adjust_lat = __webpack_require__(11);
+var mlfn = __webpack_require__(10);
+var EPSLN = 1.0e-10;
+var gN = __webpack_require__(18);
+var MAX_ITER = 20;
+exports.init = function() {
+  /* Place parameters in static storage for common use
+      -------------------------------------------------*/
+  this.temp = this.b / this.a;
+  this.es = 1 - Math.pow(this.temp, 2); // devait etre dans tmerc.js mais n y est pas donc je commente sinon retour de valeurs nulles
+  this.e = Math.sqrt(this.es);
+  this.e0 = e0fn(this.es);
+  this.e1 = e1fn(this.es);
+  this.e2 = e2fn(this.es);
+  this.e3 = e3fn(this.es);
+  this.ml0 = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, this.lat0); //si que des zeros le calcul ne se fait pas
+};
+
+
+/* Polyconic forward equations--mapping lat,long to x,y
+    ---------------------------------------------------*/
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+  var x, y, el;
+  var dlon = adjust_lon(lon - this.long0);
+  el = dlon * Math.sin(lat);
+  if (this.sphere) {
+    if (Math.abs(lat) <= EPSLN) {
+      x = this.a * dlon;
+      y = -1 * this.a * this.lat0;
+    }
+    else {
+      x = this.a * Math.sin(el) / Math.tan(lat);
+      y = this.a * (adjust_lat(lat - this.lat0) + (1 - Math.cos(el)) / Math.tan(lat));
+    }
+  }
+  else {
+    if (Math.abs(lat) <= EPSLN) {
+      x = this.a * dlon;
+      y = -1 * this.ml0;
+    }
+    else {
+      var nl = gN(this.a, this.e, Math.sin(lat)) / Math.tan(lat);
+      x = nl * Math.sin(el);
+      y = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, lat) - this.ml0 + nl * (1 - Math.cos(el));
+    }
+
+  }
+  p.x = x + this.x0;
+  p.y = y + this.y0;
+  return p;
+};
+
+
+/* Inverse equations
+  -----------------*/
+exports.inverse = function(p) {
+  var lon, lat, x, y, i;
+  var al, bl;
+  var phi, dphi;
+  x = p.x - this.x0;
+  y = p.y - this.y0;
+
+  if (this.sphere) {
+    if (Math.abs(y + this.a * this.lat0) <= EPSLN) {
+      lon = adjust_lon(x / this.a + this.long0);
+      lat = 0;
+    }
+    else {
+      al = this.lat0 + y / this.a;
+      bl = x * x / this.a / this.a + al * al;
+      phi = al;
+      var tanphi;
+      for (i = MAX_ITER; i; --i) {
+        tanphi = Math.tan(phi);
+        dphi = -1 * (al * (phi * tanphi + 1) - phi - 0.5 * (phi * phi + bl) * tanphi) / ((phi - al) / tanphi - 1);
+        phi += dphi;
+        if (Math.abs(dphi) <= EPSLN) {
+          lat = phi;
+          break;
+        }
+      }
+      lon = adjust_lon(this.long0 + (Math.asin(x * Math.tan(phi) / this.a)) / Math.sin(lat));
+    }
+  }
+  else {
+    if (Math.abs(y + this.ml0) <= EPSLN) {
+      lat = 0;
+      lon = adjust_lon(this.long0 + x / this.a);
+    }
+    else {
+
+      al = (this.ml0 + y) / this.a;
+      bl = x * x / this.a / this.a + al * al;
+      phi = al;
+      var cl, mln, mlnp, ma;
+      var con;
+      for (i = MAX_ITER; i; --i) {
+        con = this.e * Math.sin(phi);
+        cl = Math.sqrt(1 - con * con) * Math.tan(phi);
+        mln = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, phi);
+        mlnp = this.e0 - 2 * this.e1 * Math.cos(2 * phi) + 4 * this.e2 * Math.cos(4 * phi) - 6 * this.e3 * Math.cos(6 * phi);
+        ma = mln / this.a;
+        dphi = (al * (cl * ma + 1) - ma - 0.5 * cl * (ma * ma + bl)) / (this.es * Math.sin(2 * phi) * (ma * ma + bl - 2 * al * ma) / (4 * cl) + (al - ma) * (cl * mlnp - 2 / Math.sin(2 * phi)) - mlnp);
+        phi -= dphi;
+        if (Math.abs(dphi) <= EPSLN) {
+          lat = phi;
+          break;
+        }
+      }
+
+      //lat=phi4z(this.e,this.e0,this.e1,this.e2,this.e3,al,bl,0,0);
+      cl = Math.sqrt(1 - this.es * Math.pow(Math.sin(lat), 2)) * Math.tan(lat);
+      lon = adjust_lon(this.long0 + Math.asin(x * cl / this.a) / Math.sin(lat));
+    }
+  }
+
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["Polyconic", "poly"];
+
+/***/ }),
+/* 80 */
+/***/ (function(module, exports) {
+
+var SEC_TO_RAD = 4.84813681109535993589914102357e-6;
+/*
+  reference
+    Department of Land and Survey Technical Circular 1973/32
+      http://www.linz.govt.nz/docs/miscellaneous/nz-map-definition.pdf
+    OSG Technical Report 4.1
+      http://www.linz.govt.nz/docs/miscellaneous/nzmg.pdf
+  */
+
+/**
+ * iterations: Number of iterations to refine inverse transform.
+ *     0 -> km accuracy
+ *     1 -> m accuracy -- suitable for most mapping applications
+ *     2 -> mm accuracy
+ */
+exports.iterations = 1;
+
+exports.init = function() {
+  this.A = [];
+  this.A[1] = 0.6399175073;
+  this.A[2] = -0.1358797613;
+  this.A[3] = 0.063294409;
+  this.A[4] = -0.02526853;
+  this.A[5] = 0.0117879;
+  this.A[6] = -0.0055161;
+  this.A[7] = 0.0026906;
+  this.A[8] = -0.001333;
+  this.A[9] = 0.00067;
+  this.A[10] = -0.00034;
+
+  this.B_re = [];
+  this.B_im = [];
+  this.B_re[1] = 0.7557853228;
+  this.B_im[1] = 0;
+  this.B_re[2] = 0.249204646;
+  this.B_im[2] = 0.003371507;
+  this.B_re[3] = -0.001541739;
+  this.B_im[3] = 0.041058560;
+  this.B_re[4] = -0.10162907;
+  this.B_im[4] = 0.01727609;
+  this.B_re[5] = -0.26623489;
+  this.B_im[5] = -0.36249218;
+  this.B_re[6] = -0.6870983;
+  this.B_im[6] = -1.1651967;
+
+  this.C_re = [];
+  this.C_im = [];
+  this.C_re[1] = 1.3231270439;
+  this.C_im[1] = 0;
+  this.C_re[2] = -0.577245789;
+  this.C_im[2] = -0.007809598;
+  this.C_re[3] = 0.508307513;
+  this.C_im[3] = -0.112208952;
+  this.C_re[4] = -0.15094762;
+  this.C_im[4] = 0.18200602;
+  this.C_re[5] = 1.01418179;
+  this.C_im[5] = 1.64497696;
+  this.C_re[6] = 1.9660549;
+  this.C_im[6] = 2.5127645;
+
+  this.D = [];
+  this.D[1] = 1.5627014243;
+  this.D[2] = 0.5185406398;
+  this.D[3] = -0.03333098;
+  this.D[4] = -0.1052906;
+  this.D[5] = -0.0368594;
+  this.D[6] = 0.007317;
+  this.D[7] = 0.01220;
+  this.D[8] = 0.00394;
+  this.D[9] = -0.0013;
+};
+
+/**
+    New Zealand Map Grid Forward  - long/lat to x/y
+    long/lat in radians
+  */
+exports.forward = function(p) {
+  var n;
+  var lon = p.x;
+  var lat = p.y;
+
+  var delta_lat = lat - this.lat0;
+  var delta_lon = lon - this.long0;
+
+  // 1. Calculate d_phi and d_psi    ...                          // and d_lambda
+  // For this algorithm, delta_latitude is in seconds of arc x 10-5, so we need to scale to those units. Longitude is radians.
+  var d_phi = delta_lat / SEC_TO_RAD * 1E-5;
+  var d_lambda = delta_lon;
+  var d_phi_n = 1; // d_phi^0
+
+  var d_psi = 0;
+  for (n = 1; n <= 10; n++) {
+    d_phi_n = d_phi_n * d_phi;
+    d_psi = d_psi + this.A[n] * d_phi_n;
+  }
+
+  // 2. Calculate theta
+  var th_re = d_psi;
+  var th_im = d_lambda;
+
+  // 3. Calculate z
+  var th_n_re = 1;
+  var th_n_im = 0; // theta^0
+  var th_n_re1;
+  var th_n_im1;
+
+  var z_re = 0;
+  var z_im = 0;
+  for (n = 1; n <= 6; n++) {
+    th_n_re1 = th_n_re * th_re - th_n_im * th_im;
+    th_n_im1 = th_n_im * th_re + th_n_re * th_im;
+    th_n_re = th_n_re1;
+    th_n_im = th_n_im1;
+    z_re = z_re + this.B_re[n] * th_n_re - this.B_im[n] * th_n_im;
+    z_im = z_im + this.B_im[n] * th_n_re + this.B_re[n] * th_n_im;
+  }
+
+  // 4. Calculate easting and northing
+  p.x = (z_im * this.a) + this.x0;
+  p.y = (z_re * this.a) + this.y0;
+
+  return p;
+};
+
+
+/**
+    New Zealand Map Grid Inverse  -  x/y to long/lat
+  */
+exports.inverse = function(p) {
+  var n;
+  var x = p.x;
+  var y = p.y;
+
+  var delta_x = x - this.x0;
+  var delta_y = y - this.y0;
+
+  // 1. Calculate z
+  var z_re = delta_y / this.a;
+  var z_im = delta_x / this.a;
+
+  // 2a. Calculate theta - first approximation gives km accuracy
+  var z_n_re = 1;
+  var z_n_im = 0; // z^0
+  var z_n_re1;
+  var z_n_im1;
+
+  var th_re = 0;
+  var th_im = 0;
+  for (n = 1; n <= 6; n++) {
+    z_n_re1 = z_n_re * z_re - z_n_im * z_im;
+    z_n_im1 = z_n_im * z_re + z_n_re * z_im;
+    z_n_re = z_n_re1;
+    z_n_im = z_n_im1;
+    th_re = th_re + this.C_re[n] * z_n_re - this.C_im[n] * z_n_im;
+    th_im = th_im + this.C_im[n] * z_n_re + this.C_re[n] * z_n_im;
+  }
+
+  // 2b. Iterate to refine the accuracy of the calculation
+  //        0 iterations gives km accuracy
+  //        1 iteration gives m accuracy -- good enough for most mapping applications
+  //        2 iterations bives mm accuracy
+  for (var i = 0; i < this.iterations; i++) {
+    var th_n_re = th_re;
+    var th_n_im = th_im;
+    var th_n_re1;
+    var th_n_im1;
+
+    var num_re = z_re;
+    var num_im = z_im;
+    for (n = 2; n <= 6; n++) {
+      th_n_re1 = th_n_re * th_re - th_n_im * th_im;
+      th_n_im1 = th_n_im * th_re + th_n_re * th_im;
+      th_n_re = th_n_re1;
+      th_n_im = th_n_im1;
+      num_re = num_re + (n - 1) * (this.B_re[n] * th_n_re - this.B_im[n] * th_n_im);
+      num_im = num_im + (n - 1) * (this.B_im[n] * th_n_re + this.B_re[n] * th_n_im);
+    }
+
+    th_n_re = 1;
+    th_n_im = 0;
+    var den_re = this.B_re[1];
+    var den_im = this.B_im[1];
+    for (n = 2; n <= 6; n++) {
+      th_n_re1 = th_n_re * th_re - th_n_im * th_im;
+      th_n_im1 = th_n_im * th_re + th_n_re * th_im;
+      th_n_re = th_n_re1;
+      th_n_im = th_n_im1;
+      den_re = den_re + n * (this.B_re[n] * th_n_re - this.B_im[n] * th_n_im);
+      den_im = den_im + n * (this.B_im[n] * th_n_re + this.B_re[n] * th_n_im);
+    }
+
+    // Complex division
+    var den2 = den_re * den_re + den_im * den_im;
+    th_re = (num_re * den_re + num_im * den_im) / den2;
+    th_im = (num_im * den_re - num_re * den_im) / den2;
+  }
+
+  // 3. Calculate d_phi              ...                                    // and d_lambda
+  var d_psi = th_re;
+  var d_lambda = th_im;
+  var d_psi_n = 1; // d_psi^0
+
+  var d_phi = 0;
+  for (n = 1; n <= 9; n++) {
+    d_psi_n = d_psi_n * d_psi;
+    d_phi = d_phi + this.D[n] * d_psi_n;
+  }
+
+  // 4. Calculate latitude and longitude
+  // d_phi is calcuated in second of arc * 10^-5, so we need to scale back to radians. d_lambda is in radians.
+  var lat = this.lat0 + (d_phi * SEC_TO_RAD * 1E5);
+  var lon = this.long0 + d_lambda;
+
+  p.x = lon;
+  p.y = lat;
+
+  return p;
+};
+exports.names = ["New_Zealand_Map_Grid", "nzmg"];
+
+/***/ }),
+/* 81 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+/*
+  reference
+    "New Equal-Area Map Projections for Noncircular Regions", John P. Snyder,
+    The American Cartographer, Vol 15, No. 4, October 1988, pp. 341-355.
+  */
+
+
+/* Initialize the Miller Cylindrical projection
+  -------------------------------------------*/
+exports.init = function() {
+  //no-op
+};
+
+
+/* Miller Cylindrical forward equations--mapping lat,long to x,y
+    ------------------------------------------------------------*/
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+  /* Forward equations
+      -----------------*/
+  var dlon = adjust_lon(lon - this.long0);
+  var x = this.x0 + this.a * dlon;
+  var y = this.y0 + this.a * Math.log(Math.tan((Math.PI / 4) + (lat / 2.5))) * 1.25;
+
+  p.x = x;
+  p.y = y;
+  return p;
+};
+
+/* Miller Cylindrical inverse equations--mapping x,y to lat/long
+    ------------------------------------------------------------*/
+exports.inverse = function(p) {
+  p.x -= this.x0;
+  p.y -= this.y0;
+
+  var lon = adjust_lon(this.long0 + p.x / this.a);
+  var lat = 2.5 * (Math.atan(Math.exp(0.8 * p.y / this.a)) - Math.PI / 4);
+
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["Miller_Cylindrical", "mill"];
+
+
+/***/ }),
+/* 82 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+var adjust_lat = __webpack_require__(11);
+var pj_enfn = __webpack_require__(83);
+var MAX_ITER = 20;
+var pj_mlfn = __webpack_require__(32);
+var pj_inv_mlfn = __webpack_require__(84);
+var HALF_PI = Math.PI/2;
+var EPSLN = 1.0e-10;
+var asinz = __webpack_require__(3);
+exports.init = function() {
+  /* Place parameters in static storage for common use
+    -------------------------------------------------*/
+
+
+  if (!this.sphere) {
+    this.en = pj_enfn(this.es);
+  }
+  else {
+    this.n = 1;
+    this.m = 0;
+    this.es = 0;
+    this.C_y = Math.sqrt((this.m + 1) / this.n);
+    this.C_x = this.C_y / (this.m + 1);
+  }
+
+};
+
+/* Sinusoidal forward equations--mapping lat,long to x,y
+  -----------------------------------------------------*/
+exports.forward = function(p) {
+  var x, y;
+  var lon = p.x;
+  var lat = p.y;
+  /* Forward equations
+    -----------------*/
+  lon = adjust_lon(lon - this.long0);
+
+  if (this.sphere) {
+    if (!this.m) {
+      lat = this.n !== 1 ? Math.asin(this.n * Math.sin(lat)) : lat;
+    }
+    else {
+      var k = this.n * Math.sin(lat);
+      for (var i = MAX_ITER; i; --i) {
+        var V = (this.m * lat + Math.sin(lat) - k) / (this.m + Math.cos(lat));
+        lat -= V;
+        if (Math.abs(V) < EPSLN) {
+          break;
+        }
+      }
+    }
+    x = this.a * this.C_x * lon * (this.m + Math.cos(lat));
+    y = this.a * this.C_y * lat;
+
+  }
+  else {
+
+    var s = Math.sin(lat);
+    var c = Math.cos(lat);
+    y = this.a * pj_mlfn(lat, s, c, this.en);
+    x = this.a * lon * c / Math.sqrt(1 - this.es * s * s);
+  }
+
+  p.x = x;
+  p.y = y;
+  return p;
+};
+
+exports.inverse = function(p) {
+  var lat, temp, lon, s;
+
+  p.x -= this.x0;
+  lon = p.x / this.a;
+  p.y -= this.y0;
+  lat = p.y / this.a;
+
+  if (this.sphere) {
+    lat /= this.C_y;
+    lon = lon / (this.C_x * (this.m + Math.cos(lat)));
+    if (this.m) {
+      lat = asinz((this.m * lat + Math.sin(lat)) / this.n);
+    }
+    else if (this.n !== 1) {
+      lat = asinz(Math.sin(lat) / this.n);
+    }
+    lon = adjust_lon(lon + this.long0);
+    lat = adjust_lat(lat);
+  }
+  else {
+    lat = pj_inv_mlfn(p.y / this.a, this.es, this.en);
+    s = Math.abs(lat);
+    if (s < HALF_PI) {
+      s = Math.sin(lat);
+      temp = this.long0 + p.x * Math.sqrt(1 - this.es * s * s) / (this.a * Math.cos(lat));
+      //temp = this.long0 + p.x / (this.a * Math.cos(lat));
+      lon = adjust_lon(temp);
+    }
+    else if ((s - EPSLN) < HALF_PI) {
+      lon = this.long0;
+    }
+  }
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["Sinusoidal", "sinu"];
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports) {
+
+var C00 = 1;
+var C02 = 0.25;
+var C04 = 0.046875;
+var C06 = 0.01953125;
+var C08 = 0.01068115234375;
+var C22 = 0.75;
+var C44 = 0.46875;
+var C46 = 0.01302083333333333333;
+var C48 = 0.00712076822916666666;
+var C66 = 0.36458333333333333333;
+var C68 = 0.00569661458333333333;
+var C88 = 0.3076171875;
+
+module.exports = function(es) {
+  var en = [];
+  en[0] = C00 - es * (C02 + es * (C04 + es * (C06 + es * C08)));
+  en[1] = es * (C22 - es * (C04 + es * (C06 + es * C08)));
+  var t = es * es;
+  en[2] = t * (C44 - es * (C46 + es * C48));
+  t *= es;
+  en[3] = t * (C66 - es * C68);
+  en[4] = t * es * C88;
+  return en;
+};
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var pj_mlfn = __webpack_require__(32);
+var EPSLN = 1.0e-10;
+var MAX_ITER = 20;
+module.exports = function(arg, es, en) {
+  var k = 1 / (1 - es);
+  var phi = arg;
+  for (var i = MAX_ITER; i; --i) { /* rarely goes over 2 iterations */
+    var s = Math.sin(phi);
+    var t = 1 - es * s * s;
+    //t = this.pj_mlfn(phi, s, Math.cos(phi), en) - arg;
+    //phi -= t * (t * Math.sqrt(t)) * k;
+    t = (pj_mlfn(phi, s, Math.cos(phi), en) - arg) * (t * Math.sqrt(t)) * k;
+    phi -= t;
+    if (Math.abs(t) < EPSLN) {
+      return phi;
+    }
+  }
+  //..reportError("cass:pj_inv_mlfn: Convergence error");
+  return phi;
+};
+
+/***/ }),
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+var EPSLN = 1.0e-10;
+exports.init = function() {};
+
+/* Mollweide forward equations--mapping lat,long to x,y
+    ----------------------------------------------------*/
+exports.forward = function(p) {
+
+  /* Forward equations
+      -----------------*/
+  var lon = p.x;
+  var lat = p.y;
+
+  var delta_lon = adjust_lon(lon - this.long0);
+  var theta = lat;
+  var con = Math.PI * Math.sin(lat);
+
+  /* Iterate using the Newton-Raphson method to find theta
+      -----------------------------------------------------*/
+  for (var i = 0; true; i++) {
+    var delta_theta = -(theta + Math.sin(theta) - con) / (1 + Math.cos(theta));
+    theta += delta_theta;
+    if (Math.abs(delta_theta) < EPSLN) {
+      break;
+    }
+  }
+  theta /= 2;
+
+  /* If the latitude is 90 deg, force the x coordinate to be "0 + false easting"
+       this is done here because of precision problems with "cos(theta)"
+       --------------------------------------------------------------------------*/
+  if (Math.PI / 2 - Math.abs(lat) < EPSLN) {
+    delta_lon = 0;
+  }
+  var x = 0.900316316158 * this.a * delta_lon * Math.cos(theta) + this.x0;
+  var y = 1.4142135623731 * this.a * Math.sin(theta) + this.y0;
+
+  p.x = x;
+  p.y = y;
+  return p;
+};
+
+exports.inverse = function(p) {
+  var theta;
+  var arg;
+
+  /* Inverse equations
+      -----------------*/
+  p.x -= this.x0;
+  p.y -= this.y0;
+  arg = p.y / (1.4142135623731 * this.a);
+
+  /* Because of division by zero problems, 'arg' can not be 1.  Therefore
+       a number very close to one is used instead.
+       -------------------------------------------------------------------*/
+  if (Math.abs(arg) > 0.999999999999) {
+    arg = 0.999999999999;
+  }
+  theta = Math.asin(arg);
+  var lon = adjust_lon(this.long0 + (p.x / (0.900316316158 * this.a * Math.cos(theta))));
+  if (lon < (-Math.PI)) {
+    lon = -Math.PI;
+  }
+  if (lon > Math.PI) {
+    lon = Math.PI;
+  }
+  arg = (2 * theta + Math.sin(2 * theta)) / Math.PI;
+  if (Math.abs(arg) > 1) {
+    arg = 1;
+  }
+  var lat = Math.asin(arg);
+
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["Mollweide", "moll"];
+
+
+/***/ }),
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var e0fn = __webpack_require__(6);
+var e1fn = __webpack_require__(7);
+var e2fn = __webpack_require__(8);
+var e3fn = __webpack_require__(9);
+var msfnz = __webpack_require__(2);
+var mlfn = __webpack_require__(10);
+var adjust_lon = __webpack_require__(1);
+var adjust_lat = __webpack_require__(11);
+var imlfn = __webpack_require__(19);
+var EPSLN = 1.0e-10;
+exports.init = function() {
+
+  /* Place parameters in static storage for common use
+      -------------------------------------------------*/
+  // Standard Parallels cannot be equal and on opposite sides of the equator
+  if (Math.abs(this.lat1 + this.lat2) < EPSLN) {
+    return;
+  }
+  this.lat2 = this.lat2 || this.lat1;
+  this.temp = this.b / this.a;
+  this.es = 1 - Math.pow(this.temp, 2);
+  this.e = Math.sqrt(this.es);
+  this.e0 = e0fn(this.es);
+  this.e1 = e1fn(this.es);
+  this.e2 = e2fn(this.es);
+  this.e3 = e3fn(this.es);
+
+  this.sinphi = Math.sin(this.lat1);
+  this.cosphi = Math.cos(this.lat1);
+
+  this.ms1 = msfnz(this.e, this.sinphi, this.cosphi);
+  this.ml1 = mlfn(this.e0, this.e1, this.e2, this.e3, this.lat1);
+
+  if (Math.abs(this.lat1 - this.lat2) < EPSLN) {
+    this.ns = this.sinphi;
+  }
+  else {
+    this.sinphi = Math.sin(this.lat2);
+    this.cosphi = Math.cos(this.lat2);
+    this.ms2 = msfnz(this.e, this.sinphi, this.cosphi);
+    this.ml2 = mlfn(this.e0, this.e1, this.e2, this.e3, this.lat2);
+    this.ns = (this.ms1 - this.ms2) / (this.ml2 - this.ml1);
+  }
+  this.g = this.ml1 + this.ms1 / this.ns;
+  this.ml0 = mlfn(this.e0, this.e1, this.e2, this.e3, this.lat0);
+  this.rh = this.a * (this.g - this.ml0);
+};
+
+
+/* Equidistant Conic forward equations--mapping lat,long to x,y
+  -----------------------------------------------------------*/
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+  var rh1;
+
+  /* Forward equations
+      -----------------*/
+  if (this.sphere) {
+    rh1 = this.a * (this.g - lat);
+  }
+  else {
+    var ml = mlfn(this.e0, this.e1, this.e2, this.e3, lat);
+    rh1 = this.a * (this.g - ml);
+  }
+  var theta = this.ns * adjust_lon(lon - this.long0);
+  var x = this.x0 + rh1 * Math.sin(theta);
+  var y = this.y0 + this.rh - rh1 * Math.cos(theta);
+  p.x = x;
+  p.y = y;
+  return p;
+};
+
+/* Inverse equations
+  -----------------*/
+exports.inverse = function(p) {
+  p.x -= this.x0;
+  p.y = this.rh - p.y + this.y0;
+  var con, rh1, lat, lon;
+  if (this.ns >= 0) {
+    rh1 = Math.sqrt(p.x * p.x + p.y * p.y);
+    con = 1;
+  }
+  else {
+    rh1 = -Math.sqrt(p.x * p.x + p.y * p.y);
+    con = -1;
+  }
+  var theta = 0;
+  if (rh1 !== 0) {
+    theta = Math.atan2(con * p.x, con * p.y);
+  }
+
+  if (this.sphere) {
+    lon = adjust_lon(this.long0 + theta / this.ns);
+    lat = adjust_lat(this.g - rh1 / this.a);
+    p.x = lon;
+    p.y = lat;
+    return p;
+  }
+  else {
+    var ml = this.g - rh1 / this.a;
+    lat = imlfn(ml, this.e0, this.e1, this.e2, this.e3);
+    lon = adjust_lon(this.long0 + theta / this.ns);
+    p.x = lon;
+    p.y = lat;
+    return p;
+  }
+
+};
+exports.names = ["Equidistant_Conic", "eqdc"];
+
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+var HALF_PI = Math.PI/2;
+var EPSLN = 1.0e-10;
+var asinz = __webpack_require__(3);
+/* Initialize the Van Der Grinten projection
+  ----------------------------------------*/
+exports.init = function() {
+  //this.R = 6370997; //Radius of earth
+  this.R = this.a;
+};
+
+exports.forward = function(p) {
+
+  var lon = p.x;
+  var lat = p.y;
+
+  /* Forward equations
+    -----------------*/
+  var dlon = adjust_lon(lon - this.long0);
+  var x, y;
+
+  if (Math.abs(lat) <= EPSLN) {
+    x = this.x0 + this.R * dlon;
+    y = this.y0;
+  }
+  var theta = asinz(2 * Math.abs(lat / Math.PI));
+  if ((Math.abs(dlon) <= EPSLN) || (Math.abs(Math.abs(lat) - HALF_PI) <= EPSLN)) {
+    x = this.x0;
+    if (lat >= 0) {
+      y = this.y0 + Math.PI * this.R * Math.tan(0.5 * theta);
+    }
+    else {
+      y = this.y0 + Math.PI * this.R * -Math.tan(0.5 * theta);
+    }
+    //  return(OK);
+  }
+  var al = 0.5 * Math.abs((Math.PI / dlon) - (dlon / Math.PI));
+  var asq = al * al;
+  var sinth = Math.sin(theta);
+  var costh = Math.cos(theta);
+
+  var g = costh / (sinth + costh - 1);
+  var gsq = g * g;
+  var m = g * (2 / sinth - 1);
+  var msq = m * m;
+  var con = Math.PI * this.R * (al * (g - msq) + Math.sqrt(asq * (g - msq) * (g - msq) - (msq + asq) * (gsq - msq))) / (msq + asq);
+  if (dlon < 0) {
+    con = -con;
+  }
+  x = this.x0 + con;
+  //con = Math.abs(con / (Math.PI * this.R));
+  var q = asq + g;
+  con = Math.PI * this.R * (m * q - al * Math.sqrt((msq + asq) * (asq + 1) - q * q)) / (msq + asq);
+  if (lat >= 0) {
+    //y = this.y0 + Math.PI * this.R * Math.sqrt(1 - con * con - 2 * al * con);
+    y = this.y0 + con;
+  }
+  else {
+    //y = this.y0 - Math.PI * this.R * Math.sqrt(1 - con * con - 2 * al * con);
+    y = this.y0 - con;
+  }
+  p.x = x;
+  p.y = y;
+  return p;
+};
+
+/* Van Der Grinten inverse equations--mapping x,y to lat/long
+  ---------------------------------------------------------*/
+exports.inverse = function(p) {
+  var lon, lat;
+  var xx, yy, xys, c1, c2, c3;
+  var a1;
+  var m1;
+  var con;
+  var th1;
+  var d;
+
+  /* inverse equations
+    -----------------*/
+  p.x -= this.x0;
+  p.y -= this.y0;
+  con = Math.PI * this.R;
+  xx = p.x / con;
+  yy = p.y / con;
+  xys = xx * xx + yy * yy;
+  c1 = -Math.abs(yy) * (1 + xys);
+  c2 = c1 - 2 * yy * yy + xx * xx;
+  c3 = -2 * c1 + 1 + 2 * yy * yy + xys * xys;
+  d = yy * yy / c3 + (2 * c2 * c2 * c2 / c3 / c3 / c3 - 9 * c1 * c2 / c3 / c3) / 27;
+  a1 = (c1 - c2 * c2 / 3 / c3) / c3;
+  m1 = 2 * Math.sqrt(-a1 / 3);
+  con = ((3 * d) / a1) / m1;
+  if (Math.abs(con) > 1) {
+    if (con >= 0) {
+      con = 1;
+    }
+    else {
+      con = -1;
+    }
+  }
+  th1 = Math.acos(con) / 3;
+  if (p.y >= 0) {
+    lat = (-m1 * Math.cos(th1 + Math.PI / 3) - c2 / 3 / c3) * Math.PI;
+  }
+  else {
+    lat = -(-m1 * Math.cos(th1 + Math.PI / 3) - c2 / 3 / c3) * Math.PI;
+  }
+
+  if (Math.abs(xx) < EPSLN) {
+    lon = this.long0;
+  }
+  else {
+    lon = adjust_lon(this.long0 + Math.PI * (xys - 1 + Math.sqrt(1 + 2 * (xx * xx - yy * yy) + xys * xys)) / 2 / xx);
+  }
+
+  p.x = lon;
+  p.y = lat;
+  return p;
+};
+exports.names = ["Van_der_Grinten_I", "VanDerGrinten", "vandg"];
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var adjust_lon = __webpack_require__(1);
+var HALF_PI = Math.PI/2;
+var EPSLN = 1.0e-10;
+var mlfn = __webpack_require__(10);
+var e0fn = __webpack_require__(6);
+var e1fn = __webpack_require__(7);
+var e2fn = __webpack_require__(8);
+var e3fn = __webpack_require__(9);
+var gN = __webpack_require__(18);
+var asinz = __webpack_require__(3);
+var imlfn = __webpack_require__(19);
+exports.init = function() {
+  this.sin_p12 = Math.sin(this.lat0);
+  this.cos_p12 = Math.cos(this.lat0);
+};
+
+exports.forward = function(p) {
+  var lon = p.x;
+  var lat = p.y;
+  var sinphi = Math.sin(p.y);
+  var cosphi = Math.cos(p.y);
+  var dlon = adjust_lon(lon - this.long0);
+  var e0, e1, e2, e3, Mlp, Ml, tanphi, Nl1, Nl, psi, Az, G, H, GH, Hs, c, kp, cos_c, s, s2, s3, s4, s5;
+  if (this.sphere) {
+    if (Math.abs(this.sin_p12 - 1) <= EPSLN) {
+      //North Pole case
+      p.x = this.x0 + this.a * (HALF_PI - lat) * Math.sin(dlon);
+      p.y = this.y0 - this.a * (HALF_PI - lat) * Math.cos(dlon);
+      return p;
+    }
+    else if (Math.abs(this.sin_p12 + 1) <= EPSLN) {
+      //South Pole case
+      p.x = this.x0 + this.a * (HALF_PI + lat) * Math.sin(dlon);
+      p.y = this.y0 + this.a * (HALF_PI + lat) * Math.cos(dlon);
+      return p;
+    }
+    else {
+      //default case
+      cos_c = this.sin_p12 * sinphi + this.cos_p12 * cosphi * Math.cos(dlon);
+      c = Math.acos(cos_c);
+      kp = c / Math.sin(c);
+      p.x = this.x0 + this.a * kp * cosphi * Math.sin(dlon);
+      p.y = this.y0 + this.a * kp * (this.cos_p12 * sinphi - this.sin_p12 * cosphi * Math.cos(dlon));
+      return p;
+    }
+  }
+  else {
+    e0 = e0fn(this.es);
+    e1 = e1fn(this.es);
+    e2 = e2fn(this.es);
+    e3 = e3fn(this.es);
+    if (Math.abs(this.sin_p12 - 1) <= EPSLN) {
+      //North Pole case
+      Mlp = this.a * mlfn(e0, e1, e2, e3, HALF_PI);
+      Ml = this.a * mlfn(e0, e1, e2, e3, lat);
+      p.x = this.x0 + (Mlp - Ml) * Math.sin(dlon);
+      p.y = this.y0 - (Mlp - Ml) * Math.cos(dlon);
+      return p;
+    }
+    else if (Math.abs(this.sin_p12 + 1) <= EPSLN) {
+      //South Pole case
+      Mlp = this.a * mlfn(e0, e1, e2, e3, HALF_PI);
+      Ml = this.a * mlfn(e0, e1, e2, e3, lat);
+      p.x = this.x0 + (Mlp + Ml) * Math.sin(dlon);
+      p.y = this.y0 + (Mlp + Ml) * Math.cos(dlon);
+      return p;
+    }
+    else {
+      //Default case
+      tanphi = sinphi / cosphi;
+      Nl1 = gN(this.a, this.e, this.sin_p12);
+      Nl = gN(this.a, this.e, sinphi);
+      psi = Math.atan((1 - this.es) * tanphi + this.es * Nl1 * this.sin_p12 / (Nl * cosphi));
+      Az = Math.atan2(Math.sin(dlon), this.cos_p12 * Math.tan(psi) - this.sin_p12 * Math.cos(dlon));
+      if (Az === 0) {
+        s = Math.asin(this.cos_p12 * Math.sin(psi) - this.sin_p12 * Math.cos(psi));
+      }
+      else if (Math.abs(Math.abs(Az) - Math.PI) <= EPSLN) {
+        s = -Math.asin(this.cos_p12 * Math.sin(psi) - this.sin_p12 * Math.cos(psi));
+      }
+      else {
+        s = Math.asin(Math.sin(dlon) * Math.cos(psi) / Math.sin(Az));
+      }
+      G = this.e * this.sin_p12 / Math.sqrt(1 - this.es);
+      H = this.e * this.cos_p12 * Math.cos(Az) / Math.sqrt(1 - this.es);
+      GH = G * H;
+      Hs = H * H;
+      s2 = s * s;
+      s3 = s2 * s;
+      s4 = s3 * s;
+      s5 = s4 * s;
+      c = Nl1 * s * (1 - s2 * Hs * (1 - Hs) / 6 + s3 / 8 * GH * (1 - 2 * Hs) + s4 / 120 * (Hs * (4 - 7 * Hs) - 3 * G * G * (1 - 7 * Hs)) - s5 / 48 * GH);
+      p.x = this.x0 + c * Math.sin(Az);
+      p.y = this.y0 + c * Math.cos(Az);
+      return p;
+    }
+  }
+
+
+};
+
+exports.inverse = function(p) {
+  p.x -= this.x0;
+  p.y -= this.y0;
+  var rh, z, sinz, cosz, lon, lat, con, e0, e1, e2, e3, Mlp, M, N1, psi, Az, cosAz, tmp, A, B, D, Ee, F;
+  if (this.sphere) {
+    rh = Math.sqrt(p.x * p.x + p.y * p.y);
+    if (rh > (2 * HALF_PI * this.a)) {
+      return;
+    }
+    z = rh / this.a;
+
+    sinz = Math.sin(z);
+    cosz = Math.cos(z);
+
+    lon = this.long0;
+    if (Math.abs(rh) <= EPSLN) {
+      lat = this.lat0;
+    }
+    else {
+      lat = asinz(cosz * this.sin_p12 + (p.y * sinz * this.cos_p12) / rh);
+      con = Math.abs(this.lat0) - HALF_PI;
+      if (Math.abs(con) <= EPSLN) {
+        if (this.lat0 >= 0) {
+          lon = adjust_lon(this.long0 + Math.atan2(p.x, - p.y));
+        }
+        else {
+          lon = adjust_lon(this.long0 - Math.atan2(-p.x, p.y));
+        }
+      }
+      else {
+        /*con = cosz - this.sin_p12 * Math.sin(lat);
+        if ((Math.abs(con) < EPSLN) && (Math.abs(p.x) < EPSLN)) {
+          //no-op, just keep the lon value as is
+        } else {
+          var temp = Math.atan2((p.x * sinz * this.cos_p12), (con * rh));
+          lon = adjust_lon(this.long0 + Math.atan2((p.x * sinz * this.cos_p12), (con * rh)));
+        }*/
+        lon = adjust_lon(this.long0 + Math.atan2(p.x * sinz, rh * this.cos_p12 * cosz - p.y * this.sin_p12 * sinz));
+      }
+    }
+
+    p.x = lon;
+    p.y = lat;
+    return p;
+  }
+  else {
+    e0 = e0fn(this.es);
+    e1 = e1fn(this.es);
+    e2 = e2fn(this.es);
+    e3 = e3fn(this.es);
+    if (Math.abs(this.sin_p12 - 1) <= EPSLN) {
+      //North pole case
+      Mlp = this.a * mlfn(e0, e1, e2, e3, HALF_PI);
+      rh = Math.sqrt(p.x * p.x + p.y * p.y);
+      M = Mlp - rh;
+      lat = imlfn(M / this.a, e0, e1, e2, e3);
+      lon = adjust_lon(this.long0 + Math.atan2(p.x, - 1 * p.y));
+      p.x = lon;
+      p.y = lat;
+      return p;
+    }
+    else if (Math.abs(this.sin_p12 + 1) <= EPSLN) {
+      //South pole case
+      Mlp = this.a * mlfn(e0, e1, e2, e3, HALF_PI);
+      rh = Math.sqrt(p.x * p.x + p.y * p.y);
+      M = rh - Mlp;
+
+      lat = imlfn(M / this.a, e0, e1, e2, e3);
+      lon = adjust_lon(this.long0 + Math.atan2(p.x, p.y));
+      p.x = lon;
+      p.y = lat;
+      return p;
+    }
+    else {
+      //default case
+      rh = Math.sqrt(p.x * p.x + p.y * p.y);
+      Az = Math.atan2(p.x, p.y);
+      N1 = gN(this.a, this.e, this.sin_p12);
+      cosAz = Math.cos(Az);
+      tmp = this.e * this.cos_p12 * cosAz;
+      A = -tmp * tmp / (1 - this.es);
+      B = 3 * this.es * (1 - A) * this.sin_p12 * this.cos_p12 * cosAz / (1 - this.es);
+      D = rh / N1;
+      Ee = D - A * (1 + A) * Math.pow(D, 3) / 6 - B * (1 + 3 * A) * Math.pow(D, 4) / 24;
+      F = 1 - A * Ee * Ee / 2 - D * Ee * Ee * Ee / 6;
+      psi = Math.asin(this.sin_p12 * Math.cos(Ee) + this.cos_p12 * Math.sin(Ee) * cosAz);
+      lon = adjust_lon(this.long0 + Math.asin(Math.sin(Az) * Math.sin(Ee) / Math.cos(psi)));
+      lat = Math.atan((1 - this.es * F * this.sin_p12 / Math.sin(psi)) * Math.tan(psi) / (1 - this.es));
+      p.x = lon;
+      p.y = lat;
+      return p;
+    }
+  }
+
+};
+exports.names = ["Azimuthal_Equidistant", "aeqd"];
+
+
+/***/ }),
+/* 89 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12650,7 +18473,7 @@ SuperMap.TimeFlowControl = TimeFlowControl_TimeFlowControl;
 
 
 // EXTERNAL MODULE: ./node_modules/promise-polyfill/promise.js
-var promise = __webpack_require__(35);
+var promise = __webpack_require__(33);
 var promise_default = /*#__PURE__*/__webpack_require__.n(promise);
 
 // CONCATENATED MODULE: ./src/common/util/PromisePolyfill.js
@@ -12661,10 +18484,10 @@ var promise_default = /*#__PURE__*/__webpack_require__.n(promise);
 
 window.Promise = promise_default.a;
 // EXTERNAL MODULE: ./node_modules/fetch-ie8/fetch.js
-var fetch = __webpack_require__(82);
+var fetch = __webpack_require__(42);
 
 // EXTERNAL MODULE: ./node_modules/fetch-jsonp/build/fetch-jsonp.js
-var fetch_jsonp = __webpack_require__(24);
+var fetch_jsonp = __webpack_require__(21);
 var fetch_jsonp_default = /*#__PURE__*/__webpack_require__.n(fetch_jsonp);
 
 // CONCATENATED MODULE: ./src/common/util/FetchRequest.js
@@ -39303,7 +45126,7 @@ SuperMap.ElasticSearch = ElasticSearch_ElasticSearch;
 
 
 // EXTERNAL MODULE: ./node_modules/lodash.topairs/index.js
-var lodash_topairs = __webpack_require__(33);
+var lodash_topairs = __webpack_require__(35);
 var lodash_topairs_default = /*#__PURE__*/__webpack_require__.n(lodash_topairs);
 
 // CONCATENATED MODULE: ./src/common/style/CartoCSS.js
@@ -64743,7 +70566,7 @@ let widgetsUtil = {
 
 };
 // EXTERNAL MODULE: external "function(){try{return XLSX}catch(e){return {}}}()"
-var external_function_try_return_XLSX_catch_e_return_ = __webpack_require__(23);
+var external_function_try_return_XLSX_catch_e_return_ = __webpack_require__(22);
 var external_function_try_return_XLSX_catch_e_return_default = /*#__PURE__*/__webpack_require__.n(external_function_try_return_XLSX_catch_e_return_);
 
 // CONCATENATED MODULE: ./src/common/lang/Lang.js
@@ -66044,6 +71867,10 @@ external_ol_default.a.supermap.control.Logo = Logo_Logo;
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
 
 
+// EXTERNAL MODULE: ./node_modules/canvg/dist/browser/canvg.min.js
+var canvg_min = __webpack_require__(36);
+var canvg_min_default = /*#__PURE__*/__webpack_require__.n(canvg_min);
+
 // CONCATENATED MODULE: ./src/openlayers/overlay/vectortile/StyleMap.js
 /* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
@@ -66418,10 +72245,511 @@ var DeafultCanvasStyle = {
         imageSmoothingEnabled: true
     }
 };
-// CONCATENATED MODULE: ./src/openlayers/core/StyleUtils.js
+// EXTERNAL MODULE: ./node_modules/geostats/lib/geostats.min.js
+var geostats_min = __webpack_require__(37);
+var geostats_min_default = /*#__PURE__*/__webpack_require__.n(geostats_min);
+
+// CONCATENATED MODULE: ./src/openlayers/core/Util.js
 /* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
+
+
+
+
+external_ol_default.a.supermap = external_ol_default.a.supermap || {};
+
+/**
+ * @class ol.supermap.Util
+ * @category BaseTypes Util
+ * @classdesc 工具类。
+ */
+class core_Util_Util {
+
+    constructor() {
+
+    }
+
+    /**
+     * @function ol.supermap.Util.toGeoJSON
+     * @description 将传入对象转为 GeoJSON 格式。
+     * @param {Object} smObj - 待转参数。
+     */
+    static toGeoJSON(smObj) {
+        if (smObj) {
+            var format = new GeoJSON_GeoJSON();
+            return JSON.parse(format.write(smObj));
+        }
+    }
+
+    /**
+     * @function ol.supermap.Util.toSuperMapGeometry
+     * @description 将 GeoJSON 对象转为 SuperMap 几何图形。
+     * @param {GeoJSONObject} geoJSON - GeoJSON 对象。
+     */
+    static toSuperMapGeometry(geoJSON) {
+        if (geoJSON && geoJSON.type) {
+            var format = new GeoJSON_GeoJSON();
+            var result = format.read(geoJSON, "FeatureCollection");
+            return result[0].geometry;
+        }
+    }
+
+    /**
+     * @function ol.supermap.Util.resolutionToScale
+     * @description 通过分辨率计算比例尺。
+     * @param {number} resolution - 分辨率。
+     * @param {number} dpi - 屏幕分辨率。
+     * @param {string} mapUnit - 地图单位。
+     * @returns {number} 比例尺。
+     */
+    static resolutionToScale(resolution, dpi, mapUnit) {
+        var inchPerMeter = 1 / 0.0254;
+        // 地球半径。
+        var meterPerMapUnit = this.getMeterPerMapUnit(mapUnit);
+        var scale = resolution * dpi * inchPerMeter * meterPerMapUnit;
+        scale = 1 / scale;
+        return scale;
+    }
+
+    /**
+     * @function ol.supermap.Util.toSuperMapBounds
+     * @description 转为 SuperMapBounds 格式。
+     * @param {Array.<number>} bounds - bounds 数组。
+     * @returns {SuperMap.Bounds} 返回 SuperMap 的 Bounds 对象。
+     */
+    static toSuperMapBounds(bounds) {
+        return new Bounds_Bounds(
+            bounds[0],
+            bounds[1],
+            bounds[2],
+            bounds[3]
+        );
+    }
+
+    /**
+     * @function ol.supermap.Util.toProcessingParam
+     * @description 将 Region 节点数组转为 Processing 服务需要的分析参数。
+     * @param {Array} points - Region 各个节点数组。
+     * @returns processing 服务裁剪、查询分析的分析参数。
+     */
+    static toProcessingParam(points) {
+        var geometryParam = {};
+        if (points.length < 1) {
+            geometryParam = "";
+        } else {
+            var results = [];
+            for (var i = 0; i < points.length; i++) {
+                var point = {};
+                point.x = points[i][0];
+                point.y = points[i][1];
+                results.push(point);
+            }
+            results.push(results[0]);
+            geometryParam.type = "REGION";
+            geometryParam.points = results;
+        }
+        return geometryParam;
+    }
+
+    /**
+     * @function ol.supermap.Util.scaleToResolution
+     * @description 通过比例尺计算分辨率。
+     * @param {number} scale - 比例尺。
+     * @param {number} dpi - 屏幕分辨率。
+     * @param {string} mapUnit - 地图单位。
+     * @returns {number} 分辨率。
+     */
+    static scaleToResolution(scale, dpi, mapUnit) {
+        var inchPerMeter = 1 / 0.0254;
+        var meterPerMapUnitValue = this.getMeterPerMapUnit(mapUnit);
+        var resolution = scale * dpi * inchPerMeter * meterPerMapUnitValue;
+        resolution = 1 / resolution;
+        return resolution;
+    }
+
+    /**
+     * @private
+     * @function ol.supermap.Util.getMeterPerMapUnit
+     * @description 获取每地图单位多少米。
+     * @param {string} mapUnit - 地图单位。
+     * @returns {number} 返回每地图单位多少米。
+     */
+    static getMeterPerMapUnit(mapUnit) {
+        var earchRadiusInMeters = 6378137;
+        var meterPerMapUnit;
+        if (mapUnit === Unit.METER) {
+            meterPerMapUnit = 1;
+        } else if (mapUnit === Unit.DEGREE) {
+            // 每度表示多少米。
+            meterPerMapUnit = Math.PI * 2 * earchRadiusInMeters / 360;
+        } else if (mapUnit === Unit.KILOMETER) {
+            meterPerMapUnit = 1.0E-3;
+        } else if (mapUnit === Unit.INCH) {
+            meterPerMapUnit = 1 / 2.5399999918E-2;
+        } else if (mapUnit === Unit.FOOT) {
+            meterPerMapUnit = 0.3048;
+        } else {
+            return meterPerMapUnit;
+        }
+        return meterPerMapUnit;
+    }
+
+    /**
+     * @function ol.supermap.Util.isArray
+     * @description 判断是否为数组格式。
+     * @param {Object} obj - 待判断对象。
+     * @returns {boolean} 是否是数组。
+     */
+    static isArray(obj) {
+        return Object.prototype.toString.call(obj) == '[object Array]'
+    }
+
+    /**
+     * @function ol.supermap.Util.Csv2GeoJSON
+     * @description 将 csv 格式转为 GeoJSON。
+     * @param {Object} csv - csv 对象。
+     * @param {Object} options - 转换参数。
+     */
+    static Csv2GeoJSON(csv, options) {
+        var defaultOptions = {
+            titles: ['lon', 'lat'],
+            latitudeTitle: 'lat',
+            longitudeTitle: 'lon',
+            fieldSeparator: ',',
+            lineSeparator: '\n',
+            deleteDoubleQuotes: true,
+            firstLineTitles: false
+        };
+        options = options || defaultOptions;
+        var _propertiesNames = []
+        if (typeof csv === 'string') {
+            var titulos = options.titles;
+            if (options.firstLineTitles) {
+                csv = csv.split(options.lineSeparator);
+                if (csv.length < 2) {
+                    return;
+                }
+                titulos = csv[0];
+                csv.splice(0, 1);
+                csv = csv.join(options.lineSeparator);
+                titulos = titulos.trim().split(options.fieldSeparator);
+                for (let i = 0; i < titulos.length; i++) {
+                    titulos[i] = _deleteDoubleQuotes(titulos[i]);
+                }
+                options.titles = titulos;
+            }
+            for (let i = 0; i < titulos.length; i++) {
+                var prop = titulos[i].toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '_');
+                if (prop == '' || prop == '_') {
+                    prop = 'prop-' + i;
+                }
+                _propertiesNames[i] = prop;
+            }
+            csv = _csv2json(csv);
+        }
+        return csv;
+
+        function _deleteDoubleQuotes(cadena) {
+            if (options.deleteDoubleQuotes) {
+                cadena = cadena.trim().replace(/^"/, "").replace(/"$/, "");
+            }
+            return cadena;
+        }
+
+        function _csv2json(csv) {
+            var json = {};
+            json["type"] = "FeatureCollection";
+            json["features"] = [];
+            var titulos = options.titles;
+            csv = csv.split(options.lineSeparator);
+            for (var num_linea = 0; num_linea < csv.length; num_linea++) {
+                var campos = csv[num_linea].trim().split(options.fieldSeparator)
+                    , lng = parseFloat(campos[titulos.indexOf(options.longitudeTitle)])
+                    , lat = parseFloat(campos[titulos.indexOf(options.latitudeTitle)]);
+
+                var isInRange = lng < 180 && lng > -180 && lat < 90 && lat > -90;
+                if (!(campos.length == titulos.length && isInRange)) {
+                    continue;
+                }
+
+                var feature = {};
+                feature["type"] = "Feature";
+                feature["geometry"] = {};
+                feature["properties"] = {};
+                feature["geometry"]["type"] = "Point";
+                feature["geometry"]["coordinates"] = [lng, lat];
+                for (var i = 0; i < titulos.length; i++) {
+                    if (titulos[i] != options.latitudeTitle && titulos[i] != options.longitudeTitle) {
+                        feature["properties"][_propertiesNames[i]] = _deleteDoubleQuotes(campos[i]);
+                    }
+                }
+                json["features"].push(feature);
+            }
+            return json;
+        }
+    }
+
+    /**
+     * @function ol.supermap.Util.createCanvasContext2D
+     * @description 创建 2D 画布。
+     * @param {number} opt_width - 画布宽度。
+     * @param {number} opt_height - 画布高度。
+     */
+    static createCanvasContext2D(opt_width, opt_height) {
+        var canvas = document.createElement('CANVAS');
+        if (opt_width) {
+            canvas.width = opt_width;
+        }
+        if (opt_height) {
+            canvas.height = opt_height;
+        }
+        return canvas.getContext('2d');
+    }
+    /**
+     * @function ol.supermap.Util.supportWebGL2
+     * @description 是否支持 webgl2。
+     */
+    static supportWebGL2() {
+        var canvas = document.createElement('canvas');
+        return Boolean(canvas && canvas.getContext("webgl2"));
+    }
+    static getRootUrl(url = window.location.href) {
+        /*let tempRootUrl = {};
+        let onlineUrl = 'https://www.supermapol.com/', itestUrl = 'https://itest.supermapol.com/';
+        if (tempRootUrl[url]) return tempRootUrl[url];
+        let rootUrl = "";
+        if (url.indexOf(onlineUrl) === 0) {
+            rootUrl = onlineUrl;
+        } else if (url.indexOf(itestUrl) === 0) {
+            rootUrl = itestUrl;
+        } else {
+            let regExp = /\/apps|\/web|\/manager|\/developer|\/services/i,
+                index = url.search(regExp);
+            let anchor = this.getAnchor(url);
+            rootUrl += anchor.protocol + '//' + this.getHost(url) + '/';
+            if (index > 0) {
+                rootUrl += url.substring(rootUrl.length, index + 1);
+            }
+        }
+        tempRootUrl[url] = rootUrl;
+        return rootUrl;*/
+        return 'http://127.0.0.1:8090/iportal/';
+    }
+    /**
+     * 是否为字符串
+     *
+     * @param str
+     */
+    static isString(str) {
+        return (typeof str === 'string') && str.constructor === String;
+    }
+    /**
+     * 字符串裁剪两边的空格
+     *
+     * @param str {String} 需要裁剪的字符串
+     */
+    static trim(str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
+    /**
+     * 随机生成id
+     * @param attr
+     * @returns {string}
+     */
+    static newGuid(attr) {
+        let len = attr || 32;
+        let guid = "";
+        for (let i = 1; i < len; i++) {
+            let n = Math.floor(Math.random() * 16.0).toString(16);
+            guid += n;
+        }
+        return guid;
+    }
+    /**
+     * 获取数组统计的值
+     *
+     * @param array 需要统计的数组
+     * @param type  统计方法
+     */
+    static getArrayStatistic(array, type){
+        if(!array.length) return 0;
+        if(type === "Sum" || type === "求和"){
+            // return this.getSum(array);
+        }
+        else if(type === "Maximum" || type === "最大值"){
+            return this.getMax(array);
+        }
+        else if(type === "Minimum" || type === "最小值"){
+            return this.getMin(array);
+        }
+        else if(type === "Average" || type === "平均值"){
+            return this.getMean(array);
+        }
+        else if(type === "Median" || type === "中位数"){
+            return this.getMedian(array);
+        }
+        else if(type === "times" || type === "计数"){
+            return this.getTimes(array);
+        }
+    }
+    /**
+     * 获取数组分段后的数值
+     *
+     * @param array  需要分段的数组
+     * @param type   分段方法
+     * @param segNum 分段个数
+     */
+    static getArraySegments(array, type, segNum) {
+        if(type === "Offset segment" || type === "等距分段法") {
+            return this.getEqInterval(array, segNum);
+        } else if(type === "Natural breaks" || type === "自然断裂法") {
+            return this.getJenks(array, segNum);
+        } else if(type === "Square root segment" || type === "平方根分段法") {
+            // 数据都必须 >= 0
+            let minValue = this.getMin(array);
+            if(minValue >= 0){
+                return this.getSqrtInterval(array, segNum);
+            }else {
+                // todo 提示数据不合法
+                //console.log('数据都必须 >= 0');
+                // Util.showMessage(Language.hasNegValue + Language.noSupportRange, 'ERROR');
+                return false;
+            }
+
+        } else if(type === "Logarithm segment" || type === "对数分段法") {
+            // 数据都必须 > 0
+            let minValue = this.getMin(array);
+            if(minValue > 0){
+                return this.getGeometricProgression(array, segNum);
+            }else {
+                // todo 提示数据不合法
+                //console.log('数据都必须 > 0');
+                // Util.showMessage(Language.hasZeroNegValue + Language.noSupportRange, 'ERROR');
+                return false;
+            }
+        }
+    }
+    /**
+     * 最小值
+     * @param array
+     * @returns {*}
+     */
+    static getMax(array){
+        return this.getInstance(array).max();
+    }
+    /**
+     * 最大值
+     * @param array
+     * @returns {*}
+     */
+    static getMin(array){
+        return this.getInstance(array).min();
+    }
+    /**
+     * 初始化插件实例
+     */
+    static newInstance() {
+        if(!this.geostatsInstance) {
+            this.geostatsInstance = new geostats_min_default.a();
+        }
+        return this.geostatsInstance;
+    }
+    /**
+     * 设置需要被处理的数组
+     *
+     * @param array
+     */
+    static getInstance(array) {
+        let instance = this.newInstance();
+        instance.setSerie(array);
+        return instance;
+    }
+    /**
+     * 等距分段法
+     *
+     * @param array
+     * @param segNum
+     */
+    static getEqInterval(array, segNum) {
+        return this.getInstance(array).getClassEqInterval(segNum);
+    }
+    /**
+     * 平方根分段法
+     *
+     * @param array
+     * @param segNum
+     */
+    static getSqrtInterval(array, segNum) {
+        array = array.map(function(value) {
+            return Math.sqrt(value);
+        });
+        let breaks = this.getInstance(array).getClassEqInterval(segNum);
+        return (
+            breaks.map(function(value) {
+                return value * value;
+            })
+        )
+    }
+
+    /**
+     * 检测数据是否为number
+     * @param value 值，未知数据类型
+     * @returns {boolean}
+     */
+    static isNumber(value) {
+        if (value === '') {
+            return false;
+        }
+        let mdata = Number(value);
+        if (mdata === 0) {
+            return true;
+        }
+        return !isNaN(mdata);
+    }
+    /**
+     * 获取feature (restData)
+     * @param url
+     * @param datasetNames
+     * @param processCompleted
+     * @param processFaild
+     */
+    static getFeatureBySQL(url, datasetNames, processCompleted, processFaild) {
+        let getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
+        getFeatureParam = new FilterParameter_FilterParameter({
+            name: datasetNames.join().replace(":", "@"),
+            attributeFilter: 'SMID > 0'
+        });
+        getFeatureBySQLParams = new GetFeaturesBySQLParameters_GetFeaturesBySQLParameters({
+            queryParameter: getFeatureParam,
+            datasetNames: datasetNames,
+            fromIndex: 0,
+            toIndex: 100000,
+            returnContent: true
+        });
+        let options = {
+            eventListeners: {
+                processCompleted: function (getFeaturesEventArgs) {
+                    processCompleted(getFeaturesEventArgs);
+                },
+                processFaild: function (e) {
+                    processFaild && processFaild(e);
+                }
+            }
+        };
+        /*if (!this.isInTheSameDomain(url)) {
+            url = this.getIPortalUrl() + 'apps/viewer/getUrlResource.json?url=' + url;
+        }*/
+        getFeatureBySQLService = new GetFeaturesBySQLService_GetFeaturesBySQLService(url, options);
+        getFeatureBySQLService.processAsync(getFeatureBySQLParams);
+    }
+
+}
+
+external_ol_default.a.supermap.Util = core_Util_Util;
+// CONCATENATED MODULE: ./src/openlayers/core/StyleUtils.js
+
+
 
 
 
@@ -66841,7 +73169,7 @@ class StyleUtils_StyleUtils {
             return [];
         }
         var w = style.strokeWidth * widthFactor;
-        var str = style.strokeDashstyle;
+        var str = style.strokeDashstyle || style.lineDash;
         switch (str) {
             case 'solid':
                 return [];
@@ -67001,278 +73329,148 @@ class StyleUtils_StyleUtils {
         }
         return style;
     }
+
+    static toOpenLayersStyle(style, type) {
+        style = style || this.getDefaultStyle();
+        let olStyle = new external_ol_default.a.style.Style();
+        let newImage, newFill, newStroke;
+        const ZERO = 0.0000001;
+        let {
+            fillColor,
+            fillOpacity,
+            strokeColor,
+            strokeWidth,
+            strokeOpacity,
+            radius,
+            lineDash,
+            lineCap,
+            src,
+            scale,
+            //size,
+            //imgSize,
+            anchor
+        } = style;
+        let fillColorArray = this.hexToRgb(fillColor);
+        if(fillColorArray){
+            fillColorArray.push(fillOpacity);
+        }
+
+        let strokeColorArray = this.hexToRgb(strokeColor);
+        if(strokeColorArray){
+            strokeColorArray.push(strokeOpacity);
+        }
+        if (type === "POINT") {
+            if (src) {
+                newImage = new external_ol_default.a.style.Icon({
+                    src: src,
+                    scale: scale,
+                    anchor: anchor
+                });
+            } else {
+                newImage = new external_ol_default.a.style.Circle({
+                    radius: radius,
+                    fill: new external_ol_default.a.style.Fill({
+                        color: fillColorArray
+                    }),
+                    stroke: new external_ol_default.a.style.Stroke({
+                        width: strokeWidth || ZERO,
+                        color: strokeColorArray
+                    })
+                });
+            }
+            olStyle.setImage(newImage);
+        }
+        else if (type === "LINE" || type === "LINESTRING") {
+            newStroke = new external_ol_default.a.style.Stroke({
+                width: strokeWidth || ZERO,
+                color: strokeColorArray,
+                lineCap: lineCap || 'round', //todo 缺少lineCap
+                lineDash: this.dashStyle(style, 1)
+            });
+            olStyle.setStroke(newStroke);
+        } else {
+            newFill = new external_ol_default.a.style.Fill({
+                color: fillColorArray
+            });
+            newStroke = new external_ol_default.a.style.Stroke({
+                width: strokeWidth || ZERO,
+                color: strokeColorArray,
+                lineCap: lineCap || 'round',
+                lineDash: this.dashStyle(style, 1)
+            });
+            olStyle.setFill(newFill);
+            olStyle.setStroke(newStroke);
+        }
+        return olStyle;
+    }
+    /**
+     * 将16进制的颜色，转换成rgb格式
+     * @param hexColor
+     * @returns {*[]}
+     */
+    static hexToRgb (hexColor) {
+        if (!hexColor) return;
+        var s = hexColor.replace('#', '').split('');
+        var rgb = [s[0] + s[1], s[2] + s[3], s[4] + s[5]];
+        rgb = rgb.map(function (hex) {
+            return parseInt(hex, 16);
+        });
+        return rgb;
+    }
+    /**
+     * 将颜色数组转换成标准的rgb颜色格式
+     * @param colorArray {Array}
+     * @returns {String} 'rgb(0,0,0)'或者 rgba(0,0,0,0)
+     */
+    static formatRGB(colorArray) {
+        let rgb;
+        if(colorArray.length === 3) {
+            rgb = 'rgb(';
+            colorArray.forEach(function (color,index) {
+                index === 2 ? rgb += color : rgb += color + ',';
+            });
+        } else {
+            rgb = 'rgba(';
+            colorArray.forEach(function (color,index) {
+                index === 3 ? rgb += color : rgb += color + ',';
+            });
+        }
+        return rgb;
+    }
+    /**
+     * 将SVG转换成Canvas
+     * @param svgUrl
+     * @param divDom
+     * @param callBack
+     */
+    static getCanvasFromSVG (svgUrl, divDom, callBack) {
+        //一个图层对应一个canvas
+        let canvas = document.createElement('canvas');
+        canvas.id = 'dataviz-canvas-' + core_Util_Util.newGuid(8);
+        divDom.appendChild(canvas);
+        try {
+            canvg_min_default()(canvas.id, svgUrl, {
+                ignoreMouse: true,
+                ignoreAnimation: true,
+                renderCallback: function () {
+                    if(canvas.width > 300 || canvas.height > 300) {
+                        // Util.showMessage(DataViz.Language.sizeIsWrong,'WARNING');
+                        return;
+                    }
+                    callBack(canvas);
+                },
+                forceRedraw: function () {
+                    return false
+                }
+            });
+        } catch(e) {
+            // Util.showMessage(DataViz.Language.loadFaild,'ERROR');
+        }
+    }
+
 }
 
 external_ol_default.a.supermap.StyleUtils = StyleUtils_StyleUtils;
-// CONCATENATED MODULE: ./src/openlayers/core/Util.js
-/* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
- * This program are made available under the terms of the Apache License, Version 2.0
- * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
-
-
-
-external_ol_default.a.supermap = external_ol_default.a.supermap || {};
-
-/**
- * @class ol.supermap.Util
- * @category BaseTypes Util
- * @classdesc 工具类。
- */
-class core_Util_Util {
-
-    constructor() {
-
-    }
-
-    /**
-     * @function ol.supermap.Util.toGeoJSON
-     * @description 将传入对象转为 GeoJSON 格式。
-     * @param {Object} smObj - 待转参数。
-     */
-    static toGeoJSON(smObj) {
-        if (smObj) {
-            var format = new GeoJSON_GeoJSON();
-            return JSON.parse(format.write(smObj));
-        }
-    }
-
-    /**
-     * @function ol.supermap.Util.toSuperMapGeometry
-     * @description 将 GeoJSON 对象转为 SuperMap 几何图形。
-     * @param {GeoJSONObject} geoJSON - GeoJSON 对象。
-     */
-    static toSuperMapGeometry(geoJSON) {
-        if (geoJSON && geoJSON.type) {
-            var format = new GeoJSON_GeoJSON();
-            var result = format.read(geoJSON, "FeatureCollection");
-            return result[0].geometry;
-        }
-    }
-
-    /**
-     * @function ol.supermap.Util.resolutionToScale
-     * @description 通过分辨率计算比例尺。
-     * @param {number} resolution - 分辨率。
-     * @param {number} dpi - 屏幕分辨率。
-     * @param {string} mapUnit - 地图单位。
-     * @returns {number} 比例尺。
-     */
-    static resolutionToScale(resolution, dpi, mapUnit) {
-        var inchPerMeter = 1 / 0.0254;
-        // 地球半径。
-        var meterPerMapUnit = this.getMeterPerMapUnit(mapUnit);
-        var scale = resolution * dpi * inchPerMeter * meterPerMapUnit;
-        scale = 1 / scale;
-        return scale;
-    }
-
-    /**
-     * @function ol.supermap.Util.toSuperMapBounds
-     * @description 转为 SuperMapBounds 格式。
-     * @param {Array.<number>} bounds - bounds 数组。
-     * @returns {SuperMap.Bounds} 返回 SuperMap 的 Bounds 对象。
-     */
-    static toSuperMapBounds(bounds) {
-        return new Bounds_Bounds(
-            bounds[0],
-            bounds[1],
-            bounds[2],
-            bounds[3]
-        );
-    }
-
-    /**
-     * @function ol.supermap.Util.toProcessingParam
-     * @description 将 Region 节点数组转为 Processing 服务需要的分析参数。
-     * @param {Array} points - Region 各个节点数组。
-     * @returns processing 服务裁剪、查询分析的分析参数。
-     */
-    static toProcessingParam(points) {
-        var geometryParam = {};
-        if (points.length < 1) {
-            geometryParam = "";
-        } else {
-            var results = [];
-            for (var i = 0; i < points.length; i++) {
-                var point = {};
-                point.x = points[i][0];
-                point.y = points[i][1];
-                results.push(point);
-            }
-            results.push(results[0]);
-            geometryParam.type = "REGION";
-            geometryParam.points = results;
-        }
-        return geometryParam;
-    }
-
-    /**
-     * @function ol.supermap.Util.scaleToResolution
-     * @description 通过比例尺计算分辨率。
-     * @param {number} scale - 比例尺。
-     * @param {number} dpi - 屏幕分辨率。
-     * @param {string} mapUnit - 地图单位。
-     * @returns {number} 分辨率。
-     */
-    static scaleToResolution(scale, dpi, mapUnit) {
-        var inchPerMeter = 1 / 0.0254;
-        var meterPerMapUnitValue = this.getMeterPerMapUnit(mapUnit);
-        var resolution = scale * dpi * inchPerMeter * meterPerMapUnitValue;
-        resolution = 1 / resolution;
-        return resolution;
-    }
-
-    /**
-     * @private
-     * @function ol.supermap.Util.getMeterPerMapUnit
-     * @description 获取每地图单位多少米。
-     * @param {string} mapUnit - 地图单位。
-     * @returns {number} 返回每地图单位多少米。
-     */
-    static getMeterPerMapUnit(mapUnit) {
-        var earchRadiusInMeters = 6378137;
-        var meterPerMapUnit;
-        if (mapUnit === Unit.METER) {
-            meterPerMapUnit = 1;
-        } else if (mapUnit === Unit.DEGREE) {
-            // 每度表示多少米。
-            meterPerMapUnit = Math.PI * 2 * earchRadiusInMeters / 360;
-        } else if (mapUnit === Unit.KILOMETER) {
-            meterPerMapUnit = 1.0E-3;
-        } else if (mapUnit === Unit.INCH) {
-            meterPerMapUnit = 1 / 2.5399999918E-2;
-        } else if (mapUnit === Unit.FOOT) {
-            meterPerMapUnit = 0.3048;
-        } else {
-            return meterPerMapUnit;
-        }
-        return meterPerMapUnit;
-    }
-
-    /**
-     * @function ol.supermap.Util.isArray
-     * @description 判断是否为数组格式。
-     * @param {Object} obj - 待判断对象。
-     * @returns {boolean} 是否是数组。
-     */
-    static isArray(obj) {
-        return Object.prototype.toString.call(obj) == '[object Array]'
-    }
-
-    /**
-     * @function ol.supermap.Util.Csv2GeoJSON
-     * @description 将 csv 格式转为 GeoJSON。
-     * @param {Object} csv - csv 对象。
-     * @param {Object} options - 转换参数。
-     */
-    static Csv2GeoJSON(csv, options) {
-        var defaultOptions = {
-            titles: ['lon', 'lat'],
-            latitudeTitle: 'lat',
-            longitudeTitle: 'lon',
-            fieldSeparator: ',',
-            lineSeparator: '\n',
-            deleteDoubleQuotes: true,
-            firstLineTitles: false
-        };
-        options = options || defaultOptions;
-        var _propertiesNames = []
-        if (typeof csv === 'string') {
-            var titulos = options.titles;
-            if (options.firstLineTitles) {
-                csv = csv.split(options.lineSeparator);
-                if (csv.length < 2) {
-                    return;
-                }
-                titulos = csv[0];
-                csv.splice(0, 1);
-                csv = csv.join(options.lineSeparator);
-                titulos = titulos.trim().split(options.fieldSeparator);
-                for (let i = 0; i < titulos.length; i++) {
-                    titulos[i] = _deleteDoubleQuotes(titulos[i]);
-                }
-                options.titles = titulos;
-            }
-            for (let i = 0; i < titulos.length; i++) {
-                var prop = titulos[i].toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '_');
-                if (prop == '' || prop == '_') {
-                    prop = 'prop-' + i;
-                }
-                _propertiesNames[i] = prop;
-            }
-            csv = _csv2json(csv);
-        }
-        return csv;
-
-        function _deleteDoubleQuotes(cadena) {
-            if (options.deleteDoubleQuotes) {
-                cadena = cadena.trim().replace(/^"/, "").replace(/"$/, "");
-            }
-            return cadena;
-        }
-
-        function _csv2json(csv) {
-            var json = {};
-            json["type"] = "FeatureCollection";
-            json["features"] = [];
-            var titulos = options.titles;
-            csv = csv.split(options.lineSeparator);
-            for (var num_linea = 0; num_linea < csv.length; num_linea++) {
-                var campos = csv[num_linea].trim().split(options.fieldSeparator)
-                    , lng = parseFloat(campos[titulos.indexOf(options.longitudeTitle)])
-                    , lat = parseFloat(campos[titulos.indexOf(options.latitudeTitle)]);
-
-                var isInRange = lng < 180 && lng > -180 && lat < 90 && lat > -90;
-                if (!(campos.length == titulos.length && isInRange)) {
-                    continue;
-                }
-
-                var feature = {};
-                feature["type"] = "Feature";
-                feature["geometry"] = {};
-                feature["properties"] = {};
-                feature["geometry"]["type"] = "Point";
-                feature["geometry"]["coordinates"] = [lng, lat];
-                for (var i = 0; i < titulos.length; i++) {
-                    if (titulos[i] != options.latitudeTitle && titulos[i] != options.longitudeTitle) {
-                        feature["properties"][_propertiesNames[i]] = _deleteDoubleQuotes(campos[i]);
-                    }
-                }
-                json["features"].push(feature);
-            }
-            return json;
-        }
-    }
-
-    /**
-     * @function ol.supermap.Util.createCanvasContext2D
-     * @description 创建 2D 画布。
-     * @param {number} opt_width - 画布宽度。
-     * @param {number} opt_height - 画布高度。
-     */
-    static createCanvasContext2D(opt_width, opt_height) {
-        var canvas = document.createElement('CANVAS');
-        if (opt_width) {
-            canvas.width = opt_width;
-        }
-        if (opt_height) {
-            canvas.height = opt_height;
-        }
-        return canvas.getContext('2d');
-    }
-    /**
-     * @function ol.supermap.Util.supportWebGL2
-     * @description 是否支持 webgl2。
-     */
-    static supportWebGL2() {
-        var canvas = document.createElement('canvas');
-        return Boolean(canvas && canvas.getContext("webgl2"));
-    }
-
-
-}
-
-external_ol_default.a.supermap.Util = core_Util_Util;
 // CONCATENATED MODULE: ./src/openlayers/core/MapExtend.js
 /* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
@@ -67322,10 +73520,1983 @@ var MapExtend = function () {
         return this.forEachFeatureAtPixelDefault(pixel, callback, opt_options);
     }
 }();
+// CONCATENATED MODULE: ./src/openlayers/core/colors_picker_util/Util.js
+/* COPYRIGHT 2012 SUPERMAP
+ * 本程序只能在有效的授权许可下使用。
+ * 未经许可，不得以任何手段擅自使用或传播。*/
+
+/**
+ * Class: SuperMap.LevelRenderer.Tool.Util
+ * LevelRenderer 基础工具类
+ *
+ */
+class ColorUtil {
+
+  /*  /!**
+     * Property: BUILTIN_OBJECT
+     * {Object} 用于处理merge时无法遍历Date等对象的问题
+     *!/
+    BUILTIN_OBJECT: null,
+
+    /!**
+     * Property: _ctx
+     * {Object}
+     *!/
+    _ctx: null,
+
+    /!**
+     * Property: _canvas
+     * {Object}
+     *!/
+    _canvas: null,
+
+    /!**
+     * Property: _pixelCtx
+     * {Object}
+     *!/
+    _pixelCtx: null,
+
+    /!**
+     * Property: _width
+     * {Object}
+     *!/
+    _width: null,
+
+    /!**
+     * Property: _height
+     * {Object}
+     *!/
+    _height: null,
+
+    /!**
+     * Property: _offsetX
+     * {Object}
+     *!/
+    _offsetX: 0,
+
+    /!**
+     * Property: _offsetY
+     * {Object}
+     *!/
+    _offsetY: 0,
+*/
+    /**
+     * Constructor: SuperMap.LevelRenderer.Tool.Util
+     * 构造函数。
+     *
+     */
+    static initialize () {
+        this.BUILTIN_OBJECT = {
+            '[object Function]': 1,
+            '[object RegExp]': 1,
+            '[object Date]': 1,
+            '[object Error]': 1,
+            '[object CanvasGradient]': 1
+        };
+    }
+
+
+    /**
+     * APIMethod: clone
+     * 对一个object进行深度拷贝。
+     *
+     * Parameters:
+     * source - {Object} 需要进行拷贝的对象。
+     *
+     * Returns:
+     * {Object} 拷贝后的新对象。
+     */
+    static clone (source) {
+        var BUILTIN_OBJECT = this.BUILTIN_OBJECT;
+        if (typeof source === 'object' && source !== null) {
+            var result = source;
+            if (source instanceof Array) {
+                result = [];
+                for (var i = 0, len = source.length; i < len; i++) {
+                    result[i] = this.clone(source[i]);
+                }
+            }
+            else if (!BUILTIN_OBJECT[Object.prototype.toString.call(source)]) {
+                result = {};
+                for (var key in source) {
+                    if (source.hasOwnProperty(key)) {
+                        result[key] = this.clone(source[key]);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        return source;
+    }
+
+
+    /**
+     * Method: mergeItem
+     * 合并源对象的单个属性到目标对象。
+     *
+     * Parameters:
+     * target - {Object} 目标对象。
+     * source - {Object} 源对象。
+     * key - {String} 键。
+     * overwrite - {Boolean} 是否覆盖。
+     *
+     * Returns:
+     * {Object} 目标对象。
+     */
+    static mergeItem (target, source, key, overwrite) {
+        var BUILTIN_OBJECT = this.BUILTIN_OBJECT;
+        if (source.hasOwnProperty(key)) {
+            if (typeof target[key] === 'object'
+                && !BUILTIN_OBJECT[ Object.prototype.toString.call(target[key]) ]
+                ) {
+                // 如果需要递归覆盖，就递归调用merge
+                this.merge(
+                    target[key],
+                    source[key],
+                    overwrite
+                );
+            }
+            else if (overwrite || !(key in target)) {
+                // 否则只处理overwrite为true，或者在目标对象中没有此属性的情况
+                target[key] = source[key];
+            }
+        }
+    }
+
+    /**
+     * APIMethod: merge
+     * 合并源对象的属性到目标对象。
+     *
+     * Parameters:
+     * target - {Object} 目标对象。
+     * source - {Object} 源对象。
+     * overwrite - {Boolean} 是否覆盖。
+     *
+     * Returns:
+     * {Object} 目标对象。
+     */
+    static merge (target, source, overwrite) {
+        for (var i in source) {
+            this.mergeItem(target, source, i, overwrite);
+        }
+
+        return target;
+    }
+
+
+    /**
+     * Method: getContext
+     * 获取 Cavans 上下文
+     *
+     * Returns:
+     * {Object} Cavans 上下文。
+     */
+    static getContext () {
+        if (!this._ctx) {
+            this._ctx = document.createElement('canvas').getContext('2d');
+        }
+        return this._ctx;
+    }
+
+
+    /**
+     * APIMethod: getPixelContext
+     * 获取像素拾取专用的上下文
+     *
+     * Returns:
+     * {Object}像素拾取专用的上下文。
+     */
+    static getPixelContext () {
+        if (!this._pixelCtx) {
+            this._canvas = document.createElement('canvas');
+            this._width = this._canvas.width;
+            this._height = this._canvas.height;
+            this._pixelCtx = this._canvas.getContext('2d');
+        }
+        return this._pixelCtx;
+    }
+
+    /**
+     * APIMethod: adjustCanvasSize
+     * 如果坐标处在_canvas外部，改变_canvas的大小
+     *
+     * 注意 修改canvas的大小 需要重新设置translate
+     *
+     * Parameters:
+     * x - {Number} 横坐标。
+     * y - {Number} 纵坐标。
+     *
+     */
+    static adjustCanvasSize (x, y) {
+        var _canvas = this._canvas;
+        var _pixelCtx = this._pixelCtx;
+        var _width = this._width;
+        var _height = this._height;
+        var _offsetX = this._offsetX;
+        var _offsetY = this._offsetY;
+
+        // 每次加的长度
+        var _v = 100;
+        var _flag;
+
+        if (x + _offsetX > _width) {
+            _width = x + _offsetX + _v;
+            _canvas.width = _width;
+            _flag = true;
+        }
+
+        if (y + _offsetY > _height) {
+            _height = y + _offsetY + _v;
+            _canvas.height = _height;
+            _flag = true;
+        }
+
+        if (x < -_offsetX) {
+            _offsetX = Math.ceil(-x / _v) * _v;
+            _width += _offsetX;
+            _canvas.width = _width;
+            _flag = true;
+        }
+
+        if (y < -_offsetY) {
+            _offsetY = Math.ceil(-y / _v) * _v;
+            _height += _offsetY;
+            _canvas.height = _height;
+            _flag = true;
+        }
+
+        if (_flag) {
+            _pixelCtx.translate(_offsetX, _offsetY);
+        }
+    }
+
+    /**
+     * APIMethod: getPixelOffset
+     * 获取像素canvas的偏移量
+     *
+     * Returns:
+     * {Object}偏移量。
+     */
+    static getPixelOffset () {
+        return {
+            x : this._offsetX,
+            y : this._offsetY
+        };
+    }
+
+
+    /**
+     * APIMethod: indexOf
+     * 查询数组中元素的index
+     *
+     * Returns:
+     * {Object}偏移量。
+     */
+    static indexOf (array, value) {
+        if (array.indexOf) {
+            return array.indexOf(value);
+        }
+        for (var i = 0, len = array.length; i < len; i++) {
+            if (array[i] === value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+    /**
+     * APIMethod: inherits
+     * 构造类继承关系
+     *
+     * Parameters:
+     * clazz - {Function} 源类。
+     * baseClazz - {Function} 基类。
+     *
+     * Returns:
+     * {Object}偏移量。
+     */
+    static inherits (clazz, baseClazz) {
+        var clazzPrototype = clazz.prototype;
+        function F() {
+            // eslint true
+            }
+        F.prototype = baseClazz.prototype;
+        clazz.prototype = new F();
+
+        for (var prop in clazzPrototype) {
+            clazz.prototype[prop] = clazzPrototype[prop];
+        }
+        clazz.constructor = clazz;
+    }
+};
+// CONCATENATED MODULE: ./src/openlayers/core/colors_picker_util/Color.js
+/* COPYRIGHT 2012 SUPERMAP
+ * 本程序只能在有效的授权许可下使用。
+ * 未经许可，不得以任何手段擅自使用或传播。*/
+
+/**
+ * Class: SuperMap.LevelRenderer.Tool.Color
+ * LevelRenderer 工具-颜色辅助类
+ *
+ */
+
+ColorUtil.initialize();
+
+class colors_picker_util_Color_Color {
+
+  /*  /!**
+     * Property: util
+     * {<SuperMap.LevelRenderer.Tool.Util>} LevelRenderer 基础工具对象
+     *!/
+    util: null,
+
+    /!**
+     * Property: _ctx
+     * {Object} _ctx
+     *!/
+    _ctx: null,
+
+    /!**
+     * Property: palette
+     * {Array} 默认色板
+     * 色板是一个包含图表默认颜色系列的数组，当色板中所有颜色被使用过后，又将从新回到色板中的第一个颜色。
+     *
+     * [
+     * '#ff9277', '#dddd00', '#ffc877', '#bbe3ff', '#d5ffbb', '#bbbbff', '#ddb000', '#b0dd00', '#e2bbff', '#ffbbe3',
+     * '#ff7777', '#ff9900', '#83dd00', '#77e3ff', '#778fff', '#c877ff', '#ff77ab', '#ff6600', '#aa8800', '#77c7ff',  '
+     * #ad77ff', '#ff77ff', '#dd0083', '#777700', '#00aa00', '#0088aa', '#8400dd', '#aa0088', '#dd0000', '#772e00'
+     * ];
+     *!/
+    palette: null,
+
+    /!**
+     * Property: _palette
+     * {Array} 复位色板，用于复位  palette
+     *!/
+    _palette: null,
+
+    /!**
+     * Property: highlightColor
+     * {String} 高亮色
+     *!/
+    highlightColor: null,
+
+    /!**
+     * Property: _highlightColor
+     * {String} 复位高亮色
+     *!/
+    _highlightColor: null,
+
+    /!**
+     * Property: colorRegExp
+     * {String} 颜色格式，正则表达式。
+     *!/
+    colorRegExp: null,
+
+    /!**
+     * Property: _nameColors
+     * {String} 颜色名。
+     *!/
+    _nameColors: null,*/
+
+    static initialize () {
+        this.util = ColorUtil;
+
+        this.palette = [
+            '#ff9277', ' #dddd00', ' #ffc877', ' #bbe3ff', ' #d5ffbb',
+            '#bbbbff', ' #ddb000', ' #b0dd00', ' #e2bbff', ' #ffbbe3',
+            '#ff7777', ' #ff9900', ' #83dd00', ' #77e3ff', ' #778fff',
+            '#c877ff', ' #ff77ab', ' #ff6600', ' #aa8800', ' #77c7ff',
+            '#ad77ff', ' #ff77ff', ' #dd0083', ' #777700', ' #00aa00',
+            '#0088aa', ' #8400dd', ' #aa0088', ' #dd0000', ' #772e00'
+        ];
+
+        this._palette = this.palette;
+
+        this.highlightColor = 'rgba(0,0,255,1)';
+
+        this._highlightColor = this.highlightColor;
+
+        this.colorRegExp = /^\s*((#[a-f\d]{6})|(#[a-f\d]{3})|rgba?\(\s*([\d\.]+%?\s*,\s*[\d\.]+%?\s*,\s*[\d\.]+%?(?:\s*,\s*[\d\.]+%?)?)\s*\)|hsba?\(\s*([\d\.]+(?:deg|\xb0|%)?\s*,\s*[\d\.]+%?\s*,\s*[\d\.]+%?(?:\s*,\s*[\d\.]+)?)%?\s*\)|hsla?\(\s*([\d\.]+(?:deg|\xb0|%)?\s*,\s*[\d\.]+%?\s*,\s*[\d\.]+%?(?:\s*,\s*[\d\.]+)?)%?\s*\))\s*$/i;
+
+        this._nameColors = {
+            aliceblue : '#f0f8ff',
+            antiquewhite : '#faebd7',
+            aqua : '#0ff',
+            aquamarine : '#7fffd4',
+            azure : '#f0ffff',
+            beige : '#f5f5dc',
+            bisque : '#ffe4c4',
+            black : '#000',
+            blanchedalmond : '#ffebcd',
+            blue : '#00f',
+            blueviolet : '#8a2be2',
+            brown : '#a52a2a',
+            burlywood : '#deb887',
+            cadetblue : '#5f9ea0',
+            chartreuse : '#7fff00',
+            chocolate : '#d2691e',
+            coral : '#ff7f50',
+            cornflowerblue : '#6495ed',
+            cornsilk : '#fff8dc',
+            crimson : '#dc143c',
+            cyan : '#0ff',
+            darkblue : '#00008b',
+            darkcyan : '#008b8b',
+            darkgoldenrod : '#b8860b',
+            darkgray : '#a9a9a9',
+            darkgrey : '#a9a9a9',
+            darkgreen : '#006400',
+            darkkhaki : '#bdb76b',
+            darkmagenta : '#8b008b',
+            darkolivegreen : '#556b2f',
+            darkorange : '#ff8c00',
+            darkorchid : '#9932cc',
+            darkred : '#8b0000',
+            darksalmon : '#e9967a',
+            darkseagreen : '#8fbc8f',
+            darkslateblue : '#483d8b',
+            darkslategray : '#2f4f4f',
+            darkslategrey : '#2f4f4f',
+            darkturquoise : '#00ced1',
+            darkviolet : '#9400d3',
+            deeppink : '#ff1493',
+            deepskyblue : '#00bfff',
+            dimgray : '#696969',
+            dimgrey : '#696969',
+            dodgerblue : '#1e90ff',
+            firebrick : '#b22222',
+            floralwhite : '#fffaf0',
+            forestgreen : '#228b22',
+            fuchsia : '#f0f',
+            gainsboro : '#dcdcdc',
+            ghostwhite : '#f8f8ff',
+            gold : '#ffd700',
+            goldenrod : '#daa520',
+            gray : '#808080',
+            grey : '#808080',
+            green : '#008000',
+            greenyellow : '#adff2f',
+            honeydew : '#f0fff0',
+            hotpink : '#ff69b4',
+            indianred : '#cd5c5c',
+            indigo : '#4b0082',
+            ivory : '#fffff0',
+            khaki : '#f0e68c',
+            lavender : '#e6e6fa',
+            lavenderblush : '#fff0f5',
+            lawngreen : '#7cfc00',
+            lemonchiffon : '#fffacd',
+            lightblue : '#add8e6',
+            lightcoral : '#f08080',
+            lightcyan : '#e0ffff',
+            lightgoldenrodyellow : '#fafad2',
+            lightgray : '#d3d3d3',
+            lightgrey : '#d3d3d3',
+            lightgreen : '#90ee90',
+            lightpink : '#ffb6c1',
+            lightsalmon : '#ffa07a',
+            lightseagreen : '#20b2aa',
+            lightskyblue : '#87cefa',
+            lightslategray : '#789',
+            lightslategrey : '#789',
+            lightsteelblue : '#b0c4de',
+            lightyellow : '#ffffe0',
+            lime : '#0f0',
+            limegreen : '#32cd32',
+            linen : '#faf0e6',
+            magenta : '#f0f',
+            maroon : '#800000',
+            mediumaquamarine : '#66cdaa',
+            mediumblue : '#0000cd',
+            mediumorchid : '#ba55d3',
+            mediumpurple : '#9370d8',
+            mediumseagreen : '#3cb371',
+            mediumslateblue : '#7b68ee',
+            mediumspringgreen : '#00fa9a',
+            mediumturquoise : '#48d1cc',
+            mediumvioletred : '#c71585',
+            midnightblue : '#191970',
+            mintcream : '#f5fffa',
+            mistyrose : '#ffe4e1',
+            moccasin : '#ffe4b5',
+            navajowhite : '#ffdead',
+            navy : '#000080',
+            oldlace : '#fdf5e6',
+            olive : '#808000',
+            olivedrab : '#6b8e23',
+            orange : '#ffa500',
+            orangered : '#ff4500',
+            orchid : '#da70d6',
+            palegoldenrod : '#eee8aa',
+            palegreen : '#98fb98',
+            paleturquoise : '#afeeee',
+            palevioletred : '#d87093',
+            papayawhip : '#ffefd5',
+            peachpuff : '#ffdab9',
+            peru : '#cd853f',
+            pink : '#ffc0cb',
+            plum : '#dda0dd',
+            powderblue : '#b0e0e6',
+            purple : '#800080',
+            red : '#f00',
+            rosybrown : '#bc8f8f',
+            royalblue : '#4169e1',
+            saddlebrown : '#8b4513',
+            salmon : '#fa8072',
+            sandybrown : '#f4a460',
+            seagreen : '#2e8b57',
+            seashell : '#fff5ee',
+            sienna : '#a0522d',
+            silver : '#c0c0c0',
+            skyblue : '#87ceeb',
+            slateblue : '#6a5acd',
+            slategray : '#708090',
+            slategrey : '#708090',
+            snow : '#fffafa',
+            springgreen : '#00ff7f',
+            steelblue : '#4682b4',
+            tan : '#d2b48c',
+            teal : '#008080',
+            thistle : '#d8bfd8',
+            tomato : '#ff6347',
+            turquoise : '#40e0d0',
+            violet : '#ee82ee',
+            wheat : '#f5deb3',
+            white : '#fff',
+            whitesmoke : '#f5f5f5',
+            yellow : '#ff0',
+            yellowgreen : '#9acd32'
+        };
+    }
+
+    /**
+     * APIMethod: customPalette
+     * 自定义调色板。
+     *
+     * Parameters:
+     * userPalete - {Array} 颜色板。
+     */
+    static customPalette (userPalete){
+        this.palette = userPalete;
+    }
+
+    /**
+     * APIMethod: resetPalette
+     * 复位默认色板。
+     *
+     */
+    static resetPalette (){
+        this.palette = this._palette;
+    }
+
+    /**
+     * APIMethod: getColor
+     * 获取色板颜色。
+     *
+     * Parameters:
+     * idx - {Number} 色板位置。
+     * userPalete - {Array} 色板。
+     *
+     * Returns:
+     * {String} 颜色值。
+     */
+    static getColor (idx, userPalete){
+        idx = idx | 0;
+        userPalete = userPalete || this.palette;
+        return userPalete[idx % userPalete.length];
+    }
+
+    /**
+     * APIMethod: customHighlight
+     * 自定义默认高亮颜色。
+     *
+     * Parameters:
+     * userHighlightColor - {String} 自定义高亮色。
+     */
+    static customHighlight (userHighlightColor){
+        this.highlightColor = userHighlightColor;
+    }
+
+    /**
+     * APIMethod: resetHighlight
+     * 重置默认高亮颜色。将当前的高亮色作为默认高亮颜色
+     *
+     */
+    static resetHighlight (){
+        this.highlightColor = this._highlightColor;
+    }
+
+    /**
+     * APIMethod: getHighlightColor
+     * 获取默认高亮颜色
+     *
+     * Returns:
+     * {String} 颜色值。
+     */
+    static getHighlightColor (){
+        return this.highlightColor;
+    }
+
+    /**
+     * APIMethod: getRadialGradient
+     * 径向渐变。
+     *
+     * Parameters:
+     * x0 - {Number} 渐变起点。
+     * y0 - {Number}
+     * r0 - {Number}
+     * x1 - {Number} 渐变终点。
+     * y1 - {Number}
+     * r1 - {Number}
+     * colorList - {Array} 颜色列表。
+     *
+     * Returns:
+     * {CanvasGradient} Cavans 渐变颜色。
+     */
+    static getRadialGradient (x0, y0, r0, x1, y1, r1, colorList){
+        var util = this.util;
+
+        if (!this._ctx) {
+            this._ctx = util.getContext();
+        }
+        var gradient = this._ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+        for (var i = 0, l = colorList.length; i < l; i++) {
+            gradient.addColorStop(colorList[i][0], colorList[i][1]);
+        }
+        gradient.__nonRecursion = true;
+        return gradient;
+    }
+
+
+    /**
+     * APIMethod: getLinearGradient
+     * 线性渐变。
+     *
+     * Parameters:
+     * x0 - {Number} 渐变起点。
+     * y0 - {Number}
+     * x1 - {Number} 渐变终点。
+     * y1 - {Number}
+     * colorList - {Array} 颜色列表。
+     *
+     * Returns:
+     * {CanvasGradient} Cavans 渐变颜色。
+     */
+    static getLinearGradient (x0, y0, x1, y1, colorList){
+        var util = this.util;
+
+        if (!this._ctx) {
+            this._ctx = util.getContext();
+        }
+        var gradient = this._ctx.createLinearGradient(x0, y0, x1, y1);
+        for (var i = 0, l = colorList.length; i < l; i++) {
+            gradient.addColorStop(colorList[i][0], colorList[i][1]);
+        }
+        gradient.__nonRecursion = true;
+        return gradient;
+    }
+
+    /**
+     * APIMethod: getStepColors
+     * 获取两种颜色之间渐变颜色数组。
+     *
+     * Parameters:
+     * start - {color} 起始颜色。
+     * end - {color} 结束颜色。
+     * step - {Number} 渐变级数。
+     * colorList - {Array} 颜色列表。
+     *
+     * Returns:
+     * {Array} 颜色数组。
+     */
+    static getStepColors (start, end, step){
+        start = this.toRGBA(start);
+        end = this.toRGBA(end);
+        start = this.getData(start);
+        end = this.getData(end);
+
+        var colors = [];
+        var stepR = (end[0] - start[0]) / step;
+        var stepG = (end[1] - start[1]) / step;
+        var stepB = (end[2] - start[2]) / step;
+        var stepA = (end[3] - start[3]) / step;
+        // 生成颜色集合
+        // fix by linfeng 颜色堆积
+        for (var i = 0, r = start[0], g = start[1], b = start[2], a = start[3]; i < step; i++) {
+            colors[i] = this.toColor([
+                this.adjust(Math.floor(r), [ 0, 255 ]),
+                this.adjust(Math.floor(g), [ 0, 255 ]),
+                this.adjust(Math.floor(b), [ 0, 255 ]),
+                a.toFixed(4) - 0
+            ],'rgba');
+            r += stepR;
+            g += stepG;
+            b += stepB;
+            a += stepA;
+        }
+        r = end[0];
+        g = end[1];
+        b = end[2];
+        a = end[3];
+        colors[i] = this.toColor([r, g, b, a], 'rgba');
+        return colors;
+    }
+
+    /**
+     * APIMethod: getGradientColors
+     * 获取指定级数的渐变颜色数组。
+     *
+     * Parameters:
+     * colors - {Array{String}} 颜色组。
+     * step - {Number}  渐变级数，默认值 20。
+     *
+     * Returns:
+     * {Array{String}} 颜色数组。
+     */
+    static getGradientColors (colors, step) {
+        var ret = [];
+        var len = colors.length;
+        if (step === undefined) {
+            step = 20;
+        }
+        if (len === 1) {
+            ret = this.getStepColors(colors[0], colors[0], step);
+        }
+        else if (len > 1) {
+            for (var i = 0, n = len - 1; i < n; i++) {
+                var steps = this.getStepColors(colors[i], colors[i + 1], step);
+                if (i < n - 1) {
+                    steps.pop();
+                }
+                ret = ret.concat(steps);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * APIMethod: toColor
+     *  颜色值数组转为指定格式颜色。
+     *
+     * Parameters:
+     * data - {Array} 颜色值数组。
+     * format - {String}  格式，默认rgb
+     *
+     * Returns:
+     * {String} 颜色。
+     */
+    static toColor (data, format){
+        format = format || 'rgb';
+        if (data && (data.length === 3 || data.length === 4)) {
+            data = this.map(data,
+                function(c) {
+                    return c > 1 ? Math.ceil(c) : c;
+                }
+            );
+
+            if (format.indexOf('hex') > -1) {
+                return '#' + ((1 << 24) + (data[0] << 16) + (data[1] << 8) + (+data[2])).toString(16).slice(1);
+            }
+            else if (format.indexOf('hs') > -1) {
+                var sx = this.map(data.slice(1, 3),
+                    function(c) {
+                        return c + '%';
+                    }
+                );
+                data[1] = sx[0];
+                data[2] = sx[1];
+            }
+
+            if (format.indexOf('a') > -1) {
+                if (data.length === 3) {
+                    data.push(1);
+                }
+                data[3] = this.adjust(data[3], [ 0, 1 ]);
+                return format + '(' + data.slice(0, 4).join(',') + ')';
+            }
+
+            return format + '(' + data.slice(0, 3).join(',') + ')';
+        }
+    }
+    /**
+     * APIMethod: toArray
+     *  颜色字符串转换为rgba数组。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {Array{Number}} 颜色值数组。
+     */
+    static toArray (color){
+        color = this.trim(color);
+        if (color.indexOf('rgba') < 0) {
+            color = this.toRGBA(color);
+        }
+
+        var data = [];
+        var i = 0;
+        color.replace(/[\d.]+/g, function (n) {
+            if (i < 3) {
+                n = n | 0;
+            }
+            else {
+                // Alpha
+                n = +n;
+            }
+            data[i++] = n;
+        });
+        return data;
+    }
+
+    /**
+     * APIMethod: convert
+     *  颜色格式转化。
+     *
+     * Parameters:
+     * color - {String} 颜色值数组。
+     * format - {String} 格式，默认rgb
+     *
+     * Returns:
+     * {String} 颜色。
+     */
+    static convert (color, format){
+        if (!this.isCalculableColor(color)) {
+            return color;
+        }
+        var data = this.getData(color);
+        var alpha = data[3];
+        if (typeof alpha === 'undefined') {
+            alpha = 1;
+        }
+
+        if (color.indexOf('hsb') > -1) {
+            data = this._HSV_2_RGB(data);
+        }
+        else if (color.indexOf('hsl') > -1) {
+            data = this._HSL_2_RGB(data);
+        }
+
+        if (format.indexOf('hsb') > -1 || format.indexOf('hsv') > -1) {
+            data = this._RGB_2_HSB(data);
+        }
+        else if (format.indexOf('hsl') > -1) {
+            data = this._RGB_2_HSL(data);
+        }
+
+        data[3] = alpha;
+
+        return this.toColor(data, format);
+    }
+
+    /**
+     * APIMethod: toRGBA
+     *  转换为rgba格式的颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} rgba颜色，rgba(r,g,b,a)。
+     */
+    static toRGBA (color){
+        return this.convert(color, 'rgba');
+    }
+
+    /**
+     * APIMethod: toRGB
+     *  转换为rgb数字格式的颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} rgb颜色，rgb(0,0,0)格式
+     */
+    static toRGB (color){
+        return this.convert(color, 'rgb');
+    }
+
+    /**
+     * APIMethod: toHex
+     *  转换为16进制颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} 16进制颜色，#rrggbb格式
+     */
+    static toHex (color){
+        return this.convert(color, 'hex');
+    }
+
+    /**
+     * APIMethod: toHSVA
+     *  转换为HSV颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} HSVA颜色，hsva(h,s,v,a)
+     */
+    static toHSVA (color){
+        return this.convert(color, 'hsva');
+    }
+
+    /**
+     * APIMethod: toHSV
+     *  转换为HSV颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} HSV颜色，hsv(h,s,v)
+     */
+    static toHSV (color){
+        return this.convert(color, 'hsv');
+    }
+
+    /**
+     * APIMethod: toHSBA
+     *  转换为HSBA颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} HSBA颜色，hsba(h,s,b,a)
+     */
+    static toHSBA (color){
+        return this.convert(color, 'hsba');
+    }
+
+    /**
+     * APIMethod: toHSB
+     *  转换为HSB颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} HSB颜色，hsb(h,s,b)
+     */
+    static toHSB (color){
+        return this.convert(color, 'hsb');
+    }
+
+    /**
+     * APIMethod: toHSLA
+     *  转换为HSLA颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} HSLA颜色，hsla(h,s,l,a)
+     */
+    static toHSLA (color){
+        return this.convert(color, 'hsla');
+    }
+
+    /**
+     * APIMethod: toHSL
+     *  转换为HSL颜色。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} HSL颜色，hsl(h,s,l)
+     */
+    static toHSL (color){
+        return this.convert(color, 'hsl');
+    }
+
+    /**
+     * APIMethod: toName
+     * 转换颜色名。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} 颜色名
+     */
+    static toName (color){
+        for (var key in this._nameColors) {
+            if (this.toHex(this._nameColors[key]) === this.toHex(color)) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * APIMethod: trim
+     * 移除颜色中多余空格。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} 无空格颜色
+     */
+    static trim (color){
+        return String(color).replace(/\s+/g, '');
+    }
+
+    /**
+     * APIMethod: normalize
+     * 颜色规范化。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} 规范化后的颜色
+     */
+    static normalize (color){
+        // 颜色名
+        if (this._nameColors[color]) {
+            color = this._nameColors[color];
+        }
+        // 去掉空格
+        color = this.trim(color);
+        // hsv与hsb等价
+        color = color.replace(/hsv/i, 'hsb');
+        // rgb转为rrggbb
+        if (/^#[\da-f]{3}$/i.test(color)) {
+            color = parseInt(color.slice(1), 16);
+            var r = (color & 0xf00) << 8;
+            var g = (color & 0xf0) << 4;
+            var b = color & 0xf;
+
+            color = '#' + ((1 << 24) + (r << 4) + r + (g << 4) + g + (b << 4) + b).toString(16).slice(1);
+        }
+        // 或者使用以下正则替换，不过 chrome 下性能相对差点
+        // color = color.replace(/^#([\da-f])([\da-f])([\da-f])$/i, '#$1$1$2$2$3$3');
+        return color;
+    }
+
+    /**
+     * APIMethod: lift
+     * 颜色加深或减淡，当level>0加深，当level<0减淡。
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     * level - {Number} 升降程度,取值区间[-1,1]。
+     *
+     * Returns:
+     * {String} 加深或减淡后颜色值
+     */
+    static lift (color, level){
+        if (!this.isCalculableColor(color)) {
+            return color;
+        }
+        var direct = level > 0 ? 1 : -1;
+        if (typeof level === 'undefined') {
+            level = 0;
+        }
+        level = Math.abs(level) > 1 ? 1 : Math.abs(level);
+        color = this.toRGB(color);
+        var data = this.getData(color);
+        for (var i = 0; i < 3; i++) {
+            if (direct === 1) {
+                data[i] = data[i] * (1 - level) | 0;
+            }
+            else {
+                data[i] = ((255 - data[i]) * level + data[i]) | 0;
+            }
+        }
+        return 'rgb(' + data.join(',') + ')';
+    }
+
+    /**
+     * APIMethod: reverse
+     * 颜色翻转,[255-r,255-g,255-b,1-a]
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {String} 翻转颜色
+     */
+    static reverse (color){
+        if (!this.isCalculableColor(color)) {
+            return color;
+        }
+        var data = this.getData(this.toRGBA(color));
+        data = this.map(data,
+            function(c) {
+                return 255 - c;
+            }
+        );
+        return this.toColor(data, 'rgb');
+    }
+
+    /**
+     * APIMethod: reverse
+     * 简单两种颜色混合
+     *
+     * Parameters:
+     * color1 - {String} 第一种颜色。
+     * color2 - {String} 第二种颜色。
+     * weight - {Number} 混合权重[0-1]。
+     *
+     * Returns:
+     * {String} 结果色,rgb(r,g,b)或rgba(r,g,b,a)
+     */
+    static amix (color1, color2, weight){
+        if (!this.isCalculableColor(color1) || !this.isCalculableColor(color2)) {
+            return color1;
+        }
+
+        if (typeof weight === 'undefined') {
+            weight = 0.5;
+        }
+        weight = 1 - this.adjust(weight, [ 0, 1 ]);
+
+        var w = weight * 2 - 1;
+        var data1 = this.getData(this.toRGBA(color1));
+        var data2 = this.getData(this.toRGBA(color2));
+
+        var d = data1[3] - data2[3];
+
+        var weight1 = (((w * d === -1) ? w : (w + d) / (1 + w * d)) + 1) / 2;
+        var weight2 = 1 - weight1;
+
+        var data = [];
+
+        for (var i = 0; i < 3; i++) {
+            data[i] = data1[i] * weight1 + data2[i] * weight2;
+        }
+
+        var alpha = data1[3] * weight + data2[3] * (1 - weight);
+        alpha = Math.max(0, Math.min(1, alpha));
+
+        if (data1[3] === 1 && data2[3] === 1) {// 不考虑透明度
+            return this.toColor(data, 'rgb');
+        }
+        data[3] = alpha;
+        return this.toColor(data, 'rgba');
+    }
+
+    /**
+     * APIMethod: random
+     * 随机颜色
+     *
+     * Returns:
+     * {String} 颜色值，#rrggbb格式
+     */
+    static random (){
+        return '#' + Math.random().toString(16).slice(2, 8);
+    }
+
+    /**
+     * APIMethod: getData
+     * 获取颜色值数组,返回值范围:
+     *
+     * RGB 范围[0-255]
+     *
+     * HSL/HSV/HSB 范围[0-1]
+     *
+     * A透明度范围[0-1]
+     *
+     * 支持格式：
+     *
+     * #rgb
+     *
+     * #rrggbb
+     *
+     * rgb(r,g,b)
+     *
+     * rgb(r%,g%,b%)
+     *
+     * rgba(r,g,b,a)
+     *
+     * hsb(h,s,b) // hsv与hsb等价
+     *
+     * hsb(h%,s%,b%)
+     *
+     * hsba(h,s,b,a)
+     *
+     * hsl(h,s,l)
+     *
+     * hsl(h%,s%,l%)
+     *
+     * hsla(h,s,l,a)
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {Array{Number}} 颜色值数组或null
+     */
+    static getData (color){
+        color = this.normalize(color);
+        var r = color.match(this.colorRegExp);
+        if (r === null) {
+            throw new Error('The color format error'); // 颜色格式错误
+        }
+        var d;
+        var a;
+        var data = [];
+        var rgb;
+
+        if (r[2]) {
+            // #rrggbb
+            d = r[2].replace('#', '').split('');
+            rgb = [ d[0] + d[1], d[2] + d[3], d[4] + d[5] ];
+            data = this.map(rgb,
+                function(c) {
+                    return colors_picker_util_Color_Color.adjust.call(this, parseInt(c, 16), [ 0, 255 ]);
+                }
+            );
+
+        }
+        else if (r[4]) {
+            // rgb rgba
+            var rgba = (r[4]).split(',');
+            a = rgba[3];
+            rgb = rgba.slice(0, 3);
+            data = this.map(
+                rgb,
+                function(c) {
+                    c = Math.floor(
+                        c.indexOf('%') > 0 ? parseInt(c, 0) * 2.55 : c
+                    );
+                    return colors_picker_util_Color_Color.adjust.call(this, c, [ 0, 255 ]);
+                }
+            );
+
+            if (typeof a !== 'undefined') {
+                data.push(this.adjust(parseFloat(a), [ 0, 1 ]));
+            }
+        }
+        else if (r[5] || r[6]) {
+            // hsb hsba hsl hsla
+            var hsxa = (r[5] || r[6]).split(',');
+            var h = parseInt(hsxa[0], 0) / 360;
+            var s = hsxa[1];
+            var x = hsxa[2];
+            a = hsxa[3];
+            data = this.map([ s, x ],
+                function(c) {
+                    return colors_picker_util_Color_Color.adjust.call(this, parseFloat(c) / 100, [ 0, 1 ]);
+                }
+            );
+            data.unshift(h);
+            if (typeof a !== 'undefined') {
+                data.push(this.adjust(parseFloat(a), [ 0, 1 ]));
+            }
+        }
+        return data;
+    }
+
+    /**
+     * APIMethod: alpha
+     * 设置颜色透明度
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     * a - {Number} 透明度,区间[0,1]。
+     *
+     * Returns:
+     * {String} rgba颜色值
+     */
+    static alpha (color, a){
+        if (!this.isCalculableColor(color)) {
+            return color;
+        }
+        if (a === null) {
+            a = 1;
+        }
+        var data = this.getData(this.toRGBA(color));
+        data[3] = this.adjust(Number(a).toFixed(4), [ 0, 1 ]);
+
+        return this.toColor(data, 'rgba');
+    }
+
+    /**
+     * APIMethod: map
+     * 数组映射
+     *
+     * Parameters:
+     * array - {String} 数组。
+     * fun - {Number} 函数。
+     *
+     * Returns:
+     * {String} 数组映射结果
+     */
+    static map (array, fun){
+        if (typeof fun !== 'function') {
+            throw new TypeError();
+        }
+        var len = array ? array.length : 0;
+        for (var i = 0; i < len; i++) {
+            array[i] = fun(array[i]);
+        }
+        return array;
+    }
+
+    /**
+     * APIMethod: adjust
+     * 调整值区间
+     *
+     * Parameters:
+     * value - {Number} 数组。
+     * region - {Array(Number)} 区间。
+     *
+     * Returns:
+     * {Number} 调整后的值
+     */
+    static adjust (value, region){
+        // < to <= & > to >=
+        // modify by linzhifeng 2014-05-25 because -0 == 0
+        if (value <= region[0]) {
+            value = region[0];
+        }
+        else if (value >= region[1]) {
+            value = region[1];
+        }
+        return value;
+    }
+
+    /**
+     * APIMethod: isCalculableColor
+     * 判断是否是可计算的颜色
+     *
+     * Parameters:
+     * color - {String} 颜色。
+     *
+     * Returns:
+     * {Boolean} 是否是可计算的颜色
+     */
+    static isCalculableColor (color){
+        return color instanceof Array || typeof color === 'string';
+    }
+
+    /**
+     * APIMethod: _HSV_2_RGB
+     * 参见 http:// www.easyrgb.com/index.php?X=MATH
+     */
+    static _HSV_2_RGB (data){
+        var H = data[0];
+        var S = data[1];
+        var V = data[2];
+        // HSV from 0 to 1
+        var R;
+        var G;
+        var B;
+        if (S === 0) {
+            R = V * 255;
+            G = V * 255;
+            B = V * 255;
+        }
+        else {
+            var h = H * 6;
+            if (h === 6) {
+                h = 0;
+            }
+            var i = h | 0;
+            var v1 = V * (1 - S);
+            var v2 = V * (1 - S * (h - i));
+            var v3 = V * (1 - S * (1 - (h - i)));
+            var r = 0;
+            var g = 0;
+            var b = 0;
+
+            if (i === 0) {
+                r = V;
+                g = v3;
+                b = v1;
+            }
+            else if (i === 1) {
+                r = v2;
+                g = V;
+                b = v1;
+            }
+            else if (i === 2) {
+                r = v1;
+                g = V;
+                b = v3;
+            }
+            else if (i === 3) {
+                r = v1;
+                g = v2;
+                b = V;
+            }
+            else if (i === 4) {
+                r = v3;
+                g = v1;
+                b = V;
+            }
+            else {
+                r = V;
+                g = v1;
+                b = v2;
+            }
+
+            // RGB results from 0 to 255
+            R = r * 255;
+            G = g * 255;
+            B = b * 255;
+        }
+        return [ R, G, B ];
+    }
+
+    /**
+     * APIMethod: _HSL_2_RGB
+     * 参见 http:// www.easyrgb.com/index.php?X=MATH
+     */
+    static _HSL_2_RGB (data){
+        var H = data[0];
+        var S = data[1];
+        var L = data[2];
+        // HSL from 0 to 1
+        var R;
+        var G;
+        var B;
+        if (S === 0) {
+            R = L * 255;
+            G = L * 255;
+            B = L * 255;
+        }
+        else {
+            var v2;
+            if (L < 0.5) {
+                v2 = L * (1 + S);
+            }
+            else {
+                v2 = (L + S) - (S * L);
+            }
+
+            var v1 = 2 * L - v2;
+
+            R = 255 * this._HUE_2_RGB(v1, v2, H + (1 / 3));
+            G = 255 * this._HUE_2_RGB(v1, v2, H);
+            B = 255 * this._HUE_2_RGB(v1, v2, H - (1 / 3));
+        }
+        return [ R, G, B ];
+    }
+
+    /**
+     * APIMethod: _HUE_2_RGB
+     * 参见 http:// www.easyrgb.com/index.php?X=MATH
+     */
+    static _HUE_2_RGB (v1, v2, vH){
+        if (vH < 0) {
+            vH += 1;
+        }
+        if (vH > 1) {
+            vH -= 1;
+        }
+        if ((6 * vH) < 1) {
+            return (v1 + (v2 - v1) * 6 * vH);
+        }
+        if ((2 * vH) < 1) {
+            return (v2);
+        }
+        if ((3 * vH) < 2) {
+            return (v1 + (v2 - v1) * ((2 / 3) - vH) * 6);
+        }
+        return v1;
+    }
+
+    /**
+     * APIMethod: _RGB_2_HSB
+     * 参见 http:// www.easyrgb.com/index.php?X=MATH
+     */
+    static _RGB_2_HSB (data){
+        // RGB from 0 to 255
+        var R = (data[0] / 255);
+        var G = (data[1] / 255);
+        var B = (data[2] / 255);
+
+        var vMin = Math.min(R, G, B); // Min. value of RGB
+        var vMax = Math.max(R, G, B); // Max. value of RGB
+        var delta = vMax - vMin; // Delta RGB value
+        var V = vMax;
+        var H;
+        var S;
+
+        // HSV results from 0 to 1
+        if (delta === 0) {
+            H = 0;
+            S = 0;
+        }
+        else {
+            S = delta / vMax;
+
+            var deltaR = (((vMax - R) / 6) + (delta / 2)) / delta;
+            var deltaG = (((vMax - G) / 6) + (delta / 2)) / delta;
+            var deltaB = (((vMax - B) / 6) + (delta / 2)) / delta;
+
+            if (R === vMax) {
+                H = deltaB - deltaG;
+            }
+            else if (G === vMax) {
+                H = (1 / 3) + deltaR - deltaB;
+            }
+            else if (B === vMax) {
+                H = (2 / 3) + deltaG - deltaR;
+            }
+
+            if (H < 0) {
+                H += 1;
+            }
+            if (H > 1) {
+                H -= 1;
+            }
+        }
+        H = H * 360;
+        S = S * 100;
+        V = V * 100;
+        return [ H, S, V ];
+    }
+
+    /**
+     * APIMethod: _RGB_2_HSL
+     * 参见 http:// www.easyrgb.com/index.php?X=MATH
+     */
+    static _RGB_2_HSL (data){
+
+        // RGB from 0 to 255
+        var R = (data[0] / 255);
+        var G = (data[1] / 255);
+        var B = (data[2] / 255);
+
+        var vMin = Math.min(R, G, B); // Min. value of RGB
+        var vMax = Math.max(R, G, B); // Max. value of RGB
+        var delta = vMax - vMin; // Delta RGB value
+
+        var L = (vMax + vMin) / 2;
+        var H;
+        var S;
+        // HSL results from 0 to 1
+        if (delta === 0) {
+            H = 0;
+            S = 0;
+        }
+        else {
+            if (L < 0.5) {
+                S = delta / (vMax + vMin);
+            }
+            else {
+                S = delta / (2 - vMax - vMin);
+            }
+
+            var deltaR = (((vMax - R) / 6) + (delta / 2)) / delta;
+            var deltaG = (((vMax - G) / 6) + (delta / 2)) / delta;
+            var deltaB = (((vMax - B) / 6) + (delta / 2)) / delta;
+
+            if (R === vMax) {
+                H = deltaB - deltaG;
+            }
+            else if (G === vMax) {
+                H = (1 / 3) + deltaR - deltaB;
+            }
+            else if (B === vMax) {
+                H = (2 / 3) + deltaG - deltaR;
+            }
+
+            if (H < 0) {
+                H += 1;
+            }
+
+            if (H > 1) {
+                H -= 1;
+            }
+        }
+
+        H = H * 360;
+        S = S * 100;
+        L = L * 100;
+
+        return [ H, S, L ];
+    }
+};
+
+
+
+// CONCATENATED MODULE: ./src/openlayers/core/colors_picker_util/ColorsPickerUtil.js
+
+colors_picker_util_Color_Color.initialize();
+// let "http://www.qzu.zj.cn": "#bd10e0"
+// 					"www.qzct.net": "#7ed321" = new SuperMap.LevelRenderer.Tool.Color();
+
+/**
+ * Created by yzy on 2016/11/9.
+ * 色带选择器工具类  用于1、创建canvas对象，2、从几种颜色中获取一定数量的渐变色
+ *
+ */
+class ColorsPickerUtil_ColorsPickerUtil  {
+    /**
+     * 创建DOM canvas
+     * @param height canvas 高度
+     * @param width canvas 宽度
+     *
+     */
+    static createCanvas (height, width){
+        var canvas = document.createElement("canvas");
+        canvas.height = height;
+        canvas.width = width;
+
+        return canvas.getContext("2d");
+    }
+
+    /**
+     * 线性渐变。
+     * Parameters:
+     * x0 - {Number} 渐变起点。
+     * y0 - {Number}
+     * x1 - {Number} 渐变终点。
+     * y1 - {Number}
+     * colorList - {Array} 颜色列表。
+     *
+     * Returns:
+     * {CanvasGradient} Cavans 渐变颜色。
+     */
+    static getLinearGradient (x0, y0, x1, y1, colorList){
+        if (!this._ctx) {
+            this._ctx = this.getContext();
+        }
+        var gradient = this._ctx.createLinearGradient(x0, y0, x1, y1);
+        var leng = colorList.length;
+        var add = 1/(leng -1);
+        var offset = 0;
+        for (var i = 0; i < leng; i++) {
+            gradient.addColorStop(offset, colorList[i]);
+            offset += add;
+        }
+        gradient.__nonRecursion = true;
+        return gradient;
+    }
+
+    /**
+     * 获取 Cavans 上下文
+     *
+     * Returns:
+     * {Object} Cavans 上下文。
+     */
+    static getContext () {
+        if (!this._ctx) {
+            this._ctx = document.createElement('canvas').getContext('2d');
+        }
+        return this._ctx;
+    }
+
+    /**
+     * 获取两种颜色之间渐变颜色数组。
+     *
+     * Parameters:
+     * start - {color} 起始颜色。
+     * end - {color} 结束颜色。
+     * step - {Number} 渐变级数。
+     * colorList - {Array} 颜色列表。
+     *
+     * Returns:
+     * {Array} 颜色数组。
+     */
+    static getStepColors (start, end, step){
+        start = colors_picker_util_Color_Color.toRGBA(start);
+        end = colors_picker_util_Color_Color.toRGBA(end);
+        start = colors_picker_util_Color_Color.getData(start);
+        end = colors_picker_util_Color_Color.getData(end);
+
+        var colors = [];
+        var stepR = (end[0] - start[0]) / step;
+        var stepG = (end[1] - start[1]) / step;
+        var stepB = (end[2] - start[2]) / step;
+        var stepA = (end[3] - start[3]) / step;
+        // 生成颜色集合
+        // fix by linfeng 颜色堆积
+        for (var i = 0, r = start[0], g = start[1], b = start[2], a = start[3]; i < step; i++) {
+            colors[i] = colors_picker_util_Color_Color.toColor([
+                colors_picker_util_Color_Color.adjust(Math.floor(r), [ 0, 255 ]),
+                colors_picker_util_Color_Color.adjust(Math.floor(g), [ 0, 255 ]),
+                colors_picker_util_Color_Color.adjust(Math.floor(b), [ 0, 255 ]),
+                a.toFixed(4) - 0
+            ],'hex');
+            r += stepR;
+            g += stepG;
+            b += stepB;
+            a += stepA;
+        }
+        r = end[0];
+        g = end[1];
+        b = end[2];
+        a = end[3];
+        colors[i] = colors_picker_util_Color_Color.toColor([r, g, b, a], 'hex');
+        return colors;
+    }
+
+    /**
+     * APIMethod: getGradientColors
+     * 获取指定级数的渐变颜色数组。
+     *
+     * Parameters:
+     * colors - {Array{String}} 颜色组。
+     * total - {Number}  颜色总数。
+     * total - {String}  专题类型
+     *
+     * Returns:
+     * {Array{String}} 颜色数组。
+     */
+    static getGradientColors (colors, total, themeType){
+        var ret = [], step;
+        var i, n, len = colors.length;
+        if (total === undefined) {
+            return;
+        }
+        if(len >= total){
+            if(themeType === 'RANGE'){
+                for(i = 0; i<total; i++){
+                    ret.push(colors[i]);
+                }
+            }else {
+                //1/2前后取色
+                for(i = 0; i<total; i++){
+                    let ii = Math.floor(i/2);
+                    if(i%2 === 0){
+                        ret.push(colors[ii]);
+                    }else {
+                        let index = colors.length -1 - ii;
+                        ret.push(colors[index]);
+                    }
+                }
+            }
+        } else {
+            step = Math.ceil(total/(len-1));
+            for (i = 0, n = len - 1; i < n; i++) {
+                var steps = this.getStepColors(colors[i], colors[i + 1], step);
+                if (i < n - 1) {
+                    steps.pop();
+                }
+                ret = ret.concat(steps);
+            }
+            //删除多余元素
+            var nouse = ret.length - total;
+            for(var j = 0, index = 0; j< nouse; j++){
+                ret.splice(index+2,1);
+            }
+        }
+        return ret;
+    }
+};
+// CONCATENATED MODULE: ./src/openlayers/core/ArrayStatistic.js
+class ArrayStatistic {
+
+    // geostatsInstance: null,
+
+    /**
+     * 初始化插件实例
+     */
+    static newInstance() {
+        // if(!this.geostatsInstance) {
+        //         //     this.geostatsInstance = new geostats();
+        //         // }
+        return window.geostats;
+    }
+
+    /**
+     * 设置需要被处理的数组
+     * 
+     * @param array 
+     */
+    static getInstance(array) {
+        let instance = this.newInstance();
+        instance.setSerie(array);
+        return instance;
+    }
+
+    /**
+     * 获取数组统计的值
+     * 
+     * @param array 需要统计的数组
+     * @param type  统计方法
+     */
+    static getArrayStatistic(array, type){
+        if(!array.length) return 0;
+        if(type === "Sum" || type === "求和"){
+            return this.getSum(array);
+        }
+        else if(type === "Maximum" || type === "最大值"){
+            return this.getMax(array);
+        }
+        else if(type === "Minimum" || type === "最小值"){
+            return this.getMin(array);
+        }
+        else if(type === "Average" || type === "平均值"){
+            return this.getMean(array);
+        }
+        else if(type === "Median" || type === "中位数"){
+            return this.getMedian(array);
+        }
+        else if(type === "times" || type === "计数"){
+            return this.getTimes(array);
+        }
+    }
+
+    /**
+     * 获取数组分段后的数值
+     * 
+     * @param array  需要分段的数组
+     * @param type   分段方法
+     * @param segNum 分段个数
+     */
+    static getArraySegments(array, type, segNum) {
+        if(type === "Offset") {
+            return this.getEqInterval(array, segNum);
+        } else if(type === "jenks") {
+            return this.getJenks(array, segNum);
+        } else if(type === "square") {
+            // 数据都必须 >= 0
+            let minValue = this.getMin(array);
+            if(minValue >= 0){
+                return this.getSqrtInterval(array, segNum);
+            }else {
+                // todo 提示数据不合法
+                //console.log('数据都必须 >= 0');
+                // Util.showMessage(Language.hasNegValue + Language.noSupportRange, 'ERROR');
+                return false;
+            }
+
+        } else if(type === "logarithm") {
+            // 数据都必须 > 0
+            let minValue = this.getMin(array);
+            if(minValue > 0){
+                return this.getGeometricProgression(array, segNum);
+            }else {
+                // todo 提示数据不合法
+                //console.log('数据都必须 > 0');
+                // Util.showMessage(Language.hasZeroNegValue + Language.noSupportRange, 'ERROR');
+                return false;
+            }
+        }
+    }
+
+    /**
+     * 求和
+     * @param array
+     * @returns {number}
+     */
+    static getSum(array){
+        return this.getInstance(array).sum();
+    }
+
+    /**
+     * 最小值
+     * @param array
+     * @returns {*}
+     */
+    static getMax(array){
+        return this.getInstance(array).max();
+    }
+
+    /**
+     * 最大值
+     * @param array
+     * @returns {*}
+     */
+    static getMin(array){
+        return this.getInstance(array).min();
+    }
+
+    /**
+     * 求平均
+     * @param array
+     * @returns {number}
+     */
+    static getMean(array){
+        return this.getInstance(array).mean();
+    }
+
+    /**
+     * 求中位数
+     * 
+     * @param array
+     * @returns {number} 
+     */
+    static getMedian(array) {
+        return this.getInstance(array).median();
+    }
+
+    /**
+     * 计数
+     * 
+     * @param array
+     * @returns {number} 
+     */
+    static getTimes(array) {
+        return array.length;
+    }
+
+    /**
+     * 等距分段法
+     * 
+     * @param array 
+     * @param segNum
+     */
+    static getEqInterval(array, segNum) {
+        return this.getInstance(array).getClassEqInterval(segNum);
+    }
+    
+    /**
+     * 自然断裂法
+     * 
+     * @param array 
+     * @param segNum
+     */
+    static getJenks(array, segNum) {
+        return this.getInstance(array).getClassJenks(segNum);
+    }
+
+    /**
+     * 平方根分段法
+     * 
+     * @param array
+     * @param segNum
+     */
+    static getSqrtInterval(array, segNum) {
+        array = array.map(function(value) {
+            return Math.sqrt(value);
+        });
+        let breaks = this.getInstance(array).getClassEqInterval(segNum);
+        return (
+            breaks.map(function(value) {
+                return value * value;
+            })
+        ) 
+    }
+
+    /**
+     * 对数分段法
+     * 
+     * @param array 
+     * @param segNum
+     */
+    static getGeometricProgression(array, segNum) {
+        return this.getInstance(array).getClassGeometricProgression(segNum);
+    }
+
+};
 // CONCATENATED MODULE: ./src/openlayers/core/index.js
 /* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
+
+
+
+
+
 
 
 
@@ -68308,11 +76479,11 @@ class TileSuperMapRest_TileSuperMapRest extends external_ol_default.a.source.Til
 
 external_ol_default.a.source.TileSuperMapRest = TileSuperMapRest_TileSuperMapRest;
 // EXTERNAL MODULE: ./node_modules/jsonsql/index.js
-var jsonsql = __webpack_require__(14);
+var jsonsql = __webpack_require__(4);
 var jsonsql_default = /*#__PURE__*/__webpack_require__.n(jsonsql);
 
 // EXTERNAL MODULE: ./node_modules/proj4/lib/index.js
-var lib = __webpack_require__(13);
+var lib = __webpack_require__(14);
 var lib_default = /*#__PURE__*/__webpack_require__.n(lib);
 
 // CONCATENATED MODULE: ./src/openlayers/overlay/graphic/Graphic.js
@@ -72143,10 +80314,1044 @@ class WebMap_WebMap extends external_ol_default.a.Observable {
 }
 
 external_ol_default.a.supermap.WebMap = WebMap_WebMap;
+// CONCATENATED MODULE: ./src/openlayers/mapping/DatavizWebMap.js
+/* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
+ * This program are made available under the terms of the Apache License, Version 2.0
+ * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
+
+
+
+
+
+
+
+
+external_ol_default.a.supermap = external_ol_default.a.supermap || {};
+//数据转换工具
+const transformTools = new external_ol_default.a.format.GeoJSON();
+const DatavizWebMap_mapInfo ={
+    "extent": {
+        "leftBottom": {
+            "x": -20037508.3427892,
+            "y": -20037508.3427892
+        },
+        "rightTop": {
+            "x": 20037508.3427892,
+            "y": 20037508.3427892
+        }
+    },
+    "level": 1,
+    "center": {
+        "x": 0,
+        "y": -7.081154551613622e-10
+    },
+    "baseLayer": {
+        "layerType": "TIANDITU_VEC_3857",
+        "name": "天地图",
+        "visible": true
+    },
+    "layers": [
+        {
+            "layerType": "VECOTR",
+            "featureType": "LINE",
+            "visible": true,
+            "name": "Jingjin:BaseMap_L",
+            "dataTypes":{},
+            "style": {
+                "strokeWidth": 2,
+                "lineDash": "solid",
+                "strokeColor": "#4CC8A3",
+                "strokeOpacity": 0.9
+            },
+            "url": "http://192.168.12.58:8091/iserver/services/data-jingjin/rest/data",
+            "projection": "EPSG:4326"
+        }
+    ],
+    "description": "",
+    "projection": "EPSG:3857",
+    "title": "Unuqie",
+    "version": "1.0"
+}
+/**
+ * @class ol.supermap.WebMap
+ * @category  iPortal/Online
+ * @classdesc 对接 iPortal/Online 地图类。
+ * @param {string} id - iPortal|Online 地图 ID。
+ * @param {Object} options - 参数。
+ * @param {string} [options.target='map'] - 目标类型。
+ * @param {ol.map} [options.map] - 地图对象。
+ * @param {string} [options.server='http://www.supermapol.com'] - 服务地址。
+ * @param {string} [options.credentialKey='key'] - 凭证密钥。
+ * @param {string} [options.credentialValue] - 凭证值。
+ * @extends {ol.Observable}
+ */
+class DatavizWebMap_DatavizWebMap extends external_ol_default.a.Observable {
+
+    constructor(dom, url, options) {
+        super();
+        this.mapUrl = url;
+        if(options) {
+            this.callBack = options.callback;
+            this.credentialKey = options.credentialKey;
+            this.credentialValue = options.credentialValue;
+        }
+        this.createMap(dom);
+        this.createWebmap();
+    }
+
+    createMap(dom) {
+        //todo 地图点击事件等事件，控件配置等需要开出接口或者用时间
+        this.map = new external_ol_default.a.Map({
+            /*overlays: [
+                new ol.Overlay({
+                    offset: [0, -20],
+                    id: 'theme-pop',
+                    positioning: 'bottom-center'
+                }),
+                new ol.Overlay({
+                    id: 'marker-pop',
+                    positioning: 'bottom-center'
+                })
+            ],*/
+            target: dom
+        });
+    }
+
+    /**
+     * @function ol.supermap.WebMap.prototype.load
+     * @description 登陆窗口后添加地图图层。
+     */
+    createWebmap() {
+        let mapUrl = this.mapUrl;
+        if (this.credentialKey) {
+            mapUrl += ('?' + this.credentialKey + '=' + this.credentialValue);
+        }
+        this.getMapInfo(mapUrl);
+    }
+
+    /**
+     * 获取分享的地图信息
+     */
+    getMapInfo(url) {
+        // let mapUrl = `${url}.json`;
+      /*  let that = this;
+        let mapUrl = "http://127.0.0.1:8090/iportal/apps/viewer/1128612916.json";
+        FetchRequest.get(mapUrl, null, {withCredentials: true}).then(function (response) {
+            return response.json();
+        }).then(function (mapInfo) {
+            that.baseProjection = mapInfo.projection; //epsgCode是之前的数据格式 todo
+            that.addBaseMap(mapInfo);
+            that.addLayers(mapInfo);
+        });*/
+        if(DatavizWebMap_mapInfo) {
+            this.baseProjection = DatavizWebMap_mapInfo.projection;
+            this.addBaseMap(DatavizWebMap_mapInfo);
+            this.addLayers(DatavizWebMap_mapInfo);
+        }
+    }
+    addBaseMap(mapInfo) {
+        this.createView(mapInfo);
+        this.map.addLayer(this.createBaseLayer(mapInfo));
+    }
+    createView(options) {
+        let view = this.map.getView(),
+            oldcenter = options.center,
+            zoom = options.level,
+            extent = options.extent,
+            projection = this.baseProjection;
+        //如果是坐标系转换，就把旧的view的配置读出来，做一个转换生成新的view
+        /*if (view && center && zoom) {
+            let oldCode = view.getProjection().getCode();
+            center = view.getCenter();
+            if (oldCode && oldCode !== projection) {
+                center = ol.proj.transform(center, oldCode, projection);
+            }
+        }*/
+        let center = [];
+        for(let key in oldcenter) {
+            center.push(oldcenter[key]);
+        }
+        extent = [extent.leftBottom.x, extent.leftBottom.y, extent.rightTop.x, extent.rightTop.y];
+        zoom= 1;
+        this.map.setView(new external_ol_default.a.View({ zoom, center, projection, extent }));
+    }
+    /**
+     * Method: createLayer
+     * 同步方式创建图层并返回
+     * */
+    createBaseLayer(mapInfo){
+        let source, layerInfo = mapInfo.baseLayer || mapInfo;
+        let layerType = layerInfo.layerType; //底图和rest地图兼容
+        if(layerType.indexOf('TIANDITU_VEC') > -1 || layerType.indexOf('TIANDITU_IMG') > -1
+            || layerType.indexOf('TIANDITU_TER') > -1) {
+            layerType = layerType.substr(0,12);
+        }
+        let mapUrls = {
+            CLOUD: 'http://t2.supermapcloud.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
+            CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp?x={x}&y={y}&z={z}',
+            OSM: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            GOOGLE: 'http://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0',
+            GOOGLE_CN: 'https://mt{0-3}.google.cn/vt/lyrs=m&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
+            JAPAN_STD: 'http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
+            JAPAN_PALE: 'http://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
+            JAPAN_RELIEF: 'http://cyberjapandata.gsi.go.jp/xyz/relief/{z}/{x}/{y}.png',
+            JAPAN_ORT: 'http://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg'
+        }, url;
+        switch(layerType){
+            case "TIANDITU_VEC":
+            case "TIANDITU_IMG":
+            case "TIANDITU_TER":
+                source=this.createTiandituSource(layerInfo, layerType, mapInfo.projection);
+                break;
+            case "BAIDU":
+                source=this.createBaiduSource();
+                break;
+            case 'BING':
+                source = this.createBingSource(layerInfo, mapInfo.projection);
+                break;
+            case "WMS":
+                source=this.createWMSSource(layerInfo);
+                break;
+            case "WMTS":
+                source=this.createWmtsLayer(layerInfo);
+                break;
+            case 'SUPERMAP_REST':
+                source = this.createDynamicTiledSource(layerInfo);
+                break;
+            case 'CLOUD':
+            case 'CLOUD_BLACK':
+            case 'OSM':
+            case 'JAPAN_ORT':
+            case 'JAPAN_RELIEF':
+            case 'JAPAN_PALE':
+            case 'JAPAN_STD':
+            case 'GOOGLE_CN':
+            case 'GOOGLE':
+                url = mapUrls[layerType];
+                source = this.createXYZSource(layerInfo, url);
+                break;
+            default:
+                break;
+        }
+        return new external_ol_default.a.layer.Tile({
+            source: source,
+            zIndex: layerInfo.zIndex || 0,
+            visible: layerInfo.visible
+        });
+    }
+    /**
+     * 获取supermap iServer类型的地图的source
+     *
+     * @param {any} layerInfo
+     * @returns
+     */
+    createDynamicTiledSource(layerInfo) {
+        let serverType = "IPORTAL",
+            credential = layerInfo.credential,
+            keyfix = 'Token',
+            keyParams = layerInfo.url;
+        if (layerInfo.url.indexOf("www.supermapol.com") > -1 || layerInfo.url.indexOf("itest.supermapol.com") > -1) {
+            keyfix = 'Key';
+            keyParams = [keyParams];
+            serverType = "ONLINE";
+        }
+        if (credential) {
+            SecurityManager_SecurityManager[`register${keyfix}`](keyParams, credential);
+        }
+        let source = new external_ol_default.a.source.TileSuperMapRest({
+            transparent: true,
+            url: layerInfo.url,
+            wrapX: false,
+            serverType: serverType,
+            prjCoordSys: { epsgCode: layerInfo.projection.split(':')[1] },
+            tileProxy: this.tileProxy
+        });
+        SecurityManager_SecurityManager[`register${keyfix}`](layerInfo.url);
+        return source;
+
+    }
+    createTiandituSource(layerInfo, layerType, projection, isLabel) {
+        //todo 后台存储没有存储isLabel是否有标签
+        let options = {
+            layerType: layerType.split('_')[1].toLowerCase(),
+            isLabel: isLabel || false,
+            projection: projection
+        };
+        return new external_ol_default.a.source.Tianditu(options);
+    }
+    createBaiduSource() {
+        return new external_ol_default.a.source.BaiduMap()
+    }
+    createBingSource(layerInfo, projection) {
+        let url = 'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadKey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
+        return new external_ol_default.a.source.XYZ({
+            wrapX: false,
+            projection: projection,
+            tileUrlFunction: function (coordinates) {
+                let /*quadDigits = '', */[z, x, y] = [...coordinates];
+                y = y > 0 ? y - 1 : -y - 1;
+                var index = '';
+                for (let i = z; i > 0; i--) {
+                    let b = 0;
+                    let mask = 1 << (i - 1);
+                    if ((x & mask) !== 0) b++;
+                    if ((y & mask) !== 0) b += 2;
+                    index += b.toString()
+                }
+                return url.replace('{quadKey}', index);
+            }
+        })
+    }
+    createXYZSource(layerInfo, url) {
+        return new external_ol_default.a.source.XYZ({
+            url: url,
+            wrapX: false,
+            crossOrigin: window.location.host
+        })
+    }
+    createWMSSource(layerInfo) {
+        let that = this;
+        return new external_ol_default.a.source.TileWMS({
+            url: layerInfo.url,
+            wrapX: false,
+            params: {
+                LAYERS: layerInfo.subLayers || "0",
+                FORMAT: 'image/png'
+            },
+            projection: layerInfo.projection,
+            tileLoadFunction: function (imageTile, src) {
+                imageTile.getImage().src = src
+            }
+        })
+    }
+    addLayers(mapInfo) {
+        let layers = mapInfo.layers, that = this;
+        let features;
+        if(layers.length > 0) {
+            layers.forEach(function (layer) {
+                if(layer.dataSource && layer.dataSource.serverId) {
+                    //数据存储到iportal上了
+                    let url = `${core_Util_Util.getRootUrl()}web/datas/${layer.dataSource.serverId}/content.json?pageSize=9999999&currentPage=1`;
+                    FetchRequest.get(url, null, {withCredentials: true}).then(function (response) {
+                        return response.json()
+                    }).then(function (data) {
+                        if(data && data.type) {
+                           if (!data) {
+                               features = [];
+                           } else if (data.type === "JSON" || data.type === "GEOJSON") {
+                               data.content = JSON.parse(data.content);
+                               features = that.geojsonToFeature(data.content, layer);
+                           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
+                               features = that.excelData2Feature(data.content, layer);
+                           }
+                           that.addLayer(layer, features);
+                        }
+                    })
+                } else if(layer.url) {
+                    if(layer.layerType === "SUPERMAP_REST") {
+                        //从iserver获取的瓦片地图
+                        this.map.addLayer(this.createBaseLayer(layer));
+                    } else if(layer.layerType === "VECOTR") {
+                        //从restData获取数据
+                        core_Util_Util.getFeatureBySQL(layer.url, [layer.dataSourseName || layer.name], function(result) {
+                            features = that.parseGeoJsonData2Feature({
+                                allDatas: { features: result.result.features.features },
+                                fileCode: layer.projection.split(':')[1],
+                                featureProjection: that.baseProjection.split(':')[1]
+                            });
+
+                            /*if (!layerObj.layerInfo.dataTypes) {
+                                let data = DataManager.assembleTableJSONData(result.result.features);
+                                layerObj.layerInfo.dataTypes = Util.getFieldType(data.titles, data.rows[0]);
+                            }*/
+                            that.addLayer(layer, features);
+                        }, function(err) {
+                            console.log(err);
+                        });
+                    }
+                }
+            }, this);
+        }
+    }
+    excelData2Feature(content, layerInfo) {
+        let rows = content.rows,
+            colTitles = content.colTitles;
+        // 解决V2恢复的数据中含有空格
+        for (let i in colTitles) {
+            if (core_Util_Util.isString(colTitles[i])) {
+                colTitles[i] = core_Util_Util.trim(colTitles[i]);
+            }
+        }
+        let fileCode = layerInfo.projection,
+            xIdx = colTitles.indexOf(layerInfo.xyField.xField),
+            yIdx = colTitles.indexOf(layerInfo.xyField.yField),
+            baseLayerEpsgCode = this.baseProjection,
+            features = [];
+
+        for (let i = 0, len = rows.length; i < len; i++) {
+            let rowDatas = rows[i],
+                attributes = {},
+                geomX = rows[i][xIdx],
+                geomY = rows[i][yIdx];
+            // 位置字段信息不存在 过滤数据
+            if (geomX !== '' && geomY !== '') {
+                let olGeom = new external_ol_default.a.geom.Point([+geomX, +geomY]);
+                if (fileCode !== baseLayerEpsgCode) {
+                    olGeom.transform(fileCode, baseLayerEpsgCode);
+                }
+                for (let j = 0, leng = rowDatas.length; j < leng; j++) {
+                    attributes[colTitles[j]] = rowDatas[j];
+                }
+                let feature = new external_ol_default.a.Feature({ geometry: olGeom, Properties: attributes });
+                feature.attributes = attributes;
+                features.push(feature);
+            }
+        }
+        return features;
+    }
+    /**
+     * geojson 转换为 feature
+     */
+    geojsonToFeature(geojson, layerInfo) {
+        let allFeatures = geojson.features,
+            features = [];
+        for (let i = 0, len = allFeatures.length; i < len; i++) {
+            let feature = transformTools.readFeature(allFeatures[i], {
+                dataProjection: layerInfo.projection || 'EPSG:4326',
+                featureProjection: this.baseProjection || 'ESPG:4326'
+            });
+            //geojson格式的feature属性没有坐标系字段，为了统一，再次加上
+            let coordinate = feature.getGeometry().getCoordinates();
+            if (allFeatures[i].geometry.type === 'Point') {
+                // 标注图层 还没有属性值时候不加
+                if (allFeatures[i].properties) {
+                    allFeatures[i].properties.lon = coordinate[0];
+                    allFeatures[i].properties.lat = coordinate[1];
+                }
+            }
+            feature.attributes = allFeatures[i].properties || {};
+
+            // 标注图层特殊处理
+            let isMarker = false;
+            let featureInfo;
+            let useStyle;
+            if (allFeatures[i].dv_v5_markerInfo) {
+                featureInfo = allFeatures[i].dv_v5_markerInfo;
+                isMarker = true;
+            }
+            if (allFeatures[i].dv_v5_markerStyle) {
+                useStyle = allFeatures[i].dv_v5_markerStyle;
+                isMarker = true;
+            }
+            let properties;
+            if (isMarker) {
+                properties = Object.assign({}, { featureInfo: featureInfo }, { useStyle: useStyle });
+                //feature上添加图层的id，为了对应图层
+                feature.layerId = layerInfo.timeId;
+                //删除不需要的属性，因为这两个属性存储在properties上
+                delete feature.attributes.featureInfo;
+                delete feature.attributes.useStyle;
+            } else if (layerInfo.featureStyles) {
+                //V4 版本标注图层处理
+                let style = JSON.parse(layerInfo.featureStyles[i].style);
+                let attr = feature.attributes;
+                let imgUrl;
+                if (attr._smiportal_imgLinkUrl.indexOf('http://') > -1 || attr._smiportal_imgLinkUrl.indexOf('https://') > -1) {
+                    imgUrl = attr._smiportal_imgLinkUrl;
+                } else if (attr._smiportal_imgLinkUrl !== undefined && attr._smiportal_imgLinkUrl !== null &&
+                    attr._smiportal_imgLinkUrl !== '') {
+                    //上传的图片，加上当前地址
+                    imgUrl = `${core_Util_Util.getIPortalUrl()}resources/markerIcon/${attr._smiportal_imgLinkUrl}`
+                }
+                featureInfo = {
+                    dataViz_description: attr._smiportal_description,
+                    dataViz_imgUrl: imgUrl,
+                    dataViz_title: attr._smiportal_title,
+                    dataViz_url: attr._smiportal_otherLinkUrl
+                };
+                style.anchor = [0.5, 1];
+                style.src = style.externalGraphic;
+
+                useStyle = style;
+                properties = Object.assign({}, { featureInfo: featureInfo }, { useStyle: useStyle });
+                delete attr._smiportal_description;
+                delete attr._smiportal_imgLinkUrl;
+                delete attr._smiportal_title;
+                delete attr._smiportal_otherLinkUrl;
+            } else {
+                properties = feature.attributes;
+            }
+
+            feature.setProperties(properties);
+            features.push(feature);
+        }
+        return features;
+    }
+
+    /**
+     * 将从restData地址上获取的json转换成feature
+     * @param metaData
+     * @returns {Array}
+     */
+    parseGeoJsonData2Feature(metaData) {
+        let allFeatures = metaData.allDatas.features,
+            features = [];
+        for (let i = 0, len = allFeatures.length; i < len; i++) {
+            let feature = transformTools.readFeature(allFeatures[i], {
+                dataProjection: metaData.fileCode || 'EPSG:4326',
+                featureProjection: metaData.featureProjection || core_Util_Util.getBaseLayerProj() || 'EPSG:4326'
+            });
+            //geojson格式的feature属性没有坐标系字段，为了统一，再次加上
+            let coordinate = feature.getGeometry().getCoordinates();
+            if (allFeatures[i].geometry.type === 'Point') {
+                allFeatures[i].properties.lon = coordinate[0];
+                allFeatures[i].properties.lat = coordinate[1];
+            }
+            feature.attributes = allFeatures[i].properties || {};
+            feature.setProperties({ Properties: feature.attributes });
+            features.push(feature);
+        }
+        return features;
+    }
+    addLayer(layerInfo, features) {
+        let layer, allFeatures;
+        if(layerInfo.style && layerInfo.style.filterCondition) {
+            if(layerInfo.layerType === "RANGE") {
+                allFeatures = features;
+            }
+            //将feature根据过滤条件进行过滤, 分段专题图因为要计算styleGroup所以暂时不过滤
+            features = this.getFiterFeatures(layerInfo.style.filterCondition, features);
+        }
+        if(layerInfo.layerType === "VECTOR") {
+            if (layerInfo.featureType === "POINT") {
+                if(layerInfo.style.type === 'SYMBOL_POINT') {
+                    layer = this.createSymbolLayer(layerInfo, features);
+                } else{
+                    layer = this.createGraphicLayer(layerInfo, features);
+                }
+            } else {
+                //线和面
+                layer = this.createVectorLayer(layerInfo, features)
+            }
+        } else if(layerInfo.layerType === "UNIQUE") {
+            layer = this.createUniqueLayer(layerInfo, features);
+        } else if(layerInfo.layerType === "RANGE") {
+            layer = this.createRangeLayer(layerInfo, features, allFeatures);
+        } else if(layerInfo.layerType === "HEAT") {
+            layer = this.createHeatLayer(layerInfo, features);
+        }
+        layer && this.map.addLayer(layer);
+        if(layerInfo.labelStyle && layerInfo.labelStyle.labelField) {
+            //存在标签专题图
+            this.addLabelLayer(layerInfo, features);
+        }
+    }
+    /**
+     * 通过过滤条件查询满足的feature
+     * @param filterCondition {String} 过滤条件
+     */
+    getFiterFeatures(filterCondition, allFeatures) {
+        if(filterCondition === "") return allFeatures;
+        let obj = {}, filterFeatures;
+        for(let i=0; i<allFeatures.length; i++) {
+            obj[i] = allFeatures[i];
+        }
+        let sql = '* where attributes.' + filterCondition.replace("\"","").replace("\"","");
+        filterFeatures = jsonsql_default()(obj, sql);
+        return filterFeatures;
+    }
+    /**
+     * 添加大数据图层到地图上
+     * @param layerInfo
+     * @param features
+     */
+    createGraphicLayer(layerInfo, features) {
+        let graphics = this.getGraphicsFromFeatures(features, layerInfo.style);
+        let source = new external_ol_default.a.source.Graphic({
+            graphics: graphics,
+            render: 'canvas',
+            map: this.map,
+            isHighLight: false,
+            onClick: function(graphic){}
+        });
+        source.refresh();
+        return new external_ol_default.a.layer.Image({source: source});
+    }
+    getGraphicsFromFeatures(features, style) {
+        let olStyle, shape;
+        if(style.type === "IMAGE_POINT") {
+            //image-point
+            let imageInfo = style.imageInfo;
+            let imgDom = imageInfo.img;
+            if(!imgDom) {
+                imgDom = new Image();
+                //要组装成完整的url
+                imgDom.src = core_Util_Util.getRootUrl() + imageInfo.url;
+            }
+            shape = new external_ol_default.a.style.Icon({
+                img:  imgDom,
+                scale: 2*style.radius/imageInfo.size.w,
+                imgSize: [imageInfo.size.w, imageInfo.size.h],
+                anchor : [0.5, 0.5]
+            });
+        } else if(style.type === "SVG_POINT") {
+            if(!this.svgDiv) {
+                this.svgDiv = document.createElement('div');
+                document.body.appendChild(this.svgDiv);
+            }
+            let that = this;
+            StyleUtils_StyleUtils.getCanvasFromSVG(style.url, this.svgDiv, function (canvas) {
+                shape = new external_ol_default.a.style.Icon({
+                    img:  that.setColorToCanvas(canvas,style),
+                    scale: style.radius/canvas.width,
+                    imgSize: [canvas.width, canvas.height],
+                    anchor : [0.5, 0.5],
+                    opacity: style.fillOpacity
+                });
+            });
+        } else {
+            //base-point
+            olStyle = StyleUtils_StyleUtils.toOpenLayersStyle(style, "POINT");
+            shape = olStyle.getImage();
+        }
+        let graphics = [];
+        //构建graphic
+        for(let i in features){
+            let graphic = new external_ol_default.a.Graphic(features[i].getGeometry(), features[i].attributes);
+            graphic.setStyle(shape);
+            graphics.push(graphic);
+        }
+        return graphics;
+    }
+    /**
+     * 将颜色，透明度等样式设置到canvas上
+     * @param canvas
+     * @param parameters
+     * @returns {*}
+     */
+    setColorToCanvas(canvas,parameters) {
+        let context = canvas.getContext('2d');
+        let fillColor = StyleUtils_StyleUtils.hexToRgb(parameters.fillColor);
+        fillColor && fillColor.push(parameters.fillOpacity);
+        let strokeColor = StyleUtils_StyleUtils.hexToRgb(parameters.strokeColor);
+        strokeColor && strokeColor.push(parameters.strokeOpacity);
+        context.fillStyle = StyleUtils_StyleUtils.formatRGB(fillColor);
+        context.fill();
+        context.strokeStyle = StyleUtils_StyleUtils.formatRGB(strokeColor);
+        context.lineWidth = parameters.strokeWidth;
+        context.stroke();
+        return canvas;
+    }
+
+    /**
+     * 添加符号图层
+     * @param layerInfo
+     * @param features
+     */
+    createSymbolLayer(layerInfo, features) {
+        let style = this.getSymbolStyle(layerInfo.style);
+        return new external_ol_default.a.layer.Vector({
+            style: style,
+            source: new external_ol_default.a.source.Vector({
+                features: features,
+                wrapX: false
+            })
+        });
+    }
+
+    /**
+     * 获取符号样式
+     * @param parameters
+     * @returns {ol.style.Style}
+     */
+    getSymbolStyle(parameters){
+        let text = '';
+        if(parameters.unicode){
+            //todo 为什么要判断，难道还有其他的图层会进来
+            text = String.fromCharCode(parseInt(parameters.unicode.replace(/^&#x/, ''), 16));
+        }
+        let fontSize = 2 * parameters.radius;
+        // 填充色 + 透明度
+        let fillColor = StyleUtils_StyleUtils.hexToRgb(parameters.fillColor);
+        fillColor.push(parameters.fillOpacity);
+        // 边框充色 + 透明度
+        let strokeColor = StyleUtils_StyleUtils.hexToRgb(parameters.strokeColor);
+        strokeColor.push(parameters.strokeOpacity);
+        return new external_ol_default.a.style.Style({
+            text: new external_ol_default.a.style.Text({
+                text: text,
+                font: fontSize + "px " + "supermapol-icons",
+                placement: 'point',
+                textAlign: 'center',
+                fill: new external_ol_default.a.style.Fill({ color: fillColor}),
+                backgroundFill: new external_ol_default.a.style.Fill({ color: [0, 0, 0, 0]}),
+                stroke: new external_ol_default.a.style.Stroke({
+                    width: parameters.strokeWidth || 0.000001,
+                    color: strokeColor
+                })
+            })
+        });
+    }
+    /**
+     * 添加标签图层
+     * @param layerInfo
+     * @param features
+     */
+    addLabelLayer(layerInfo, features) {
+        let labelStyle = layerInfo.labelStyle;
+        let style = this.getLabelStyle(labelStyle);
+        let layer = new external_ol_default.a.layer.Vector({
+            declutter: true,
+            styleOL: style,
+            labelField: labelStyle.labelField,
+            source: new external_ol_default.a.source.Vector({
+                features: features,
+                wrapX: false
+            })
+        });
+        layer.setStyle(features => {
+            let labelField = labelStyle.labelField;
+            let label = features.attributes[labelField] + "";
+            if(label === "undefined") return null;
+            let styleOL = layer.get('styleOL');
+            let text = styleOL.getText();
+            if(text && text.setText){
+                text.setText(label);
+            }
+            return styleOL;
+        });
+        this.map.addLayer(layer);
+    }
+
+    /**
+     * 获取标签样式
+     * @param parameters
+     * @returns {ol.style.Style}
+     */
+    getLabelStyle(parameters) {
+        return new external_ol_default.a.style.Style({
+            text: new external_ol_default.a.style.Text({
+                font: parameters.fontSize + " " +parameters.fontFamily,
+                placement: 'point',
+                textAlign: 'center',
+                fill: new external_ol_default.a.style.Fill({ color: parameters.fill}),
+                backgroundFill: new external_ol_default.a.style.Fill({ color: parameters.backgroundFill}),
+                padding: [3, 3, 3, 3],
+                offsetY: parameters.offsetY
+            })
+        });
+    }
+    createVectorLayer (layerInfo, features) {
+        let style = StyleUtils_StyleUtils.toOpenLayersStyle(layerInfo.style, layerInfo.featureType);
+        return new external_ol_default.a.layer.Vector({
+            style: style,
+            source: new external_ol_default.a.source.Vector({
+                features: features,
+                wrapX: false
+            })
+        });
+    }
+    createHeatLayer(layerInfo, features) {
+        let source = new external_ol_default.a.source.Vector({
+            features: features,
+            wrapX: false
+        });
+        let layerOptions = {
+            source: source
+        };
+        let style = layerInfo.style;
+        layerOptions.gradient = style.colors.slice();
+        layerOptions.radius = parseInt(style.radius);
+        //自定义颜色
+        let customSettings = style.customSettings;
+        for (let i in customSettings) {
+            layerOptions.gradient[i] = customSettings[i];
+        }
+        // 权重字段恢复
+        if(style.weight){
+            this.changeWeight(features, style.weight);
+        }
+        return new external_ol_default.a.layer.Heatmap(layerOptions);
+    }
+    /**
+     * 改变当前权重字段
+     * @param features {Array} feature 数组
+     * @param weightFeild {String} 权重字段
+     */
+    changeWeight(features, weightFeild) {
+        this.fieldMaxValue = {};
+        this.getMaxValue(features,weightFeild);
+        let maxValue = this.fieldMaxValue[weightFeild];
+        features.forEach(function (feature) {
+            let attributes = feature.get("Properties") || feature.attributes;
+            try {
+                let value = attributes[weightFeild];
+                feature.set('weight', value/ maxValue);
+            }catch (e){
+                // V2 热力图没有权重字段 但恢复回来却有权重字段
+            }
+        })
+    }
+    /**
+     * 获取当前字段对应的最大值，用于计算权重
+     * @param features {Array} feature 数组
+     * @param weightField {String} 权重字段
+     */
+    getMaxValue(features, weightField) {
+        let values = [], attributes;
+        let field = weightField || this.defaultParameters.weight;
+        if(this.fieldMaxValue[field]) return;
+        features.forEach(function(feature){
+            //收集当前权重字段对应的所有值
+            attributes = feature.get("Properties") || feature.attributes;
+            try {
+                values.push(parseFloat(attributes[field])) ;
+            }catch (e){
+                // V2 热力图没有权重字段 但恢复回来却有权重字段
+            }
+        });
+        this.fieldMaxValue[field] = ArrayStatistic.getArrayStatistic(values, 'Maximum');
+    }
+    createUniqueLayer(layerInfo, features){
+        let styleSource = this.createUniqueSource(layerInfo.style, features, layerInfo.featureType);
+        let layer = new external_ol_default.a.layer.Vector({
+            styleSource: styleSource,
+            source: new external_ol_default.a.source.Vector({
+                features: features,
+                wrapX: false
+            })
+        });
+        layer.setStyle(feature => {
+            let styleSource = layer.get('styleSource');
+            let labelField = styleSource.themeField;
+            let label = feature.attributes[labelField];
+            return styleSource.styleGroups[label].olStyle;
+        });
+
+        return layer;
+    }
+    createUniqueSource(parameters, features, featureType){
+        //找到合适的专题字段
+        let themeField = parameters.themeField;
+      /*  if(!themeField) {
+            for(let key in dataTypes){
+                themeField = key;
+                //break;
+            }
+            parameters.themeField = themeField;
+        }*/
+        let colors = parameters.colors;
+        let styleGroup = this.getStyleGroup(themeField, features, colors, featureType, parameters);
+
+        let source = {
+            map: this.map, //必传参数 API居然不提示
+            style: parameters.style ,
+            isHoverAble: parameters.isHoverAble,
+            highlightStyle: parameters.highlightStyle,
+            themeField: themeField,
+            styleGroups: styleGroup
+        };
+
+        return source;
+    }
+    getStyleGroup(fieldName, features, colors, featureType, style){
+        // 找出所有的单值
+        let names = [], customSettings = style.customSettings;
+        for(let i in features){
+            let attributes = features[i].attributes;
+            let name = attributes[fieldName];
+            let isSaved = false;
+            for(let j in names){
+                if(names[j] === name) {
+                    isSaved = true;
+                    break;
+                }
+            }
+            if(!isSaved){
+                names.push(name);
+            }
+        }
+
+        //获取一定量的颜色
+        let curentColors = colors || this.defaultParameters.colors;
+        curentColors = ColorsPickerUtil_ColorsPickerUtil.getGradientColors(curentColors, names.length);
+
+        //生成styleGroup
+        let styleGroup = [];
+        names.forEach(function(name,index){
+            let color = curentColors[index];
+            if (name in customSettings) {
+                color = customSettings[name];
+            }
+            if(featureType === "LINE"){
+                style.strokeColor = color;
+            }else {
+                style.fillColor = color;
+            }
+            // 转化成 ol 样式
+            let olStyle = StyleUtils_StyleUtils.toOpenLayersStyle(style, featureType);
+
+            styleGroup[name] = {olStyle: olStyle, color: color, value: name};
+        });
+
+        return styleGroup;
+    }
+    createRangeLayer(layerInfo, features, allFeatures){
+        //这里获取styleGroup要用所以的feature
+        let styleSource = this.createRangeSource(layerInfo.style, allFeatures || features, layerInfo.featureType);
+        let layer = new external_ol_default.a.layer.Vector({
+            styleSource: styleSource,
+            source: new external_ol_default.a.source.Vector({
+                features: features,
+                wrapX: false
+            })
+        });
+
+        layer.setStyle(feature => {
+            let styleSource = layer.get('styleSource');
+            if(styleSource){
+                let labelField = styleSource.themeField;
+                let value = Number(feature.attributes[labelField]);
+                let styleGroups = styleSource.styleGroups;
+                for(let i = 0; i < styleGroups.length; i++){
+                    if(i === 0){
+                        if(value >= styleGroups[i].start && value <= styleGroups[i].end){
+                            return styleGroups[i].olStyle;
+                        }
+                    }else {
+                        if(value > styleGroups[i].start && value <= styleGroups[i].end){
+                            return styleGroups[i].olStyle;
+                        }
+                    }
+                }
+            }
+        });
+
+        return layer;
+    }
+    createRangeSource(parameters, features, featureType){
+        //找到合适的专题字段
+        let themeField = parameters.themeField;
+        let styleGroup = this.getRangeStyleGroup(themeField, parameters.segmentCount,
+            parameters.segmentMethod, features, parameters.colors, featureType, parameters, parameters.customSettings);
+
+        if(styleGroup){
+            let source = {
+                style: parameters || this.defaultParameters.style,
+                themeField: parameters.themeField,
+                styleGroups: styleGroup
+            };
+
+            return source;
+        }else {
+            return false;
+        }
+    }
+    getRangeStyleGroup(fieldName, count, method, features, colors, featureType, style, customSettings){
+        // 找出分段值
+        let values = [];
+        let attributes;
+        let segmentCount = count || this.defaultParameters.segmentCount;
+        let segmentMethod = method || this.defaultParameters.segmentMethod;
+
+        features.forEach(function(feature){
+            attributes = feature.get("Properties") || feature.attributes;
+            try{
+                if (attributes) {
+                    //过滤掉非数值的数据
+                    if (attributes[fieldName] && core_Util_Util.isNumber(attributes[fieldName])) {
+                        values.push(parseFloat(attributes[fieldName])) ;
+                    }
+                } else if(feature.get(fieldName) && core_Util_Util.isNumber(feature.get(fieldName))) {
+                    if (feature.get(fieldName)) {
+                        values.push(parseFloat(feature.get(fieldName))) ;
+                    }
+                }
+            }catch (e){
+                // console.log(e);
+            }
+
+        });
+
+        let segements;
+        try {
+            segements = ArrayStatistic.getArraySegments(values, segmentMethod, segmentCount);
+        }catch (e){
+            // console.log(e);
+        }
+        if(segements){
+            let itemNum = segmentCount;
+            if(attributes && segements[0] === segements[attributes.length-1]) {
+                itemNum = 1;
+                segements.length = 2;
+            }
+
+            //保留两位有效数
+            for(let key in segements){
+                let value = segements[key];
+                if(key === 0){
+                    // 最小的值下舍入
+                    value = Math.floor(value*100)/100;
+                }else {
+                    // 其余上舍入
+                    value = Math.ceil(value*100)/100 + 0.1; // 加0.1 解决最大值没有样式问题
+                }
+
+                segements[key] = Number(value.toFixed(2));
+            }
+
+            //获取一定量的颜色
+            let curentColors = colors || this.defaultParameters.colors;
+            curentColors = ColorsPickerUtil_ColorsPickerUtil.getGradientColors(curentColors, itemNum, 'RANGE');
+
+            for (let index = 0; index < itemNum; index++) {
+                if (index in customSettings) {
+                    if (customSettings[index]["segment"]["start"] !== null) {
+                        segements[index] = customSettings[index]["segment"]["start"];
+                    }
+                    if(customSettings[index]["segment"]["end"] !== null) {
+                        segements[index + 1] = customSettings[index]["segment"]["end"];
+                    }
+                }
+            }
+            //生成styleGroup
+            let styleGroups = [];
+            for(let i = 0; i < itemNum; i++) {
+                let color = curentColors[i];
+                if (i in customSettings) {
+                    if (customSettings[i].color) {
+                        color = customSettings[i].color;
+                    }
+                }
+                if(featureType === "LINE"){
+                    style.strokeColor = color;
+                }else {
+                    style.fillColor = color;
+                }
+
+                // 转化成 ol 样式
+                let olStyle = StyleUtils_StyleUtils.toOpenLayersStyle(style, featureType);
+
+                let start = segements[i];
+                let end = segements[i + 1];
+
+                styleGroups.push({olStyle: olStyle, color: color, start: start, end: end});
+            }
+
+            return styleGroups;
+        }else {
+            return false;
+        }
+    }
+    
+}
+
+external_ol_default.a.supermap.DatavizWebMap = DatavizWebMap_DatavizWebMap;
 // CONCATENATED MODULE: ./src/openlayers/mapping/index.js
 /* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
+
 
 
 
@@ -74185,7 +83390,7 @@ class MapvCanvasLayer {
     }
 }
 // EXTERNAL MODULE: external "function(){try{return mapv}catch(e){return {}}}()"
-var external_function_try_return_mapv_catch_e_return_ = __webpack_require__(22);
+var external_function_try_return_mapv_catch_e_return_ = __webpack_require__(23);
 
 // CONCATENATED MODULE: ./src/openlayers/overlay/mapv/MapvLayer.js
 /* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
@@ -74795,7 +84000,7 @@ class overlay_RankSymbol_RankSymbol extends overlay_Graph_Graph {
 
 external_ol_default.a.source.RankSymbol = overlay_RankSymbol_RankSymbol;
 // EXTERNAL MODULE: external "function(){try{return turf}catch(e){return {}}}()"
-var external_function_try_return_turf_catch_e_return_ = __webpack_require__(21);
+var external_function_try_return_turf_catch_e_return_ = __webpack_require__(24);
 
 // CONCATENATED MODULE: ./src/openlayers/overlay/Turf.js
 /* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
@@ -79727,291 +88932,296 @@ external_ol_default.a.supermap.TrafficTransferAnalystService = TrafficTransferAn
 
 
 // CONCATENATED MODULE: ./src/openlayers/index.js
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SuperMap", function() { return SuperMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DataFormat", function() { return DataFormat; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServerType", function() { return ServerType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeometryType", function() { return GeometryType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "QueryOption", function() { return QueryOption; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "JoinType", function() { return JoinType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "EngineType", function() { return EngineType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MeasureMode", function() { return MeasureMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SpatialRelationType", function() { return SpatialRelationType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DataReturnMode", function() { return DataReturnMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Unit", function() { return Unit; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BufferRadiusUnit", function() { return BufferRadiusUnit; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SpatialQueryMode", function() { return SpatialQueryMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraphTextFormat", function() { return ThemeGraphTextFormat; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraphType", function() { return ThemeGraphType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GraphAxesTextDisplayMode", function() { return GraphAxesTextDisplayMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GraduatedMode", function() { return GraduatedMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RangeMode", function() { return RangeMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeType", function() { return ThemeType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ColorGradientType", function() { return ColorGradientType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TextAlignment", function() { return TextAlignment; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FillGradientMode", function() { return FillGradientMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SideType", function() { return SideType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AlongLineDirection", function() { return AlongLineDirection; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LabelBackShape", function() { return LabelBackShape; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LabelOverLengthMode", function() { return LabelOverLengthMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DirectionType", function() { return DirectionType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OverlayOperationType", function() { return OverlayOperationType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SupplyCenterType", function() { return SupplyCenterType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TurnType", function() { return TurnType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BufferEndType", function() { return BufferEndType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SmoothMethod", function() { return SmoothMethod; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SurfaceAnalystMethod", function() { return SurfaceAnalystMethod; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ColorSpaceType", function() { return ColorSpaceType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ChartType", function() { return ChartType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "EditType", function() { return EditType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TransferTactic", function() { return TransferTactic; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TransferPreference", function() { return TransferPreference; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GridType", function() { return GridType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ClientType", function() { return ClientType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LayerType", function() { return LayerType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "UGCLayerType", function() { return UGCLayerType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "StatisticMode", function() { return StatisticMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PixelFormat", function() { return PixelFormat; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SearchMode", function() { return SearchMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SummaryType", function() { return SummaryType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "InterpolationAlgorithmType", function() { return InterpolationAlgorithmType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VariogramMode", function() { return VariogramMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Exponent", function() { return Exponent; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ClipAnalystMode", function() { return ClipAnalystMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AnalystAreaUnit", function() { return AnalystAreaUnit; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AnalystSizeUnit", function() { return AnalystSizeUnit; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "StatisticAnalystMode", function() { return StatisticAnalystMode; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TopologyValidatorRule", function() { return TopologyValidatorRule; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OutputType", function() { return OutputType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AggregationQueryBuilderType", function() { return AggregationQueryBuilderType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AggregationType", function() { return AggregationType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TimeFlowControl", function() { return TimeFlowControl_TimeFlowControl; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IManager", function() { return iManager_IManager; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IManagerServiceBase", function() { return iManagerServiceBase_IManagerServiceBase; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IManagerCreateNodeParam", function() { return iManagerCreateNodeParam_IManagerCreateNodeParam; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IPortal", function() { return iPortal_IPortal; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IPortalMap", function() { return iPortalMap_IPortalMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IPortalMapsQueryParam", function() { return iPortalMapsQueryParam_IPortalMapsQueryParam; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IPortalService", function() { return iPortalService_IPortalService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IPortalServiceBase", function() { return iPortalServiceBase_IPortalServiceBase; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "IPortalServicesQueryParam", function() { return iPortalServicesQueryParam_IPortalServicesQueryParam; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Online", function() { return Online_Online; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OnlineData", function() { return OnlineData_OnlineData; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OnlineQueryDatasParameter", function() { return OnlineQueryDatasParameter_OnlineQueryDatasParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServiceStatus", function() { return ServiceStatus; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DataItemType", function() { return DataItemType; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DataItemOrderBy", function() { return DataItemOrderBy; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FilterField", function() { return FilterField; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OnlineServiceBase", function() { return OnlineServiceBase_OnlineServiceBase; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "KeyServiceParameter", function() { return KeyServiceParameter_KeyServiceParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SecurityManager", function() { return SecurityManager_SecurityManager; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServerInfo", function() { return ServerInfo_ServerInfo; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TokenServiceParameter", function() { return TokenServiceParameter_TokenServiceParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ElasticSearch", function() { return ElasticSearch_ElasticSearch; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FetchRequest", function() { return FetchRequest; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AreaSolarRadiationParameters", function() { return AreaSolarRadiationParameters_AreaSolarRadiationParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AggregationParameter", function() { return AggregationParameter_AggregationParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AggQueryBuilderParameter", function() { return AggQueryBuilderParameter_AggQueryBuilderParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BufferAnalystParameters", function() { return BufferAnalystParameters_BufferAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BufferDistance", function() { return BufferDistance_BufferDistance; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BuffersAnalystJobsParameter", function() { return BuffersAnalystJobsParameter_BuffersAnalystJobsParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BufferSetting", function() { return BufferSetting_BufferSetting; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BurstPipelineAnalystParameters", function() { return BurstPipelineAnalystParameters_BurstPipelineAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ChartQueryFilterParameter", function() { return ChartQueryFilterParameter_ChartQueryFilterParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ChartQueryParameters", function() { return ChartQueryParameters_ChartQueryParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ClipParameter", function() { return ClipParameter_ClipParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ColorDictionary", function() { return ColorDictionary_ColorDictionary; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ComputeWeightMatrixParameters", function() { return ComputeWeightMatrixParameters_ComputeWeightMatrixParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DataReturnOption", function() { return DataReturnOption_DataReturnOption; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DatasetBufferAnalystParameters", function() { return DatasetBufferAnalystParameters_DatasetBufferAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DatasetInfo", function() { return DatasetInfo_DatasetInfo; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DatasetOverlayAnalystParameters", function() { return DatasetOverlayAnalystParameters_DatasetOverlayAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DatasetSurfaceAnalystParameters", function() { return DatasetSurfaceAnalystParameters_DatasetSurfaceAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DatasetThiessenAnalystParameters", function() { return DatasetThiessenAnalystParameters_DatasetThiessenAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DatasourceConnectionInfo", function() { return DatasourceConnectionInfo_DatasourceConnectionInfo; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DensityKernelAnalystParameters", function() { return DensityKernelAnalystParameters_DensityKernelAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "EditFeaturesParameters", function() { return EditFeaturesParameters_EditFeaturesParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FacilityAnalyst3DParameters", function() { return FacilityAnalyst3DParameters_FacilityAnalyst3DParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FacilityAnalystSinks3DParameters", function() { return FacilityAnalystSinks3DParameters_FacilityAnalystSinks3DParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FacilityAnalystSources3DParameters", function() { return FacilityAnalystSources3DParameters_FacilityAnalystSources3DParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FacilityAnalystStreamParameters", function() { return FacilityAnalystStreamParameters_FacilityAnalystStreamParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FacilityAnalystTracedown3DParameters", function() { return FacilityAnalystTracedown3DParameters_FacilityAnalystTracedown3DParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FacilityAnalystTraceup3DParameters", function() { return FacilityAnalystTraceup3DParameters_FacilityAnalystTraceup3DParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FacilityAnalystUpstream3DParameters", function() { return FacilityAnalystUpstream3DParameters_FacilityAnalystUpstream3DParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FieldParameters", function() { return FieldParameters_FieldParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FieldStatisticsParameters", function() { return FieldStatisticsParameters_FieldStatisticsParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FilterParameter", function() { return FilterParameter_FilterParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FilterAggParameter", function() { return FilterAggParameter_FilterAggParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FindClosestFacilitiesParameters", function() { return FindClosestFacilitiesParameters_FindClosestFacilitiesParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FindLocationParameters", function() { return FindLocationParameters_FindLocationParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FindMTSPPathsParameters", function() { return FindMTSPPathsParameters_FindMTSPPathsParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FindPathParameters", function() { return FindPathParameters_FindPathParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FindServiceAreasParameters", function() { return FindServiceAreasParameters_FindServiceAreasParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FindTSPPathsParameters", function() { return FindTSPPathsParameters_FindTSPPathsParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GenerateSpatialDataParameters", function() { return GenerateSpatialDataParameters_GenerateSpatialDataParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeoBoundingBoxQueryBuilderParameter", function() { return GeoBoundingBoxQueryBuilderParameter_GeoBoundingBoxQueryBuilderParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeoCodingParameter", function() { return GeoCodingParameter_GeoCodingParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeoDecodingParameter", function() { return GeoDecodingParameter_GeoDecodingParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeoHashGridAggParameter", function() { return GeoHashGridAggParameter_GeoHashGridAggParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeometryBufferAnalystParameters", function() { return GeometryBufferAnalystParameters_GeometryBufferAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeometryOverlayAnalystParameters", function() { return GeometryOverlayAnalystParameters_GeometryOverlayAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeometrySurfaceAnalystParameters", function() { return GeometrySurfaceAnalystParameters_GeometrySurfaceAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeometryThiessenAnalystParameters", function() { return GeometryThiessenAnalystParameters_GeometryThiessenAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeoRelationAnalystParameters", function() { return GeoRelationAnalystParameters_GeoRelationAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GetFeaturesByBoundsParameters", function() { return GetFeaturesByBoundsParameters_GetFeaturesByBoundsParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GetFeaturesByBufferParameters", function() { return GetFeaturesByBufferParameters_GetFeaturesByBufferParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GetFeaturesByGeometryParameters", function() { return GetFeaturesByGeometryParameters_GetFeaturesByGeometryParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GetFeaturesByIDsParameters", function() { return GetFeaturesByIDsParameters_GetFeaturesByIDsParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GetFeaturesBySQLParameters", function() { return GetFeaturesBySQLParameters_GetFeaturesBySQLParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GetGridCellInfosParameters", function() { return GetGridCellInfosParameters_GetGridCellInfosParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Grid", function() { return Grid_Grid; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Image", function() { return Image_Image; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "InterpolationAnalystParameters", function() { return InterpolationAnalystParameters_InterpolationAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "InterpolationIDWAnalystParameters", function() { return InterpolationIDWAnalystParameters_InterpolationIDWAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "InterpolationKrigingAnalystParameters", function() { return InterpolationKrigingAnalystParameters_InterpolationKrigingAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "InterpolationRBFAnalystParameters", function() { return InterpolationRBFAnalystParameters_InterpolationRBFAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "JoinItem", function() { return JoinItem_JoinItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "KernelDensityJobParameter", function() { return KernelDensityJobParameter_KernelDensityJobParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LabelImageCell", function() { return LabelImageCell_LabelImageCell; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LabelMatrixCell", function() { return LabelMatrixCell; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LabelMixedTextStyle", function() { return LabelMixedTextStyle_LabelMixedTextStyle; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LabelSymbolCell", function() { return LabelSymbolCell_LabelSymbolCell; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LabelThemeCell", function() { return LabelThemeCell_LabelThemeCell; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LayerStatus", function() { return LayerStatus_LayerStatus; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LinkItem", function() { return LinkItem_LinkItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MathExpressionAnalysisParameters", function() { return MathExpressionAnalysisParameters_MathExpressionAnalysisParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MeasureParameters", function() { return MeasureParameters_MeasureParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OutputSetting", function() { return OutputSetting_OutputSetting; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MappingParameters", function() { return MappingParameters_MappingParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OverlapDisplayedOptions", function() { return OverlapDisplayedOptions_OverlapDisplayedOptions; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OverlayAnalystParameters", function() { return OverlayAnalystParameters_OverlayAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OverlayGeoJobParameter", function() { return OverlayGeoJobParameter_OverlayGeoJobParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "PointWithMeasure", function() { return PointWithMeasure_PointWithMeasure; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "QueryByBoundsParameters", function() { return QueryByBoundsParameters_QueryByBoundsParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "QueryByDistanceParameters", function() { return QueryByDistanceParameters_QueryByDistanceParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "QueryByGeometryParameters", function() { return QueryByGeometryParameters_QueryByGeometryParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "QueryBySQLParameters", function() { return QueryBySQLParameters_QueryBySQLParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "QueryParameters", function() { return QueryParameters_QueryParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Route", function() { return Route_Route; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RouteCalculateMeasureParameters", function() { return RouteCalculateMeasureParameters_RouteCalculateMeasureParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RouteLocatorParameters", function() { return RouteLocatorParameters_RouteLocatorParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServerColor", function() { return ServerColor; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServerFeature", function() { return ServerFeature_ServerFeature; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServerGeometry", function() { return ServerGeometry_ServerGeometry; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServerStyle", function() { return ServerStyle_ServerStyle; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServerTextStyle", function() { return ServerTextStyle_ServerTextStyle; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServerTheme", function() { return ServerTheme_ServerTheme; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SetLayerInfoParameters", function() { return SetLayerInfoParameters_SetLayerInfoParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SetLayersInfoParameters", function() { return SetLayersInfoParameters_SetLayersInfoParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SetLayerStatusParameters", function() { return SetLayerStatusParameters_SetLayerStatusParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SingleObjectQueryJobsParameter", function() { return SingleObjectQueryJobsParameter_SingleObjectQueryJobsParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "StopQueryParameters", function() { return StopQueryParameters_StopQueryParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SummaryAttributesJobsParameter", function() { return SummaryAttributesJobsParameter_SummaryAttributesJobsParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SummaryMeshJobParameter", function() { return SummaryMeshJobParameter_SummaryMeshJobParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SummaryRegionJobParameter", function() { return SummaryRegionJobParameter_SummaryRegionJobParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SupplyCenter", function() { return SupplyCenter_SupplyCenter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SurfaceAnalystParameters", function() { return SurfaceAnalystParameters_SurfaceAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SurfaceAnalystParametersSetting", function() { return SurfaceAnalystParametersSetting_SurfaceAnalystParametersSetting; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TerrainCurvatureCalculationParameters", function() { return TerrainCurvatureCalculationParameters_TerrainCurvatureCalculationParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "CommonTheme", function() { return Theme_Theme; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeDotDensity", function() { return ThemeDotDensity_ThemeDotDensity; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeFlow", function() { return ThemeFlow_ThemeFlow; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraduatedSymbol", function() { return ThemeGraduatedSymbol_ThemeGraduatedSymbol; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraduatedSymbolStyle", function() { return ThemeGraduatedSymbolStyle_ThemeGraduatedSymbolStyle; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraph", function() { return ThemeGraph_ThemeGraph; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraphAxes", function() { return ThemeGraphAxes_ThemeGraphAxes; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraphItem", function() { return ThemeGraphItem_ThemeGraphItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraphSize", function() { return ThemeGraphSize_ThemeGraphSize; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGraphText", function() { return ThemeGraphText_ThemeGraphText; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGridRange", function() { return ThemeGridRange_ThemeGridRange; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGridRangeItem", function() { return ThemeGridRangeItem_ThemeGridRangeItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGridUnique", function() { return ThemeGridUnique_ThemeGridUnique; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeGridUniqueItem", function() { return ThemeGridUniqueItem_ThemeGridUniqueItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeLabel", function() { return ThemeLabel_ThemeLabel; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeLabelAlongLine", function() { return ThemeLabelAlongLine_ThemeLabelAlongLine; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeLabelBackground", function() { return ThemeLabelBackground_ThemeLabelBackground; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeLabelItem", function() { return ThemeLabelItem_ThemeLabelItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeLabelText", function() { return ThemeLabelText_ThemeLabelText; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeLabelUniqueItem", function() { return ThemeLabelUniqueItem_ThemeLabelUniqueItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeMemoryData", function() { return ThemeMemoryData; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeOffset", function() { return ThemeOffset_ThemeOffset; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeParameters", function() { return ThemeParameters_ThemeParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeRange", function() { return ThemeRange_ThemeRange; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeRangeItem", function() { return ThemeRangeItem_ThemeRangeItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeUnique", function() { return ThemeUnique_ThemeUnique; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeUniqueItem", function() { return ThemeUniqueItem_ThemeUniqueItem; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThiessenAnalystParameters", function() { return ThiessenAnalystParameters_ThiessenAnalystParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TopologyValidatorJobsParameter", function() { return TopologyValidatorJobsParameter_TopologyValidatorJobsParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TransferLine", function() { return TransferLine_TransferLine; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TransferPathParameters", function() { return TransferPathParameters_TransferPathParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TransferSolutionParameters", function() { return TransferSolutionParameters_TransferSolutionParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TransportationAnalystParameter", function() { return TransportationAnalystParameter_TransportationAnalystParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TransportationAnalystResultSetting", function() { return TransportationAnalystResultSetting_TransportationAnalystResultSetting; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "UGCLayer", function() { return UGCLayer_UGCLayer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "UGCMapLayer", function() { return UGCMapLayer_UGCMapLayer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "UGCSubLayer", function() { return UGCSubLayer_UGCSubLayer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "UpdateEdgeWeightParameters", function() { return UpdateEdgeWeightParameters_UpdateEdgeWeightParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "UpdateTurnNodeWeightParameters", function() { return UpdateTurnNodeWeightParameters_UpdateTurnNodeWeightParameters; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Vector", function() { return iServer_Vector_Vector; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VectorClipJobsParameter", function() { return VectorClipJobsParameter_VectorClipJobsParameter; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ChangeTileVersion", function() { return ChangeTileVersion_ChangeTileVersion; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Logo", function() { return Logo_Logo; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "StyleUtils", function() { return StyleUtils_StyleUtils; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Util", function() { return core_Util_Util; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MapExtend", function() { return MapExtend; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BaiduMap", function() { return BaiduMap_BaiduMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ImageSuperMapRest", function() { return ImageSuperMapRest_ImageSuperMapRest; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SuperMapCloud", function() { return SuperMapCloud_SuperMapCloud; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Tianditu", function() { return Tianditu_Tianditu; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TileSuperMapRest", function() { return TileSuperMapRest_TileSuperMapRest; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "WebMap", function() { return WebMap_WebMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DataFlow", function() { return DataFlow_DataFlow; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Graph", function() { return overlay_Graph_Graph; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Graphic", function() { return overlay_Graphic_Graphic; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Label", function() { return overlay_Label_Label; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Mapv", function() { return Mapv_Mapv; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Range", function() { return Range_Range; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "RankSymbol", function() { return overlay_RankSymbol_RankSymbol; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Turf", function() { return Turf_Turf; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Unique", function() { return Unique_Unique; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VectorTileSuperMapRest", function() { return VectorTileSuperMapRest_VectorTileSuperMapRest; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "HeatMap", function() { return HeatMap_HeatMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "OverlayGraphic", function() { return Graphic_Graphic; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "CloverShape", function() { return CloverShape_CloverShape; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "HitCloverShape", function() { return HitCloverShape_HitCloverShape; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GraphicCanvasRenderer", function() { return CanvasRenderer_GraphicCanvasRenderer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GraphicWebGLRenderer", function() { return WebGLRenderer_GraphicWebGLRenderer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MapvCanvasLayer", function() { return MapvCanvasLayer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MapvLayer", function() { return MapvLayer_MapvLayer; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GeoFeature", function() { return GeoFeature_GeoFeature; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "Theme", function() { return theme_Theme_Theme; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeFeature", function() { return ThemeFeature_ThemeFeature; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "pointStyle", function() { return DeafultCanvasStyle_pointStyle; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "lineStyle", function() { return DeafultCanvasStyle_lineStyle; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "polygonStyle", function() { return DeafultCanvasStyle_polygonStyle; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DeafultCanvasStyle", function() { return DeafultCanvasStyle; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "pointMap", function() { return pointMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "lineMap", function() { return lineMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "polygonMap", function() { return polygonMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "StyleMap", function() { return StyleMap; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "VectorTileStyles", function() { return VectorTileStyles_VectorTileStyles; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MapboxStyles", function() { return MapboxStyles_MapboxStyles; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "AddressMatchService", function() { return services_AddressMatchService_AddressMatchService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ChartService", function() { return ChartService_ChartService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "DataFlowService", function() { return services_DataFlowService_DataFlowService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FeatureService", function() { return FeatureService_FeatureService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "FieldService", function() { return FieldService_FieldService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "GridCellInfosService", function() { return GridCellInfosService_GridCellInfosService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LayerInfoService", function() { return LayerInfoService_LayerInfoService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MapService", function() { return services_MapService_MapService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MeasureService", function() { return services_MeasureService_MeasureService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "NetworkAnalyst3DService", function() { return NetworkAnalyst3DService_NetworkAnalyst3DService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "NetworkAnalystService", function() { return NetworkAnalystService_NetworkAnalystService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ProcessingService", function() { return ProcessingService_ProcessingService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "QueryService", function() { return services_QueryService_QueryService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ServiceBase", function() { return ServiceBase_ServiceBase; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "SpatialAnalystService", function() { return SpatialAnalystService_SpatialAnalystService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ThemeService", function() { return services_ThemeService_ThemeService; });
-/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "TrafficTransferAnalystService", function() { return TrafficTransferAnalystService_TrafficTransferAnalystService; });
+/* concated harmony reexport SuperMap */__webpack_require__.d(__webpack_exports__, "SuperMap", function() { return SuperMap; });
+/* concated harmony reexport DataFormat */__webpack_require__.d(__webpack_exports__, "DataFormat", function() { return DataFormat; });
+/* concated harmony reexport ServerType */__webpack_require__.d(__webpack_exports__, "ServerType", function() { return ServerType; });
+/* concated harmony reexport GeometryType */__webpack_require__.d(__webpack_exports__, "GeometryType", function() { return GeometryType; });
+/* concated harmony reexport QueryOption */__webpack_require__.d(__webpack_exports__, "QueryOption", function() { return QueryOption; });
+/* concated harmony reexport JoinType */__webpack_require__.d(__webpack_exports__, "JoinType", function() { return JoinType; });
+/* concated harmony reexport EngineType */__webpack_require__.d(__webpack_exports__, "EngineType", function() { return EngineType; });
+/* concated harmony reexport MeasureMode */__webpack_require__.d(__webpack_exports__, "MeasureMode", function() { return MeasureMode; });
+/* concated harmony reexport SpatialRelationType */__webpack_require__.d(__webpack_exports__, "SpatialRelationType", function() { return SpatialRelationType; });
+/* concated harmony reexport DataReturnMode */__webpack_require__.d(__webpack_exports__, "DataReturnMode", function() { return DataReturnMode; });
+/* concated harmony reexport Unit */__webpack_require__.d(__webpack_exports__, "Unit", function() { return Unit; });
+/* concated harmony reexport BufferRadiusUnit */__webpack_require__.d(__webpack_exports__, "BufferRadiusUnit", function() { return BufferRadiusUnit; });
+/* concated harmony reexport SpatialQueryMode */__webpack_require__.d(__webpack_exports__, "SpatialQueryMode", function() { return SpatialQueryMode; });
+/* concated harmony reexport ThemeGraphTextFormat */__webpack_require__.d(__webpack_exports__, "ThemeGraphTextFormat", function() { return ThemeGraphTextFormat; });
+/* concated harmony reexport ThemeGraphType */__webpack_require__.d(__webpack_exports__, "ThemeGraphType", function() { return ThemeGraphType; });
+/* concated harmony reexport GraphAxesTextDisplayMode */__webpack_require__.d(__webpack_exports__, "GraphAxesTextDisplayMode", function() { return GraphAxesTextDisplayMode; });
+/* concated harmony reexport GraduatedMode */__webpack_require__.d(__webpack_exports__, "GraduatedMode", function() { return GraduatedMode; });
+/* concated harmony reexport RangeMode */__webpack_require__.d(__webpack_exports__, "RangeMode", function() { return RangeMode; });
+/* concated harmony reexport ThemeType */__webpack_require__.d(__webpack_exports__, "ThemeType", function() { return ThemeType; });
+/* concated harmony reexport ColorGradientType */__webpack_require__.d(__webpack_exports__, "ColorGradientType", function() { return ColorGradientType; });
+/* concated harmony reexport TextAlignment */__webpack_require__.d(__webpack_exports__, "TextAlignment", function() { return TextAlignment; });
+/* concated harmony reexport FillGradientMode */__webpack_require__.d(__webpack_exports__, "FillGradientMode", function() { return FillGradientMode; });
+/* concated harmony reexport SideType */__webpack_require__.d(__webpack_exports__, "SideType", function() { return SideType; });
+/* concated harmony reexport AlongLineDirection */__webpack_require__.d(__webpack_exports__, "AlongLineDirection", function() { return AlongLineDirection; });
+/* concated harmony reexport LabelBackShape */__webpack_require__.d(__webpack_exports__, "LabelBackShape", function() { return LabelBackShape; });
+/* concated harmony reexport LabelOverLengthMode */__webpack_require__.d(__webpack_exports__, "LabelOverLengthMode", function() { return LabelOverLengthMode; });
+/* concated harmony reexport DirectionType */__webpack_require__.d(__webpack_exports__, "DirectionType", function() { return DirectionType; });
+/* concated harmony reexport OverlayOperationType */__webpack_require__.d(__webpack_exports__, "OverlayOperationType", function() { return OverlayOperationType; });
+/* concated harmony reexport SupplyCenterType */__webpack_require__.d(__webpack_exports__, "SupplyCenterType", function() { return SupplyCenterType; });
+/* concated harmony reexport TurnType */__webpack_require__.d(__webpack_exports__, "TurnType", function() { return TurnType; });
+/* concated harmony reexport BufferEndType */__webpack_require__.d(__webpack_exports__, "BufferEndType", function() { return BufferEndType; });
+/* concated harmony reexport SmoothMethod */__webpack_require__.d(__webpack_exports__, "SmoothMethod", function() { return SmoothMethod; });
+/* concated harmony reexport SurfaceAnalystMethod */__webpack_require__.d(__webpack_exports__, "SurfaceAnalystMethod", function() { return SurfaceAnalystMethod; });
+/* concated harmony reexport ColorSpaceType */__webpack_require__.d(__webpack_exports__, "ColorSpaceType", function() { return ColorSpaceType; });
+/* concated harmony reexport ChartType */__webpack_require__.d(__webpack_exports__, "ChartType", function() { return ChartType; });
+/* concated harmony reexport EditType */__webpack_require__.d(__webpack_exports__, "EditType", function() { return EditType; });
+/* concated harmony reexport TransferTactic */__webpack_require__.d(__webpack_exports__, "TransferTactic", function() { return TransferTactic; });
+/* concated harmony reexport TransferPreference */__webpack_require__.d(__webpack_exports__, "TransferPreference", function() { return TransferPreference; });
+/* concated harmony reexport GridType */__webpack_require__.d(__webpack_exports__, "GridType", function() { return GridType; });
+/* concated harmony reexport ClientType */__webpack_require__.d(__webpack_exports__, "ClientType", function() { return ClientType; });
+/* concated harmony reexport LayerType */__webpack_require__.d(__webpack_exports__, "LayerType", function() { return LayerType; });
+/* concated harmony reexport UGCLayerType */__webpack_require__.d(__webpack_exports__, "UGCLayerType", function() { return UGCLayerType; });
+/* concated harmony reexport StatisticMode */__webpack_require__.d(__webpack_exports__, "StatisticMode", function() { return StatisticMode; });
+/* concated harmony reexport PixelFormat */__webpack_require__.d(__webpack_exports__, "PixelFormat", function() { return PixelFormat; });
+/* concated harmony reexport SearchMode */__webpack_require__.d(__webpack_exports__, "SearchMode", function() { return SearchMode; });
+/* concated harmony reexport SummaryType */__webpack_require__.d(__webpack_exports__, "SummaryType", function() { return SummaryType; });
+/* concated harmony reexport InterpolationAlgorithmType */__webpack_require__.d(__webpack_exports__, "InterpolationAlgorithmType", function() { return InterpolationAlgorithmType; });
+/* concated harmony reexport VariogramMode */__webpack_require__.d(__webpack_exports__, "VariogramMode", function() { return VariogramMode; });
+/* concated harmony reexport Exponent */__webpack_require__.d(__webpack_exports__, "Exponent", function() { return Exponent; });
+/* concated harmony reexport ClipAnalystMode */__webpack_require__.d(__webpack_exports__, "ClipAnalystMode", function() { return ClipAnalystMode; });
+/* concated harmony reexport AnalystAreaUnit */__webpack_require__.d(__webpack_exports__, "AnalystAreaUnit", function() { return AnalystAreaUnit; });
+/* concated harmony reexport AnalystSizeUnit */__webpack_require__.d(__webpack_exports__, "AnalystSizeUnit", function() { return AnalystSizeUnit; });
+/* concated harmony reexport StatisticAnalystMode */__webpack_require__.d(__webpack_exports__, "StatisticAnalystMode", function() { return StatisticAnalystMode; });
+/* concated harmony reexport TopologyValidatorRule */__webpack_require__.d(__webpack_exports__, "TopologyValidatorRule", function() { return TopologyValidatorRule; });
+/* concated harmony reexport OutputType */__webpack_require__.d(__webpack_exports__, "OutputType", function() { return OutputType; });
+/* concated harmony reexport AggregationQueryBuilderType */__webpack_require__.d(__webpack_exports__, "AggregationQueryBuilderType", function() { return AggregationQueryBuilderType; });
+/* concated harmony reexport AggregationType */__webpack_require__.d(__webpack_exports__, "AggregationType", function() { return AggregationType; });
+/* concated harmony reexport TimeFlowControl */__webpack_require__.d(__webpack_exports__, "TimeFlowControl", function() { return TimeFlowControl_TimeFlowControl; });
+/* concated harmony reexport IManager */__webpack_require__.d(__webpack_exports__, "IManager", function() { return iManager_IManager; });
+/* concated harmony reexport IManagerServiceBase */__webpack_require__.d(__webpack_exports__, "IManagerServiceBase", function() { return iManagerServiceBase_IManagerServiceBase; });
+/* concated harmony reexport IManagerCreateNodeParam */__webpack_require__.d(__webpack_exports__, "IManagerCreateNodeParam", function() { return iManagerCreateNodeParam_IManagerCreateNodeParam; });
+/* concated harmony reexport IPortal */__webpack_require__.d(__webpack_exports__, "IPortal", function() { return iPortal_IPortal; });
+/* concated harmony reexport IPortalMap */__webpack_require__.d(__webpack_exports__, "IPortalMap", function() { return iPortalMap_IPortalMap; });
+/* concated harmony reexport IPortalMapsQueryParam */__webpack_require__.d(__webpack_exports__, "IPortalMapsQueryParam", function() { return iPortalMapsQueryParam_IPortalMapsQueryParam; });
+/* concated harmony reexport IPortalService */__webpack_require__.d(__webpack_exports__, "IPortalService", function() { return iPortalService_IPortalService; });
+/* concated harmony reexport IPortalServiceBase */__webpack_require__.d(__webpack_exports__, "IPortalServiceBase", function() { return iPortalServiceBase_IPortalServiceBase; });
+/* concated harmony reexport IPortalServicesQueryParam */__webpack_require__.d(__webpack_exports__, "IPortalServicesQueryParam", function() { return iPortalServicesQueryParam_IPortalServicesQueryParam; });
+/* concated harmony reexport Online */__webpack_require__.d(__webpack_exports__, "Online", function() { return Online_Online; });
+/* concated harmony reexport OnlineData */__webpack_require__.d(__webpack_exports__, "OnlineData", function() { return OnlineData_OnlineData; });
+/* concated harmony reexport OnlineQueryDatasParameter */__webpack_require__.d(__webpack_exports__, "OnlineQueryDatasParameter", function() { return OnlineQueryDatasParameter_OnlineQueryDatasParameter; });
+/* concated harmony reexport ServiceStatus */__webpack_require__.d(__webpack_exports__, "ServiceStatus", function() { return ServiceStatus; });
+/* concated harmony reexport DataItemType */__webpack_require__.d(__webpack_exports__, "DataItemType", function() { return DataItemType; });
+/* concated harmony reexport DataItemOrderBy */__webpack_require__.d(__webpack_exports__, "DataItemOrderBy", function() { return DataItemOrderBy; });
+/* concated harmony reexport FilterField */__webpack_require__.d(__webpack_exports__, "FilterField", function() { return FilterField; });
+/* concated harmony reexport OnlineServiceBase */__webpack_require__.d(__webpack_exports__, "OnlineServiceBase", function() { return OnlineServiceBase_OnlineServiceBase; });
+/* concated harmony reexport KeyServiceParameter */__webpack_require__.d(__webpack_exports__, "KeyServiceParameter", function() { return KeyServiceParameter_KeyServiceParameter; });
+/* concated harmony reexport SecurityManager */__webpack_require__.d(__webpack_exports__, "SecurityManager", function() { return SecurityManager_SecurityManager; });
+/* concated harmony reexport ServerInfo */__webpack_require__.d(__webpack_exports__, "ServerInfo", function() { return ServerInfo_ServerInfo; });
+/* concated harmony reexport TokenServiceParameter */__webpack_require__.d(__webpack_exports__, "TokenServiceParameter", function() { return TokenServiceParameter_TokenServiceParameter; });
+/* concated harmony reexport ElasticSearch */__webpack_require__.d(__webpack_exports__, "ElasticSearch", function() { return ElasticSearch_ElasticSearch; });
+/* concated harmony reexport FetchRequest */__webpack_require__.d(__webpack_exports__, "FetchRequest", function() { return FetchRequest; });
+/* concated harmony reexport AreaSolarRadiationParameters */__webpack_require__.d(__webpack_exports__, "AreaSolarRadiationParameters", function() { return AreaSolarRadiationParameters_AreaSolarRadiationParameters; });
+/* concated harmony reexport AggregationParameter */__webpack_require__.d(__webpack_exports__, "AggregationParameter", function() { return AggregationParameter_AggregationParameter; });
+/* concated harmony reexport AggQueryBuilderParameter */__webpack_require__.d(__webpack_exports__, "AggQueryBuilderParameter", function() { return AggQueryBuilderParameter_AggQueryBuilderParameter; });
+/* concated harmony reexport BufferAnalystParameters */__webpack_require__.d(__webpack_exports__, "BufferAnalystParameters", function() { return BufferAnalystParameters_BufferAnalystParameters; });
+/* concated harmony reexport BufferDistance */__webpack_require__.d(__webpack_exports__, "BufferDistance", function() { return BufferDistance_BufferDistance; });
+/* concated harmony reexport BuffersAnalystJobsParameter */__webpack_require__.d(__webpack_exports__, "BuffersAnalystJobsParameter", function() { return BuffersAnalystJobsParameter_BuffersAnalystJobsParameter; });
+/* concated harmony reexport BufferSetting */__webpack_require__.d(__webpack_exports__, "BufferSetting", function() { return BufferSetting_BufferSetting; });
+/* concated harmony reexport BurstPipelineAnalystParameters */__webpack_require__.d(__webpack_exports__, "BurstPipelineAnalystParameters", function() { return BurstPipelineAnalystParameters_BurstPipelineAnalystParameters; });
+/* concated harmony reexport ChartQueryFilterParameter */__webpack_require__.d(__webpack_exports__, "ChartQueryFilterParameter", function() { return ChartQueryFilterParameter_ChartQueryFilterParameter; });
+/* concated harmony reexport ChartQueryParameters */__webpack_require__.d(__webpack_exports__, "ChartQueryParameters", function() { return ChartQueryParameters_ChartQueryParameters; });
+/* concated harmony reexport ClipParameter */__webpack_require__.d(__webpack_exports__, "ClipParameter", function() { return ClipParameter_ClipParameter; });
+/* concated harmony reexport ColorDictionary */__webpack_require__.d(__webpack_exports__, "ColorDictionary", function() { return ColorDictionary_ColorDictionary; });
+/* concated harmony reexport ComputeWeightMatrixParameters */__webpack_require__.d(__webpack_exports__, "ComputeWeightMatrixParameters", function() { return ComputeWeightMatrixParameters_ComputeWeightMatrixParameters; });
+/* concated harmony reexport DataReturnOption */__webpack_require__.d(__webpack_exports__, "DataReturnOption", function() { return DataReturnOption_DataReturnOption; });
+/* concated harmony reexport DatasetBufferAnalystParameters */__webpack_require__.d(__webpack_exports__, "DatasetBufferAnalystParameters", function() { return DatasetBufferAnalystParameters_DatasetBufferAnalystParameters; });
+/* concated harmony reexport DatasetInfo */__webpack_require__.d(__webpack_exports__, "DatasetInfo", function() { return DatasetInfo_DatasetInfo; });
+/* concated harmony reexport DatasetOverlayAnalystParameters */__webpack_require__.d(__webpack_exports__, "DatasetOverlayAnalystParameters", function() { return DatasetOverlayAnalystParameters_DatasetOverlayAnalystParameters; });
+/* concated harmony reexport DatasetSurfaceAnalystParameters */__webpack_require__.d(__webpack_exports__, "DatasetSurfaceAnalystParameters", function() { return DatasetSurfaceAnalystParameters_DatasetSurfaceAnalystParameters; });
+/* concated harmony reexport DatasetThiessenAnalystParameters */__webpack_require__.d(__webpack_exports__, "DatasetThiessenAnalystParameters", function() { return DatasetThiessenAnalystParameters_DatasetThiessenAnalystParameters; });
+/* concated harmony reexport DatasourceConnectionInfo */__webpack_require__.d(__webpack_exports__, "DatasourceConnectionInfo", function() { return DatasourceConnectionInfo_DatasourceConnectionInfo; });
+/* concated harmony reexport DensityKernelAnalystParameters */__webpack_require__.d(__webpack_exports__, "DensityKernelAnalystParameters", function() { return DensityKernelAnalystParameters_DensityKernelAnalystParameters; });
+/* concated harmony reexport EditFeaturesParameters */__webpack_require__.d(__webpack_exports__, "EditFeaturesParameters", function() { return EditFeaturesParameters_EditFeaturesParameters; });
+/* concated harmony reexport FacilityAnalyst3DParameters */__webpack_require__.d(__webpack_exports__, "FacilityAnalyst3DParameters", function() { return FacilityAnalyst3DParameters_FacilityAnalyst3DParameters; });
+/* concated harmony reexport FacilityAnalystSinks3DParameters */__webpack_require__.d(__webpack_exports__, "FacilityAnalystSinks3DParameters", function() { return FacilityAnalystSinks3DParameters_FacilityAnalystSinks3DParameters; });
+/* concated harmony reexport FacilityAnalystSources3DParameters */__webpack_require__.d(__webpack_exports__, "FacilityAnalystSources3DParameters", function() { return FacilityAnalystSources3DParameters_FacilityAnalystSources3DParameters; });
+/* concated harmony reexport FacilityAnalystStreamParameters */__webpack_require__.d(__webpack_exports__, "FacilityAnalystStreamParameters", function() { return FacilityAnalystStreamParameters_FacilityAnalystStreamParameters; });
+/* concated harmony reexport FacilityAnalystTracedown3DParameters */__webpack_require__.d(__webpack_exports__, "FacilityAnalystTracedown3DParameters", function() { return FacilityAnalystTracedown3DParameters_FacilityAnalystTracedown3DParameters; });
+/* concated harmony reexport FacilityAnalystTraceup3DParameters */__webpack_require__.d(__webpack_exports__, "FacilityAnalystTraceup3DParameters", function() { return FacilityAnalystTraceup3DParameters_FacilityAnalystTraceup3DParameters; });
+/* concated harmony reexport FacilityAnalystUpstream3DParameters */__webpack_require__.d(__webpack_exports__, "FacilityAnalystUpstream3DParameters", function() { return FacilityAnalystUpstream3DParameters_FacilityAnalystUpstream3DParameters; });
+/* concated harmony reexport FieldParameters */__webpack_require__.d(__webpack_exports__, "FieldParameters", function() { return FieldParameters_FieldParameters; });
+/* concated harmony reexport FieldStatisticsParameters */__webpack_require__.d(__webpack_exports__, "FieldStatisticsParameters", function() { return FieldStatisticsParameters_FieldStatisticsParameters; });
+/* concated harmony reexport FilterParameter */__webpack_require__.d(__webpack_exports__, "FilterParameter", function() { return FilterParameter_FilterParameter; });
+/* concated harmony reexport FilterAggParameter */__webpack_require__.d(__webpack_exports__, "FilterAggParameter", function() { return FilterAggParameter_FilterAggParameter; });
+/* concated harmony reexport FindClosestFacilitiesParameters */__webpack_require__.d(__webpack_exports__, "FindClosestFacilitiesParameters", function() { return FindClosestFacilitiesParameters_FindClosestFacilitiesParameters; });
+/* concated harmony reexport FindLocationParameters */__webpack_require__.d(__webpack_exports__, "FindLocationParameters", function() { return FindLocationParameters_FindLocationParameters; });
+/* concated harmony reexport FindMTSPPathsParameters */__webpack_require__.d(__webpack_exports__, "FindMTSPPathsParameters", function() { return FindMTSPPathsParameters_FindMTSPPathsParameters; });
+/* concated harmony reexport FindPathParameters */__webpack_require__.d(__webpack_exports__, "FindPathParameters", function() { return FindPathParameters_FindPathParameters; });
+/* concated harmony reexport FindServiceAreasParameters */__webpack_require__.d(__webpack_exports__, "FindServiceAreasParameters", function() { return FindServiceAreasParameters_FindServiceAreasParameters; });
+/* concated harmony reexport FindTSPPathsParameters */__webpack_require__.d(__webpack_exports__, "FindTSPPathsParameters", function() { return FindTSPPathsParameters_FindTSPPathsParameters; });
+/* concated harmony reexport GenerateSpatialDataParameters */__webpack_require__.d(__webpack_exports__, "GenerateSpatialDataParameters", function() { return GenerateSpatialDataParameters_GenerateSpatialDataParameters; });
+/* concated harmony reexport GeoBoundingBoxQueryBuilderParameter */__webpack_require__.d(__webpack_exports__, "GeoBoundingBoxQueryBuilderParameter", function() { return GeoBoundingBoxQueryBuilderParameter_GeoBoundingBoxQueryBuilderParameter; });
+/* concated harmony reexport GeoCodingParameter */__webpack_require__.d(__webpack_exports__, "GeoCodingParameter", function() { return GeoCodingParameter_GeoCodingParameter; });
+/* concated harmony reexport GeoDecodingParameter */__webpack_require__.d(__webpack_exports__, "GeoDecodingParameter", function() { return GeoDecodingParameter_GeoDecodingParameter; });
+/* concated harmony reexport GeoHashGridAggParameter */__webpack_require__.d(__webpack_exports__, "GeoHashGridAggParameter", function() { return GeoHashGridAggParameter_GeoHashGridAggParameter; });
+/* concated harmony reexport GeometryBufferAnalystParameters */__webpack_require__.d(__webpack_exports__, "GeometryBufferAnalystParameters", function() { return GeometryBufferAnalystParameters_GeometryBufferAnalystParameters; });
+/* concated harmony reexport GeometryOverlayAnalystParameters */__webpack_require__.d(__webpack_exports__, "GeometryOverlayAnalystParameters", function() { return GeometryOverlayAnalystParameters_GeometryOverlayAnalystParameters; });
+/* concated harmony reexport GeometrySurfaceAnalystParameters */__webpack_require__.d(__webpack_exports__, "GeometrySurfaceAnalystParameters", function() { return GeometrySurfaceAnalystParameters_GeometrySurfaceAnalystParameters; });
+/* concated harmony reexport GeometryThiessenAnalystParameters */__webpack_require__.d(__webpack_exports__, "GeometryThiessenAnalystParameters", function() { return GeometryThiessenAnalystParameters_GeometryThiessenAnalystParameters; });
+/* concated harmony reexport GeoRelationAnalystParameters */__webpack_require__.d(__webpack_exports__, "GeoRelationAnalystParameters", function() { return GeoRelationAnalystParameters_GeoRelationAnalystParameters; });
+/* concated harmony reexport GetFeaturesByBoundsParameters */__webpack_require__.d(__webpack_exports__, "GetFeaturesByBoundsParameters", function() { return GetFeaturesByBoundsParameters_GetFeaturesByBoundsParameters; });
+/* concated harmony reexport GetFeaturesByBufferParameters */__webpack_require__.d(__webpack_exports__, "GetFeaturesByBufferParameters", function() { return GetFeaturesByBufferParameters_GetFeaturesByBufferParameters; });
+/* concated harmony reexport GetFeaturesByGeometryParameters */__webpack_require__.d(__webpack_exports__, "GetFeaturesByGeometryParameters", function() { return GetFeaturesByGeometryParameters_GetFeaturesByGeometryParameters; });
+/* concated harmony reexport GetFeaturesByIDsParameters */__webpack_require__.d(__webpack_exports__, "GetFeaturesByIDsParameters", function() { return GetFeaturesByIDsParameters_GetFeaturesByIDsParameters; });
+/* concated harmony reexport GetFeaturesBySQLParameters */__webpack_require__.d(__webpack_exports__, "GetFeaturesBySQLParameters", function() { return GetFeaturesBySQLParameters_GetFeaturesBySQLParameters; });
+/* concated harmony reexport GetGridCellInfosParameters */__webpack_require__.d(__webpack_exports__, "GetGridCellInfosParameters", function() { return GetGridCellInfosParameters_GetGridCellInfosParameters; });
+/* concated harmony reexport Grid */__webpack_require__.d(__webpack_exports__, "Grid", function() { return Grid_Grid; });
+/* concated harmony reexport Image */__webpack_require__.d(__webpack_exports__, "Image", function() { return Image_Image; });
+/* concated harmony reexport InterpolationAnalystParameters */__webpack_require__.d(__webpack_exports__, "InterpolationAnalystParameters", function() { return InterpolationAnalystParameters_InterpolationAnalystParameters; });
+/* concated harmony reexport InterpolationIDWAnalystParameters */__webpack_require__.d(__webpack_exports__, "InterpolationIDWAnalystParameters", function() { return InterpolationIDWAnalystParameters_InterpolationIDWAnalystParameters; });
+/* concated harmony reexport InterpolationKrigingAnalystParameters */__webpack_require__.d(__webpack_exports__, "InterpolationKrigingAnalystParameters", function() { return InterpolationKrigingAnalystParameters_InterpolationKrigingAnalystParameters; });
+/* concated harmony reexport InterpolationRBFAnalystParameters */__webpack_require__.d(__webpack_exports__, "InterpolationRBFAnalystParameters", function() { return InterpolationRBFAnalystParameters_InterpolationRBFAnalystParameters; });
+/* concated harmony reexport JoinItem */__webpack_require__.d(__webpack_exports__, "JoinItem", function() { return JoinItem_JoinItem; });
+/* concated harmony reexport KernelDensityJobParameter */__webpack_require__.d(__webpack_exports__, "KernelDensityJobParameter", function() { return KernelDensityJobParameter_KernelDensityJobParameter; });
+/* concated harmony reexport LabelImageCell */__webpack_require__.d(__webpack_exports__, "LabelImageCell", function() { return LabelImageCell_LabelImageCell; });
+/* concated harmony reexport LabelMatrixCell */__webpack_require__.d(__webpack_exports__, "LabelMatrixCell", function() { return LabelMatrixCell; });
+/* concated harmony reexport LabelMixedTextStyle */__webpack_require__.d(__webpack_exports__, "LabelMixedTextStyle", function() { return LabelMixedTextStyle_LabelMixedTextStyle; });
+/* concated harmony reexport LabelSymbolCell */__webpack_require__.d(__webpack_exports__, "LabelSymbolCell", function() { return LabelSymbolCell_LabelSymbolCell; });
+/* concated harmony reexport LabelThemeCell */__webpack_require__.d(__webpack_exports__, "LabelThemeCell", function() { return LabelThemeCell_LabelThemeCell; });
+/* concated harmony reexport LayerStatus */__webpack_require__.d(__webpack_exports__, "LayerStatus", function() { return LayerStatus_LayerStatus; });
+/* concated harmony reexport LinkItem */__webpack_require__.d(__webpack_exports__, "LinkItem", function() { return LinkItem_LinkItem; });
+/* concated harmony reexport MathExpressionAnalysisParameters */__webpack_require__.d(__webpack_exports__, "MathExpressionAnalysisParameters", function() { return MathExpressionAnalysisParameters_MathExpressionAnalysisParameters; });
+/* concated harmony reexport MeasureParameters */__webpack_require__.d(__webpack_exports__, "MeasureParameters", function() { return MeasureParameters_MeasureParameters; });
+/* concated harmony reexport OutputSetting */__webpack_require__.d(__webpack_exports__, "OutputSetting", function() { return OutputSetting_OutputSetting; });
+/* concated harmony reexport MappingParameters */__webpack_require__.d(__webpack_exports__, "MappingParameters", function() { return MappingParameters_MappingParameters; });
+/* concated harmony reexport OverlapDisplayedOptions */__webpack_require__.d(__webpack_exports__, "OverlapDisplayedOptions", function() { return OverlapDisplayedOptions_OverlapDisplayedOptions; });
+/* concated harmony reexport OverlayAnalystParameters */__webpack_require__.d(__webpack_exports__, "OverlayAnalystParameters", function() { return OverlayAnalystParameters_OverlayAnalystParameters; });
+/* concated harmony reexport OverlayGeoJobParameter */__webpack_require__.d(__webpack_exports__, "OverlayGeoJobParameter", function() { return OverlayGeoJobParameter_OverlayGeoJobParameter; });
+/* concated harmony reexport PointWithMeasure */__webpack_require__.d(__webpack_exports__, "PointWithMeasure", function() { return PointWithMeasure_PointWithMeasure; });
+/* concated harmony reexport QueryByBoundsParameters */__webpack_require__.d(__webpack_exports__, "QueryByBoundsParameters", function() { return QueryByBoundsParameters_QueryByBoundsParameters; });
+/* concated harmony reexport QueryByDistanceParameters */__webpack_require__.d(__webpack_exports__, "QueryByDistanceParameters", function() { return QueryByDistanceParameters_QueryByDistanceParameters; });
+/* concated harmony reexport QueryByGeometryParameters */__webpack_require__.d(__webpack_exports__, "QueryByGeometryParameters", function() { return QueryByGeometryParameters_QueryByGeometryParameters; });
+/* concated harmony reexport QueryBySQLParameters */__webpack_require__.d(__webpack_exports__, "QueryBySQLParameters", function() { return QueryBySQLParameters_QueryBySQLParameters; });
+/* concated harmony reexport QueryParameters */__webpack_require__.d(__webpack_exports__, "QueryParameters", function() { return QueryParameters_QueryParameters; });
+/* concated harmony reexport Route */__webpack_require__.d(__webpack_exports__, "Route", function() { return Route_Route; });
+/* concated harmony reexport RouteCalculateMeasureParameters */__webpack_require__.d(__webpack_exports__, "RouteCalculateMeasureParameters", function() { return RouteCalculateMeasureParameters_RouteCalculateMeasureParameters; });
+/* concated harmony reexport RouteLocatorParameters */__webpack_require__.d(__webpack_exports__, "RouteLocatorParameters", function() { return RouteLocatorParameters_RouteLocatorParameters; });
+/* concated harmony reexport ServerColor */__webpack_require__.d(__webpack_exports__, "ServerColor", function() { return ServerColor; });
+/* concated harmony reexport ServerFeature */__webpack_require__.d(__webpack_exports__, "ServerFeature", function() { return ServerFeature_ServerFeature; });
+/* concated harmony reexport ServerGeometry */__webpack_require__.d(__webpack_exports__, "ServerGeometry", function() { return ServerGeometry_ServerGeometry; });
+/* concated harmony reexport ServerStyle */__webpack_require__.d(__webpack_exports__, "ServerStyle", function() { return ServerStyle_ServerStyle; });
+/* concated harmony reexport ServerTextStyle */__webpack_require__.d(__webpack_exports__, "ServerTextStyle", function() { return ServerTextStyle_ServerTextStyle; });
+/* concated harmony reexport ServerTheme */__webpack_require__.d(__webpack_exports__, "ServerTheme", function() { return ServerTheme_ServerTheme; });
+/* concated harmony reexport SetLayerInfoParameters */__webpack_require__.d(__webpack_exports__, "SetLayerInfoParameters", function() { return SetLayerInfoParameters_SetLayerInfoParameters; });
+/* concated harmony reexport SetLayersInfoParameters */__webpack_require__.d(__webpack_exports__, "SetLayersInfoParameters", function() { return SetLayersInfoParameters_SetLayersInfoParameters; });
+/* concated harmony reexport SetLayerStatusParameters */__webpack_require__.d(__webpack_exports__, "SetLayerStatusParameters", function() { return SetLayerStatusParameters_SetLayerStatusParameters; });
+/* concated harmony reexport SingleObjectQueryJobsParameter */__webpack_require__.d(__webpack_exports__, "SingleObjectQueryJobsParameter", function() { return SingleObjectQueryJobsParameter_SingleObjectQueryJobsParameter; });
+/* concated harmony reexport StopQueryParameters */__webpack_require__.d(__webpack_exports__, "StopQueryParameters", function() { return StopQueryParameters_StopQueryParameters; });
+/* concated harmony reexport SummaryAttributesJobsParameter */__webpack_require__.d(__webpack_exports__, "SummaryAttributesJobsParameter", function() { return SummaryAttributesJobsParameter_SummaryAttributesJobsParameter; });
+/* concated harmony reexport SummaryMeshJobParameter */__webpack_require__.d(__webpack_exports__, "SummaryMeshJobParameter", function() { return SummaryMeshJobParameter_SummaryMeshJobParameter; });
+/* concated harmony reexport SummaryRegionJobParameter */__webpack_require__.d(__webpack_exports__, "SummaryRegionJobParameter", function() { return SummaryRegionJobParameter_SummaryRegionJobParameter; });
+/* concated harmony reexport SupplyCenter */__webpack_require__.d(__webpack_exports__, "SupplyCenter", function() { return SupplyCenter_SupplyCenter; });
+/* concated harmony reexport SurfaceAnalystParameters */__webpack_require__.d(__webpack_exports__, "SurfaceAnalystParameters", function() { return SurfaceAnalystParameters_SurfaceAnalystParameters; });
+/* concated harmony reexport SurfaceAnalystParametersSetting */__webpack_require__.d(__webpack_exports__, "SurfaceAnalystParametersSetting", function() { return SurfaceAnalystParametersSetting_SurfaceAnalystParametersSetting; });
+/* concated harmony reexport TerrainCurvatureCalculationParameters */__webpack_require__.d(__webpack_exports__, "TerrainCurvatureCalculationParameters", function() { return TerrainCurvatureCalculationParameters_TerrainCurvatureCalculationParameters; });
+/* concated harmony reexport CommonTheme */__webpack_require__.d(__webpack_exports__, "CommonTheme", function() { return Theme_Theme; });
+/* concated harmony reexport ThemeDotDensity */__webpack_require__.d(__webpack_exports__, "ThemeDotDensity", function() { return ThemeDotDensity_ThemeDotDensity; });
+/* concated harmony reexport ThemeFlow */__webpack_require__.d(__webpack_exports__, "ThemeFlow", function() { return ThemeFlow_ThemeFlow; });
+/* concated harmony reexport ThemeGraduatedSymbol */__webpack_require__.d(__webpack_exports__, "ThemeGraduatedSymbol", function() { return ThemeGraduatedSymbol_ThemeGraduatedSymbol; });
+/* concated harmony reexport ThemeGraduatedSymbolStyle */__webpack_require__.d(__webpack_exports__, "ThemeGraduatedSymbolStyle", function() { return ThemeGraduatedSymbolStyle_ThemeGraduatedSymbolStyle; });
+/* concated harmony reexport ThemeGraph */__webpack_require__.d(__webpack_exports__, "ThemeGraph", function() { return ThemeGraph_ThemeGraph; });
+/* concated harmony reexport ThemeGraphAxes */__webpack_require__.d(__webpack_exports__, "ThemeGraphAxes", function() { return ThemeGraphAxes_ThemeGraphAxes; });
+/* concated harmony reexport ThemeGraphItem */__webpack_require__.d(__webpack_exports__, "ThemeGraphItem", function() { return ThemeGraphItem_ThemeGraphItem; });
+/* concated harmony reexport ThemeGraphSize */__webpack_require__.d(__webpack_exports__, "ThemeGraphSize", function() { return ThemeGraphSize_ThemeGraphSize; });
+/* concated harmony reexport ThemeGraphText */__webpack_require__.d(__webpack_exports__, "ThemeGraphText", function() { return ThemeGraphText_ThemeGraphText; });
+/* concated harmony reexport ThemeGridRange */__webpack_require__.d(__webpack_exports__, "ThemeGridRange", function() { return ThemeGridRange_ThemeGridRange; });
+/* concated harmony reexport ThemeGridRangeItem */__webpack_require__.d(__webpack_exports__, "ThemeGridRangeItem", function() { return ThemeGridRangeItem_ThemeGridRangeItem; });
+/* concated harmony reexport ThemeGridUnique */__webpack_require__.d(__webpack_exports__, "ThemeGridUnique", function() { return ThemeGridUnique_ThemeGridUnique; });
+/* concated harmony reexport ThemeGridUniqueItem */__webpack_require__.d(__webpack_exports__, "ThemeGridUniqueItem", function() { return ThemeGridUniqueItem_ThemeGridUniqueItem; });
+/* concated harmony reexport ThemeLabel */__webpack_require__.d(__webpack_exports__, "ThemeLabel", function() { return ThemeLabel_ThemeLabel; });
+/* concated harmony reexport ThemeLabelAlongLine */__webpack_require__.d(__webpack_exports__, "ThemeLabelAlongLine", function() { return ThemeLabelAlongLine_ThemeLabelAlongLine; });
+/* concated harmony reexport ThemeLabelBackground */__webpack_require__.d(__webpack_exports__, "ThemeLabelBackground", function() { return ThemeLabelBackground_ThemeLabelBackground; });
+/* concated harmony reexport ThemeLabelItem */__webpack_require__.d(__webpack_exports__, "ThemeLabelItem", function() { return ThemeLabelItem_ThemeLabelItem; });
+/* concated harmony reexport ThemeLabelText */__webpack_require__.d(__webpack_exports__, "ThemeLabelText", function() { return ThemeLabelText_ThemeLabelText; });
+/* concated harmony reexport ThemeLabelUniqueItem */__webpack_require__.d(__webpack_exports__, "ThemeLabelUniqueItem", function() { return ThemeLabelUniqueItem_ThemeLabelUniqueItem; });
+/* concated harmony reexport ThemeMemoryData */__webpack_require__.d(__webpack_exports__, "ThemeMemoryData", function() { return ThemeMemoryData; });
+/* concated harmony reexport ThemeOffset */__webpack_require__.d(__webpack_exports__, "ThemeOffset", function() { return ThemeOffset_ThemeOffset; });
+/* concated harmony reexport ThemeParameters */__webpack_require__.d(__webpack_exports__, "ThemeParameters", function() { return ThemeParameters_ThemeParameters; });
+/* concated harmony reexport ThemeRange */__webpack_require__.d(__webpack_exports__, "ThemeRange", function() { return ThemeRange_ThemeRange; });
+/* concated harmony reexport ThemeRangeItem */__webpack_require__.d(__webpack_exports__, "ThemeRangeItem", function() { return ThemeRangeItem_ThemeRangeItem; });
+/* concated harmony reexport ThemeUnique */__webpack_require__.d(__webpack_exports__, "ThemeUnique", function() { return ThemeUnique_ThemeUnique; });
+/* concated harmony reexport ThemeUniqueItem */__webpack_require__.d(__webpack_exports__, "ThemeUniqueItem", function() { return ThemeUniqueItem_ThemeUniqueItem; });
+/* concated harmony reexport ThiessenAnalystParameters */__webpack_require__.d(__webpack_exports__, "ThiessenAnalystParameters", function() { return ThiessenAnalystParameters_ThiessenAnalystParameters; });
+/* concated harmony reexport TopologyValidatorJobsParameter */__webpack_require__.d(__webpack_exports__, "TopologyValidatorJobsParameter", function() { return TopologyValidatorJobsParameter_TopologyValidatorJobsParameter; });
+/* concated harmony reexport TransferLine */__webpack_require__.d(__webpack_exports__, "TransferLine", function() { return TransferLine_TransferLine; });
+/* concated harmony reexport TransferPathParameters */__webpack_require__.d(__webpack_exports__, "TransferPathParameters", function() { return TransferPathParameters_TransferPathParameters; });
+/* concated harmony reexport TransferSolutionParameters */__webpack_require__.d(__webpack_exports__, "TransferSolutionParameters", function() { return TransferSolutionParameters_TransferSolutionParameters; });
+/* concated harmony reexport TransportationAnalystParameter */__webpack_require__.d(__webpack_exports__, "TransportationAnalystParameter", function() { return TransportationAnalystParameter_TransportationAnalystParameter; });
+/* concated harmony reexport TransportationAnalystResultSetting */__webpack_require__.d(__webpack_exports__, "TransportationAnalystResultSetting", function() { return TransportationAnalystResultSetting_TransportationAnalystResultSetting; });
+/* concated harmony reexport UGCLayer */__webpack_require__.d(__webpack_exports__, "UGCLayer", function() { return UGCLayer_UGCLayer; });
+/* concated harmony reexport UGCMapLayer */__webpack_require__.d(__webpack_exports__, "UGCMapLayer", function() { return UGCMapLayer_UGCMapLayer; });
+/* concated harmony reexport UGCSubLayer */__webpack_require__.d(__webpack_exports__, "UGCSubLayer", function() { return UGCSubLayer_UGCSubLayer; });
+/* concated harmony reexport UpdateEdgeWeightParameters */__webpack_require__.d(__webpack_exports__, "UpdateEdgeWeightParameters", function() { return UpdateEdgeWeightParameters_UpdateEdgeWeightParameters; });
+/* concated harmony reexport UpdateTurnNodeWeightParameters */__webpack_require__.d(__webpack_exports__, "UpdateTurnNodeWeightParameters", function() { return UpdateTurnNodeWeightParameters_UpdateTurnNodeWeightParameters; });
+/* concated harmony reexport Vector */__webpack_require__.d(__webpack_exports__, "Vector", function() { return iServer_Vector_Vector; });
+/* concated harmony reexport VectorClipJobsParameter */__webpack_require__.d(__webpack_exports__, "VectorClipJobsParameter", function() { return VectorClipJobsParameter_VectorClipJobsParameter; });
+/* concated harmony reexport ChangeTileVersion */__webpack_require__.d(__webpack_exports__, "ChangeTileVersion", function() { return ChangeTileVersion_ChangeTileVersion; });
+/* concated harmony reexport Logo */__webpack_require__.d(__webpack_exports__, "Logo", function() { return Logo_Logo; });
+/* concated harmony reexport StyleUtils */__webpack_require__.d(__webpack_exports__, "StyleUtils", function() { return StyleUtils_StyleUtils; });
+/* concated harmony reexport Util */__webpack_require__.d(__webpack_exports__, "Util", function() { return core_Util_Util; });
+/* concated harmony reexport MapExtend */__webpack_require__.d(__webpack_exports__, "MapExtend", function() { return MapExtend; });
+/* concated harmony reexport ColorsPickerUtil */__webpack_require__.d(__webpack_exports__, "ColorsPickerUtil", function() { return ColorsPickerUtil_ColorsPickerUtil; });
+/* concated harmony reexport Color */__webpack_require__.d(__webpack_exports__, "Color", function() { return colors_picker_util_Color_Color; });
+/* concated harmony reexport ColorUtil */__webpack_require__.d(__webpack_exports__, "ColorUtil", function() { return ColorUtil; });
+/* concated harmony reexport ArrayStatistic */__webpack_require__.d(__webpack_exports__, "ArrayStatistic", function() { return ArrayStatistic; });
+/* concated harmony reexport BaiduMap */__webpack_require__.d(__webpack_exports__, "BaiduMap", function() { return BaiduMap_BaiduMap; });
+/* concated harmony reexport ImageSuperMapRest */__webpack_require__.d(__webpack_exports__, "ImageSuperMapRest", function() { return ImageSuperMapRest_ImageSuperMapRest; });
+/* concated harmony reexport SuperMapCloud */__webpack_require__.d(__webpack_exports__, "SuperMapCloud", function() { return SuperMapCloud_SuperMapCloud; });
+/* concated harmony reexport Tianditu */__webpack_require__.d(__webpack_exports__, "Tianditu", function() { return Tianditu_Tianditu; });
+/* concated harmony reexport TileSuperMapRest */__webpack_require__.d(__webpack_exports__, "TileSuperMapRest", function() { return TileSuperMapRest_TileSuperMapRest; });
+/* concated harmony reexport WebMap */__webpack_require__.d(__webpack_exports__, "WebMap", function() { return WebMap_WebMap; });
+/* concated harmony reexport DatavizWebMap */__webpack_require__.d(__webpack_exports__, "DatavizWebMap", function() { return DatavizWebMap_DatavizWebMap; });
+/* concated harmony reexport DataFlow */__webpack_require__.d(__webpack_exports__, "DataFlow", function() { return DataFlow_DataFlow; });
+/* concated harmony reexport Graph */__webpack_require__.d(__webpack_exports__, "Graph", function() { return overlay_Graph_Graph; });
+/* concated harmony reexport Graphic */__webpack_require__.d(__webpack_exports__, "Graphic", function() { return overlay_Graphic_Graphic; });
+/* concated harmony reexport Label */__webpack_require__.d(__webpack_exports__, "Label", function() { return overlay_Label_Label; });
+/* concated harmony reexport Mapv */__webpack_require__.d(__webpack_exports__, "Mapv", function() { return Mapv_Mapv; });
+/* concated harmony reexport Range */__webpack_require__.d(__webpack_exports__, "Range", function() { return Range_Range; });
+/* concated harmony reexport RankSymbol */__webpack_require__.d(__webpack_exports__, "RankSymbol", function() { return overlay_RankSymbol_RankSymbol; });
+/* concated harmony reexport Turf */__webpack_require__.d(__webpack_exports__, "Turf", function() { return Turf_Turf; });
+/* concated harmony reexport Unique */__webpack_require__.d(__webpack_exports__, "Unique", function() { return Unique_Unique; });
+/* concated harmony reexport VectorTileSuperMapRest */__webpack_require__.d(__webpack_exports__, "VectorTileSuperMapRest", function() { return VectorTileSuperMapRest_VectorTileSuperMapRest; });
+/* concated harmony reexport HeatMap */__webpack_require__.d(__webpack_exports__, "HeatMap", function() { return HeatMap_HeatMap; });
+/* concated harmony reexport OverlayGraphic */__webpack_require__.d(__webpack_exports__, "OverlayGraphic", function() { return Graphic_Graphic; });
+/* concated harmony reexport CloverShape */__webpack_require__.d(__webpack_exports__, "CloverShape", function() { return CloverShape_CloverShape; });
+/* concated harmony reexport HitCloverShape */__webpack_require__.d(__webpack_exports__, "HitCloverShape", function() { return HitCloverShape_HitCloverShape; });
+/* concated harmony reexport GraphicCanvasRenderer */__webpack_require__.d(__webpack_exports__, "GraphicCanvasRenderer", function() { return CanvasRenderer_GraphicCanvasRenderer; });
+/* concated harmony reexport GraphicWebGLRenderer */__webpack_require__.d(__webpack_exports__, "GraphicWebGLRenderer", function() { return WebGLRenderer_GraphicWebGLRenderer; });
+/* concated harmony reexport MapvCanvasLayer */__webpack_require__.d(__webpack_exports__, "MapvCanvasLayer", function() { return MapvCanvasLayer; });
+/* concated harmony reexport MapvLayer */__webpack_require__.d(__webpack_exports__, "MapvLayer", function() { return MapvLayer_MapvLayer; });
+/* concated harmony reexport GeoFeature */__webpack_require__.d(__webpack_exports__, "GeoFeature", function() { return GeoFeature_GeoFeature; });
+/* concated harmony reexport Theme */__webpack_require__.d(__webpack_exports__, "Theme", function() { return theme_Theme_Theme; });
+/* concated harmony reexport ThemeFeature */__webpack_require__.d(__webpack_exports__, "ThemeFeature", function() { return ThemeFeature_ThemeFeature; });
+/* concated harmony reexport pointStyle */__webpack_require__.d(__webpack_exports__, "pointStyle", function() { return DeafultCanvasStyle_pointStyle; });
+/* concated harmony reexport lineStyle */__webpack_require__.d(__webpack_exports__, "lineStyle", function() { return DeafultCanvasStyle_lineStyle; });
+/* concated harmony reexport polygonStyle */__webpack_require__.d(__webpack_exports__, "polygonStyle", function() { return DeafultCanvasStyle_polygonStyle; });
+/* concated harmony reexport DeafultCanvasStyle */__webpack_require__.d(__webpack_exports__, "DeafultCanvasStyle", function() { return DeafultCanvasStyle; });
+/* concated harmony reexport pointMap */__webpack_require__.d(__webpack_exports__, "pointMap", function() { return pointMap; });
+/* concated harmony reexport lineMap */__webpack_require__.d(__webpack_exports__, "lineMap", function() { return lineMap; });
+/* concated harmony reexport polygonMap */__webpack_require__.d(__webpack_exports__, "polygonMap", function() { return polygonMap; });
+/* concated harmony reexport StyleMap */__webpack_require__.d(__webpack_exports__, "StyleMap", function() { return StyleMap; });
+/* concated harmony reexport VectorTileStyles */__webpack_require__.d(__webpack_exports__, "VectorTileStyles", function() { return VectorTileStyles_VectorTileStyles; });
+/* concated harmony reexport MapboxStyles */__webpack_require__.d(__webpack_exports__, "MapboxStyles", function() { return MapboxStyles_MapboxStyles; });
+/* concated harmony reexport AddressMatchService */__webpack_require__.d(__webpack_exports__, "AddressMatchService", function() { return services_AddressMatchService_AddressMatchService; });
+/* concated harmony reexport ChartService */__webpack_require__.d(__webpack_exports__, "ChartService", function() { return ChartService_ChartService; });
+/* concated harmony reexport DataFlowService */__webpack_require__.d(__webpack_exports__, "DataFlowService", function() { return services_DataFlowService_DataFlowService; });
+/* concated harmony reexport FeatureService */__webpack_require__.d(__webpack_exports__, "FeatureService", function() { return FeatureService_FeatureService; });
+/* concated harmony reexport FieldService */__webpack_require__.d(__webpack_exports__, "FieldService", function() { return FieldService_FieldService; });
+/* concated harmony reexport GridCellInfosService */__webpack_require__.d(__webpack_exports__, "GridCellInfosService", function() { return GridCellInfosService_GridCellInfosService; });
+/* concated harmony reexport LayerInfoService */__webpack_require__.d(__webpack_exports__, "LayerInfoService", function() { return LayerInfoService_LayerInfoService; });
+/* concated harmony reexport MapService */__webpack_require__.d(__webpack_exports__, "MapService", function() { return services_MapService_MapService; });
+/* concated harmony reexport MeasureService */__webpack_require__.d(__webpack_exports__, "MeasureService", function() { return services_MeasureService_MeasureService; });
+/* concated harmony reexport NetworkAnalyst3DService */__webpack_require__.d(__webpack_exports__, "NetworkAnalyst3DService", function() { return NetworkAnalyst3DService_NetworkAnalyst3DService; });
+/* concated harmony reexport NetworkAnalystService */__webpack_require__.d(__webpack_exports__, "NetworkAnalystService", function() { return NetworkAnalystService_NetworkAnalystService; });
+/* concated harmony reexport ProcessingService */__webpack_require__.d(__webpack_exports__, "ProcessingService", function() { return ProcessingService_ProcessingService; });
+/* concated harmony reexport QueryService */__webpack_require__.d(__webpack_exports__, "QueryService", function() { return services_QueryService_QueryService; });
+/* concated harmony reexport ServiceBase */__webpack_require__.d(__webpack_exports__, "ServiceBase", function() { return ServiceBase_ServiceBase; });
+/* concated harmony reexport SpatialAnalystService */__webpack_require__.d(__webpack_exports__, "SpatialAnalystService", function() { return SpatialAnalystService_SpatialAnalystService; });
+/* concated harmony reexport ThemeService */__webpack_require__.d(__webpack_exports__, "ThemeService", function() { return services_ThemeService_ThemeService; });
+/* concated harmony reexport TrafficTransferAnalystService */__webpack_require__.d(__webpack_exports__, "TrafficTransferAnalystService", function() { return TrafficTransferAnalystService_TrafficTransferAnalystService; });
 /* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
@@ -80024,4984 +89234,101 @@ external_ol_default.a.supermap.TrafficTransferAnalystService = TrafficTransferAn
 
 
 /***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-var HALF_PI = Math.PI/2;
-var EPSLN = 1.0e-10;
-var mlfn = __webpack_require__(5);
-var e0fn = __webpack_require__(9);
-var e1fn = __webpack_require__(8);
-var e2fn = __webpack_require__(7);
-var e3fn = __webpack_require__(6);
-var gN = __webpack_require__(17);
-var asinz = __webpack_require__(2);
-var imlfn = __webpack_require__(16);
-exports.init = function() {
-  this.sin_p12 = Math.sin(this.lat0);
-  this.cos_p12 = Math.cos(this.lat0);
-};
-
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-  var sinphi = Math.sin(p.y);
-  var cosphi = Math.cos(p.y);
-  var dlon = adjust_lon(lon - this.long0);
-  var e0, e1, e2, e3, Mlp, Ml, tanphi, Nl1, Nl, psi, Az, G, H, GH, Hs, c, kp, cos_c, s, s2, s3, s4, s5;
-  if (this.sphere) {
-    if (Math.abs(this.sin_p12 - 1) <= EPSLN) {
-      //North Pole case
-      p.x = this.x0 + this.a * (HALF_PI - lat) * Math.sin(dlon);
-      p.y = this.y0 - this.a * (HALF_PI - lat) * Math.cos(dlon);
-      return p;
-    }
-    else if (Math.abs(this.sin_p12 + 1) <= EPSLN) {
-      //South Pole case
-      p.x = this.x0 + this.a * (HALF_PI + lat) * Math.sin(dlon);
-      p.y = this.y0 + this.a * (HALF_PI + lat) * Math.cos(dlon);
-      return p;
-    }
-    else {
-      //default case
-      cos_c = this.sin_p12 * sinphi + this.cos_p12 * cosphi * Math.cos(dlon);
-      c = Math.acos(cos_c);
-      kp = c / Math.sin(c);
-      p.x = this.x0 + this.a * kp * cosphi * Math.sin(dlon);
-      p.y = this.y0 + this.a * kp * (this.cos_p12 * sinphi - this.sin_p12 * cosphi * Math.cos(dlon));
-      return p;
-    }
-  }
-  else {
-    e0 = e0fn(this.es);
-    e1 = e1fn(this.es);
-    e2 = e2fn(this.es);
-    e3 = e3fn(this.es);
-    if (Math.abs(this.sin_p12 - 1) <= EPSLN) {
-      //North Pole case
-      Mlp = this.a * mlfn(e0, e1, e2, e3, HALF_PI);
-      Ml = this.a * mlfn(e0, e1, e2, e3, lat);
-      p.x = this.x0 + (Mlp - Ml) * Math.sin(dlon);
-      p.y = this.y0 - (Mlp - Ml) * Math.cos(dlon);
-      return p;
-    }
-    else if (Math.abs(this.sin_p12 + 1) <= EPSLN) {
-      //South Pole case
-      Mlp = this.a * mlfn(e0, e1, e2, e3, HALF_PI);
-      Ml = this.a * mlfn(e0, e1, e2, e3, lat);
-      p.x = this.x0 + (Mlp + Ml) * Math.sin(dlon);
-      p.y = this.y0 + (Mlp + Ml) * Math.cos(dlon);
-      return p;
-    }
-    else {
-      //Default case
-      tanphi = sinphi / cosphi;
-      Nl1 = gN(this.a, this.e, this.sin_p12);
-      Nl = gN(this.a, this.e, sinphi);
-      psi = Math.atan((1 - this.es) * tanphi + this.es * Nl1 * this.sin_p12 / (Nl * cosphi));
-      Az = Math.atan2(Math.sin(dlon), this.cos_p12 * Math.tan(psi) - this.sin_p12 * Math.cos(dlon));
-      if (Az === 0) {
-        s = Math.asin(this.cos_p12 * Math.sin(psi) - this.sin_p12 * Math.cos(psi));
-      }
-      else if (Math.abs(Math.abs(Az) - Math.PI) <= EPSLN) {
-        s = -Math.asin(this.cos_p12 * Math.sin(psi) - this.sin_p12 * Math.cos(psi));
-      }
-      else {
-        s = Math.asin(Math.sin(dlon) * Math.cos(psi) / Math.sin(Az));
-      }
-      G = this.e * this.sin_p12 / Math.sqrt(1 - this.es);
-      H = this.e * this.cos_p12 * Math.cos(Az) / Math.sqrt(1 - this.es);
-      GH = G * H;
-      Hs = H * H;
-      s2 = s * s;
-      s3 = s2 * s;
-      s4 = s3 * s;
-      s5 = s4 * s;
-      c = Nl1 * s * (1 - s2 * Hs * (1 - Hs) / 6 + s3 / 8 * GH * (1 - 2 * Hs) + s4 / 120 * (Hs * (4 - 7 * Hs) - 3 * G * G * (1 - 7 * Hs)) - s5 / 48 * GH);
-      p.x = this.x0 + c * Math.sin(Az);
-      p.y = this.y0 + c * Math.cos(Az);
-      return p;
-    }
-  }
-
-
-};
-
-exports.inverse = function(p) {
-  p.x -= this.x0;
-  p.y -= this.y0;
-  var rh, z, sinz, cosz, lon, lat, con, e0, e1, e2, e3, Mlp, M, N1, psi, Az, cosAz, tmp, A, B, D, Ee, F;
-  if (this.sphere) {
-    rh = Math.sqrt(p.x * p.x + p.y * p.y);
-    if (rh > (2 * HALF_PI * this.a)) {
-      return;
-    }
-    z = rh / this.a;
-
-    sinz = Math.sin(z);
-    cosz = Math.cos(z);
-
-    lon = this.long0;
-    if (Math.abs(rh) <= EPSLN) {
-      lat = this.lat0;
-    }
-    else {
-      lat = asinz(cosz * this.sin_p12 + (p.y * sinz * this.cos_p12) / rh);
-      con = Math.abs(this.lat0) - HALF_PI;
-      if (Math.abs(con) <= EPSLN) {
-        if (this.lat0 >= 0) {
-          lon = adjust_lon(this.long0 + Math.atan2(p.x, - p.y));
-        }
-        else {
-          lon = adjust_lon(this.long0 - Math.atan2(-p.x, p.y));
-        }
-      }
-      else {
-        /*con = cosz - this.sin_p12 * Math.sin(lat);
-        if ((Math.abs(con) < EPSLN) && (Math.abs(p.x) < EPSLN)) {
-          //no-op, just keep the lon value as is
-        } else {
-          var temp = Math.atan2((p.x * sinz * this.cos_p12), (con * rh));
-          lon = adjust_lon(this.long0 + Math.atan2((p.x * sinz * this.cos_p12), (con * rh)));
-        }*/
-        lon = adjust_lon(this.long0 + Math.atan2(p.x * sinz, rh * this.cos_p12 * cosz - p.y * this.sin_p12 * sinz));
-      }
-    }
-
-    p.x = lon;
-    p.y = lat;
-    return p;
-  }
-  else {
-    e0 = e0fn(this.es);
-    e1 = e1fn(this.es);
-    e2 = e2fn(this.es);
-    e3 = e3fn(this.es);
-    if (Math.abs(this.sin_p12 - 1) <= EPSLN) {
-      //North pole case
-      Mlp = this.a * mlfn(e0, e1, e2, e3, HALF_PI);
-      rh = Math.sqrt(p.x * p.x + p.y * p.y);
-      M = Mlp - rh;
-      lat = imlfn(M / this.a, e0, e1, e2, e3);
-      lon = adjust_lon(this.long0 + Math.atan2(p.x, - 1 * p.y));
-      p.x = lon;
-      p.y = lat;
-      return p;
-    }
-    else if (Math.abs(this.sin_p12 + 1) <= EPSLN) {
-      //South pole case
-      Mlp = this.a * mlfn(e0, e1, e2, e3, HALF_PI);
-      rh = Math.sqrt(p.x * p.x + p.y * p.y);
-      M = rh - Mlp;
-
-      lat = imlfn(M / this.a, e0, e1, e2, e3);
-      lon = adjust_lon(this.long0 + Math.atan2(p.x, p.y));
-      p.x = lon;
-      p.y = lat;
-      return p;
-    }
-    else {
-      //default case
-      rh = Math.sqrt(p.x * p.x + p.y * p.y);
-      Az = Math.atan2(p.x, p.y);
-      N1 = gN(this.a, this.e, this.sin_p12);
-      cosAz = Math.cos(Az);
-      tmp = this.e * this.cos_p12 * cosAz;
-      A = -tmp * tmp / (1 - this.es);
-      B = 3 * this.es * (1 - A) * this.sin_p12 * this.cos_p12 * cosAz / (1 - this.es);
-      D = rh / N1;
-      Ee = D - A * (1 + A) * Math.pow(D, 3) / 6 - B * (1 + 3 * A) * Math.pow(D, 4) / 24;
-      F = 1 - A * Ee * Ee / 2 - D * Ee * Ee * Ee / 6;
-      psi = Math.asin(this.sin_p12 * Math.cos(Ee) + this.cos_p12 * Math.sin(Ee) * cosAz);
-      lon = adjust_lon(this.long0 + Math.asin(Math.sin(Az) * Math.sin(Ee) / Math.cos(psi)));
-      lat = Math.atan((1 - this.es * F * this.sin_p12 / Math.sin(psi)) * Math.tan(psi) / (1 - this.es));
-      p.x = lon;
-      p.y = lat;
-      return p;
-    }
-  }
-
-};
-exports.names = ["Azimuthal_Equidistant", "aeqd"];
-
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-var HALF_PI = Math.PI/2;
-var EPSLN = 1.0e-10;
-var asinz = __webpack_require__(2);
-/* Initialize the Van Der Grinten projection
-  ----------------------------------------*/
-exports.init = function() {
-  //this.R = 6370997; //Radius of earth
-  this.R = this.a;
-};
-
-exports.forward = function(p) {
-
-  var lon = p.x;
-  var lat = p.y;
-
-  /* Forward equations
-    -----------------*/
-  var dlon = adjust_lon(lon - this.long0);
-  var x, y;
-
-  if (Math.abs(lat) <= EPSLN) {
-    x = this.x0 + this.R * dlon;
-    y = this.y0;
-  }
-  var theta = asinz(2 * Math.abs(lat / Math.PI));
-  if ((Math.abs(dlon) <= EPSLN) || (Math.abs(Math.abs(lat) - HALF_PI) <= EPSLN)) {
-    x = this.x0;
-    if (lat >= 0) {
-      y = this.y0 + Math.PI * this.R * Math.tan(0.5 * theta);
-    }
-    else {
-      y = this.y0 + Math.PI * this.R * -Math.tan(0.5 * theta);
-    }
-    //  return(OK);
-  }
-  var al = 0.5 * Math.abs((Math.PI / dlon) - (dlon / Math.PI));
-  var asq = al * al;
-  var sinth = Math.sin(theta);
-  var costh = Math.cos(theta);
-
-  var g = costh / (sinth + costh - 1);
-  var gsq = g * g;
-  var m = g * (2 / sinth - 1);
-  var msq = m * m;
-  var con = Math.PI * this.R * (al * (g - msq) + Math.sqrt(asq * (g - msq) * (g - msq) - (msq + asq) * (gsq - msq))) / (msq + asq);
-  if (dlon < 0) {
-    con = -con;
-  }
-  x = this.x0 + con;
-  //con = Math.abs(con / (Math.PI * this.R));
-  var q = asq + g;
-  con = Math.PI * this.R * (m * q - al * Math.sqrt((msq + asq) * (asq + 1) - q * q)) / (msq + asq);
-  if (lat >= 0) {
-    //y = this.y0 + Math.PI * this.R * Math.sqrt(1 - con * con - 2 * al * con);
-    y = this.y0 + con;
-  }
-  else {
-    //y = this.y0 - Math.PI * this.R * Math.sqrt(1 - con * con - 2 * al * con);
-    y = this.y0 - con;
-  }
-  p.x = x;
-  p.y = y;
-  return p;
-};
-
-/* Van Der Grinten inverse equations--mapping x,y to lat/long
-  ---------------------------------------------------------*/
-exports.inverse = function(p) {
-  var lon, lat;
-  var xx, yy, xys, c1, c2, c3;
-  var a1;
-  var m1;
-  var con;
-  var th1;
-  var d;
-
-  /* inverse equations
-    -----------------*/
-  p.x -= this.x0;
-  p.y -= this.y0;
-  con = Math.PI * this.R;
-  xx = p.x / con;
-  yy = p.y / con;
-  xys = xx * xx + yy * yy;
-  c1 = -Math.abs(yy) * (1 + xys);
-  c2 = c1 - 2 * yy * yy + xx * xx;
-  c3 = -2 * c1 + 1 + 2 * yy * yy + xys * xys;
-  d = yy * yy / c3 + (2 * c2 * c2 * c2 / c3 / c3 / c3 - 9 * c1 * c2 / c3 / c3) / 27;
-  a1 = (c1 - c2 * c2 / 3 / c3) / c3;
-  m1 = 2 * Math.sqrt(-a1 / 3);
-  con = ((3 * d) / a1) / m1;
-  if (Math.abs(con) > 1) {
-    if (con >= 0) {
-      con = 1;
-    }
-    else {
-      con = -1;
-    }
-  }
-  th1 = Math.acos(con) / 3;
-  if (p.y >= 0) {
-    lat = (-m1 * Math.cos(th1 + Math.PI / 3) - c2 / 3 / c3) * Math.PI;
-  }
-  else {
-    lat = -(-m1 * Math.cos(th1 + Math.PI / 3) - c2 / 3 / c3) * Math.PI;
-  }
-
-  if (Math.abs(xx) < EPSLN) {
-    lon = this.long0;
-  }
-  else {
-    lon = adjust_lon(this.long0 + Math.PI * (xys - 1 + Math.sqrt(1 + 2 * (xx * xx - yy * yy) + xys * xys)) / 2 / xx);
-  }
-
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["Van_der_Grinten_I", "VanDerGrinten", "vandg"];
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var e0fn = __webpack_require__(9);
-var e1fn = __webpack_require__(8);
-var e2fn = __webpack_require__(7);
-var e3fn = __webpack_require__(6);
-var msfnz = __webpack_require__(3);
-var mlfn = __webpack_require__(5);
-var adjust_lon = __webpack_require__(1);
-var adjust_lat = __webpack_require__(4);
-var imlfn = __webpack_require__(16);
-var EPSLN = 1.0e-10;
-exports.init = function() {
-
-  /* Place parameters in static storage for common use
-      -------------------------------------------------*/
-  // Standard Parallels cannot be equal and on opposite sides of the equator
-  if (Math.abs(this.lat1 + this.lat2) < EPSLN) {
-    return;
-  }
-  this.lat2 = this.lat2 || this.lat1;
-  this.temp = this.b / this.a;
-  this.es = 1 - Math.pow(this.temp, 2);
-  this.e = Math.sqrt(this.es);
-  this.e0 = e0fn(this.es);
-  this.e1 = e1fn(this.es);
-  this.e2 = e2fn(this.es);
-  this.e3 = e3fn(this.es);
-
-  this.sinphi = Math.sin(this.lat1);
-  this.cosphi = Math.cos(this.lat1);
-
-  this.ms1 = msfnz(this.e, this.sinphi, this.cosphi);
-  this.ml1 = mlfn(this.e0, this.e1, this.e2, this.e3, this.lat1);
-
-  if (Math.abs(this.lat1 - this.lat2) < EPSLN) {
-    this.ns = this.sinphi;
-  }
-  else {
-    this.sinphi = Math.sin(this.lat2);
-    this.cosphi = Math.cos(this.lat2);
-    this.ms2 = msfnz(this.e, this.sinphi, this.cosphi);
-    this.ml2 = mlfn(this.e0, this.e1, this.e2, this.e3, this.lat2);
-    this.ns = (this.ms1 - this.ms2) / (this.ml2 - this.ml1);
-  }
-  this.g = this.ml1 + this.ms1 / this.ns;
-  this.ml0 = mlfn(this.e0, this.e1, this.e2, this.e3, this.lat0);
-  this.rh = this.a * (this.g - this.ml0);
-};
-
-
-/* Equidistant Conic forward equations--mapping lat,long to x,y
-  -----------------------------------------------------------*/
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-  var rh1;
-
-  /* Forward equations
-      -----------------*/
-  if (this.sphere) {
-    rh1 = this.a * (this.g - lat);
-  }
-  else {
-    var ml = mlfn(this.e0, this.e1, this.e2, this.e3, lat);
-    rh1 = this.a * (this.g - ml);
-  }
-  var theta = this.ns * adjust_lon(lon - this.long0);
-  var x = this.x0 + rh1 * Math.sin(theta);
-  var y = this.y0 + this.rh - rh1 * Math.cos(theta);
-  p.x = x;
-  p.y = y;
-  return p;
-};
-
-/* Inverse equations
-  -----------------*/
-exports.inverse = function(p) {
-  p.x -= this.x0;
-  p.y = this.rh - p.y + this.y0;
-  var con, rh1, lat, lon;
-  if (this.ns >= 0) {
-    rh1 = Math.sqrt(p.x * p.x + p.y * p.y);
-    con = 1;
-  }
-  else {
-    rh1 = -Math.sqrt(p.x * p.x + p.y * p.y);
-    con = -1;
-  }
-  var theta = 0;
-  if (rh1 !== 0) {
-    theta = Math.atan2(con * p.x, con * p.y);
-  }
-
-  if (this.sphere) {
-    lon = adjust_lon(this.long0 + theta / this.ns);
-    lat = adjust_lat(this.g - rh1 / this.a);
-    p.x = lon;
-    p.y = lat;
-    return p;
-  }
-  else {
-    var ml = this.g - rh1 / this.a;
-    lat = imlfn(ml, this.e0, this.e1, this.e2, this.e3);
-    lon = adjust_lon(this.long0 + theta / this.ns);
-    p.x = lon;
-    p.y = lat;
-    return p;
-  }
-
-};
-exports.names = ["Equidistant_Conic", "eqdc"];
-
-
-/***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-var EPSLN = 1.0e-10;
-exports.init = function() {};
-
-/* Mollweide forward equations--mapping lat,long to x,y
-    ----------------------------------------------------*/
-exports.forward = function(p) {
-
-  /* Forward equations
-      -----------------*/
-  var lon = p.x;
-  var lat = p.y;
-
-  var delta_lon = adjust_lon(lon - this.long0);
-  var theta = lat;
-  var con = Math.PI * Math.sin(lat);
-
-  /* Iterate using the Newton-Raphson method to find theta
-      -----------------------------------------------------*/
-  for (var i = 0; true; i++) {
-    var delta_theta = -(theta + Math.sin(theta) - con) / (1 + Math.cos(theta));
-    theta += delta_theta;
-    if (Math.abs(delta_theta) < EPSLN) {
-      break;
-    }
-  }
-  theta /= 2;
-
-  /* If the latitude is 90 deg, force the x coordinate to be "0 + false easting"
-       this is done here because of precision problems with "cos(theta)"
-       --------------------------------------------------------------------------*/
-  if (Math.PI / 2 - Math.abs(lat) < EPSLN) {
-    delta_lon = 0;
-  }
-  var x = 0.900316316158 * this.a * delta_lon * Math.cos(theta) + this.x0;
-  var y = 1.4142135623731 * this.a * Math.sin(theta) + this.y0;
-
-  p.x = x;
-  p.y = y;
-  return p;
-};
-
-exports.inverse = function(p) {
-  var theta;
-  var arg;
-
-  /* Inverse equations
-      -----------------*/
-  p.x -= this.x0;
-  p.y -= this.y0;
-  arg = p.y / (1.4142135623731 * this.a);
-
-  /* Because of division by zero problems, 'arg' can not be 1.  Therefore
-       a number very close to one is used instead.
-       -------------------------------------------------------------------*/
-  if (Math.abs(arg) > 0.999999999999) {
-    arg = 0.999999999999;
-  }
-  theta = Math.asin(arg);
-  var lon = adjust_lon(this.long0 + (p.x / (0.900316316158 * this.a * Math.cos(theta))));
-  if (lon < (-Math.PI)) {
-    lon = -Math.PI;
-  }
-  if (lon > Math.PI) {
-    lon = Math.PI;
-  }
-  arg = (2 * theta + Math.sin(2 * theta)) / Math.PI;
-  if (Math.abs(arg) > 1) {
-    arg = 1;
-  }
-  var lat = Math.asin(arg);
-
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["Mollweide", "moll"];
-
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var pj_mlfn = __webpack_require__(25);
-var EPSLN = 1.0e-10;
-var MAX_ITER = 20;
-module.exports = function(arg, es, en) {
-  var k = 1 / (1 - es);
-  var phi = arg;
-  for (var i = MAX_ITER; i; --i) { /* rarely goes over 2 iterations */
-    var s = Math.sin(phi);
-    var t = 1 - es * s * s;
-    //t = this.pj_mlfn(phi, s, Math.cos(phi), en) - arg;
-    //phi -= t * (t * Math.sqrt(t)) * k;
-    t = (pj_mlfn(phi, s, Math.cos(phi), en) - arg) * (t * Math.sqrt(t)) * k;
-    phi -= t;
-    if (Math.abs(t) < EPSLN) {
-      return phi;
-    }
-  }
-  //..reportError("cass:pj_inv_mlfn: Convergence error");
-  return phi;
-};
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports) {
-
-var C00 = 1;
-var C02 = 0.25;
-var C04 = 0.046875;
-var C06 = 0.01953125;
-var C08 = 0.01068115234375;
-var C22 = 0.75;
-var C44 = 0.46875;
-var C46 = 0.01302083333333333333;
-var C48 = 0.00712076822916666666;
-var C66 = 0.36458333333333333333;
-var C68 = 0.00569661458333333333;
-var C88 = 0.3076171875;
-
-module.exports = function(es) {
-  var en = [];
-  en[0] = C00 - es * (C02 + es * (C04 + es * (C06 + es * C08)));
-  en[1] = es * (C22 - es * (C04 + es * (C06 + es * C08)));
-  var t = es * es;
-  en[2] = t * (C44 - es * (C46 + es * C48));
-  t *= es;
-  en[3] = t * (C66 - es * C68);
-  en[4] = t * es * C88;
-  return en;
-};
-
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-var adjust_lat = __webpack_require__(4);
-var pj_enfn = __webpack_require__(43);
-var MAX_ITER = 20;
-var pj_mlfn = __webpack_require__(25);
-var pj_inv_mlfn = __webpack_require__(42);
-var HALF_PI = Math.PI/2;
-var EPSLN = 1.0e-10;
-var asinz = __webpack_require__(2);
-exports.init = function() {
-  /* Place parameters in static storage for common use
-    -------------------------------------------------*/
-
-
-  if (!this.sphere) {
-    this.en = pj_enfn(this.es);
-  }
-  else {
-    this.n = 1;
-    this.m = 0;
-    this.es = 0;
-    this.C_y = Math.sqrt((this.m + 1) / this.n);
-    this.C_x = this.C_y / (this.m + 1);
-  }
-
-};
-
-/* Sinusoidal forward equations--mapping lat,long to x,y
-  -----------------------------------------------------*/
-exports.forward = function(p) {
-  var x, y;
-  var lon = p.x;
-  var lat = p.y;
-  /* Forward equations
-    -----------------*/
-  lon = adjust_lon(lon - this.long0);
-
-  if (this.sphere) {
-    if (!this.m) {
-      lat = this.n !== 1 ? Math.asin(this.n * Math.sin(lat)) : lat;
-    }
-    else {
-      var k = this.n * Math.sin(lat);
-      for (var i = MAX_ITER; i; --i) {
-        var V = (this.m * lat + Math.sin(lat) - k) / (this.m + Math.cos(lat));
-        lat -= V;
-        if (Math.abs(V) < EPSLN) {
-          break;
-        }
-      }
-    }
-    x = this.a * this.C_x * lon * (this.m + Math.cos(lat));
-    y = this.a * this.C_y * lat;
-
-  }
-  else {
-
-    var s = Math.sin(lat);
-    var c = Math.cos(lat);
-    y = this.a * pj_mlfn(lat, s, c, this.en);
-    x = this.a * lon * c / Math.sqrt(1 - this.es * s * s);
-  }
-
-  p.x = x;
-  p.y = y;
-  return p;
-};
-
-exports.inverse = function(p) {
-  var lat, temp, lon, s;
-
-  p.x -= this.x0;
-  lon = p.x / this.a;
-  p.y -= this.y0;
-  lat = p.y / this.a;
-
-  if (this.sphere) {
-    lat /= this.C_y;
-    lon = lon / (this.C_x * (this.m + Math.cos(lat)));
-    if (this.m) {
-      lat = asinz((this.m * lat + Math.sin(lat)) / this.n);
-    }
-    else if (this.n !== 1) {
-      lat = asinz(Math.sin(lat) / this.n);
-    }
-    lon = adjust_lon(lon + this.long0);
-    lat = adjust_lat(lat);
-  }
-  else {
-    lat = pj_inv_mlfn(p.y / this.a, this.es, this.en);
-    s = Math.abs(lat);
-    if (s < HALF_PI) {
-      s = Math.sin(lat);
-      temp = this.long0 + p.x * Math.sqrt(1 - this.es * s * s) / (this.a * Math.cos(lat));
-      //temp = this.long0 + p.x / (this.a * Math.cos(lat));
-      lon = adjust_lon(temp);
-    }
-    else if ((s - EPSLN) < HALF_PI) {
-      lon = this.long0;
-    }
-  }
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["Sinusoidal", "sinu"];
-
-/***/ }),
-/* 45 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-/*
-  reference
-    "New Equal-Area Map Projections for Noncircular Regions", John P. Snyder,
-    The American Cartographer, Vol 15, No. 4, October 1988, pp. 341-355.
-  */
-
-
-/* Initialize the Miller Cylindrical projection
-  -------------------------------------------*/
-exports.init = function() {
-  //no-op
-};
-
-
-/* Miller Cylindrical forward equations--mapping lat,long to x,y
-    ------------------------------------------------------------*/
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-  /* Forward equations
-      -----------------*/
-  var dlon = adjust_lon(lon - this.long0);
-  var x = this.x0 + this.a * dlon;
-  var y = this.y0 + this.a * Math.log(Math.tan((Math.PI / 4) + (lat / 2.5))) * 1.25;
-
-  p.x = x;
-  p.y = y;
-  return p;
-};
-
-/* Miller Cylindrical inverse equations--mapping x,y to lat/long
-    ------------------------------------------------------------*/
-exports.inverse = function(p) {
-  p.x -= this.x0;
-  p.y -= this.y0;
-
-  var lon = adjust_lon(this.long0 + p.x / this.a);
-  var lat = 2.5 * (Math.atan(Math.exp(0.8 * p.y / this.a)) - Math.PI / 4);
-
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["Miller_Cylindrical", "mill"];
-
-
-/***/ }),
-/* 46 */
-/***/ (function(module, exports) {
-
-var SEC_TO_RAD = 4.84813681109535993589914102357e-6;
-/*
-  reference
-    Department of Land and Survey Technical Circular 1973/32
-      http://www.linz.govt.nz/docs/miscellaneous/nz-map-definition.pdf
-    OSG Technical Report 4.1
-      http://www.linz.govt.nz/docs/miscellaneous/nzmg.pdf
-  */
-
-/**
- * iterations: Number of iterations to refine inverse transform.
- *     0 -> km accuracy
- *     1 -> m accuracy -- suitable for most mapping applications
- *     2 -> mm accuracy
- */
-exports.iterations = 1;
-
-exports.init = function() {
-  this.A = [];
-  this.A[1] = 0.6399175073;
-  this.A[2] = -0.1358797613;
-  this.A[3] = 0.063294409;
-  this.A[4] = -0.02526853;
-  this.A[5] = 0.0117879;
-  this.A[6] = -0.0055161;
-  this.A[7] = 0.0026906;
-  this.A[8] = -0.001333;
-  this.A[9] = 0.00067;
-  this.A[10] = -0.00034;
-
-  this.B_re = [];
-  this.B_im = [];
-  this.B_re[1] = 0.7557853228;
-  this.B_im[1] = 0;
-  this.B_re[2] = 0.249204646;
-  this.B_im[2] = 0.003371507;
-  this.B_re[3] = -0.001541739;
-  this.B_im[3] = 0.041058560;
-  this.B_re[4] = -0.10162907;
-  this.B_im[4] = 0.01727609;
-  this.B_re[5] = -0.26623489;
-  this.B_im[5] = -0.36249218;
-  this.B_re[6] = -0.6870983;
-  this.B_im[6] = -1.1651967;
-
-  this.C_re = [];
-  this.C_im = [];
-  this.C_re[1] = 1.3231270439;
-  this.C_im[1] = 0;
-  this.C_re[2] = -0.577245789;
-  this.C_im[2] = -0.007809598;
-  this.C_re[3] = 0.508307513;
-  this.C_im[3] = -0.112208952;
-  this.C_re[4] = -0.15094762;
-  this.C_im[4] = 0.18200602;
-  this.C_re[5] = 1.01418179;
-  this.C_im[5] = 1.64497696;
-  this.C_re[6] = 1.9660549;
-  this.C_im[6] = 2.5127645;
-
-  this.D = [];
-  this.D[1] = 1.5627014243;
-  this.D[2] = 0.5185406398;
-  this.D[3] = -0.03333098;
-  this.D[4] = -0.1052906;
-  this.D[5] = -0.0368594;
-  this.D[6] = 0.007317;
-  this.D[7] = 0.01220;
-  this.D[8] = 0.00394;
-  this.D[9] = -0.0013;
-};
-
-/**
-    New Zealand Map Grid Forward  - long/lat to x/y
-    long/lat in radians
-  */
-exports.forward = function(p) {
-  var n;
-  var lon = p.x;
-  var lat = p.y;
-
-  var delta_lat = lat - this.lat0;
-  var delta_lon = lon - this.long0;
-
-  // 1. Calculate d_phi and d_psi    ...                          // and d_lambda
-  // For this algorithm, delta_latitude is in seconds of arc x 10-5, so we need to scale to those units. Longitude is radians.
-  var d_phi = delta_lat / SEC_TO_RAD * 1E-5;
-  var d_lambda = delta_lon;
-  var d_phi_n = 1; // d_phi^0
-
-  var d_psi = 0;
-  for (n = 1; n <= 10; n++) {
-    d_phi_n = d_phi_n * d_phi;
-    d_psi = d_psi + this.A[n] * d_phi_n;
-  }
-
-  // 2. Calculate theta
-  var th_re = d_psi;
-  var th_im = d_lambda;
-
-  // 3. Calculate z
-  var th_n_re = 1;
-  var th_n_im = 0; // theta^0
-  var th_n_re1;
-  var th_n_im1;
-
-  var z_re = 0;
-  var z_im = 0;
-  for (n = 1; n <= 6; n++) {
-    th_n_re1 = th_n_re * th_re - th_n_im * th_im;
-    th_n_im1 = th_n_im * th_re + th_n_re * th_im;
-    th_n_re = th_n_re1;
-    th_n_im = th_n_im1;
-    z_re = z_re + this.B_re[n] * th_n_re - this.B_im[n] * th_n_im;
-    z_im = z_im + this.B_im[n] * th_n_re + this.B_re[n] * th_n_im;
-  }
-
-  // 4. Calculate easting and northing
-  p.x = (z_im * this.a) + this.x0;
-  p.y = (z_re * this.a) + this.y0;
-
-  return p;
-};
-
-
-/**
-    New Zealand Map Grid Inverse  -  x/y to long/lat
-  */
-exports.inverse = function(p) {
-  var n;
-  var x = p.x;
-  var y = p.y;
-
-  var delta_x = x - this.x0;
-  var delta_y = y - this.y0;
-
-  // 1. Calculate z
-  var z_re = delta_y / this.a;
-  var z_im = delta_x / this.a;
-
-  // 2a. Calculate theta - first approximation gives km accuracy
-  var z_n_re = 1;
-  var z_n_im = 0; // z^0
-  var z_n_re1;
-  var z_n_im1;
-
-  var th_re = 0;
-  var th_im = 0;
-  for (n = 1; n <= 6; n++) {
-    z_n_re1 = z_n_re * z_re - z_n_im * z_im;
-    z_n_im1 = z_n_im * z_re + z_n_re * z_im;
-    z_n_re = z_n_re1;
-    z_n_im = z_n_im1;
-    th_re = th_re + this.C_re[n] * z_n_re - this.C_im[n] * z_n_im;
-    th_im = th_im + this.C_im[n] * z_n_re + this.C_re[n] * z_n_im;
-  }
-
-  // 2b. Iterate to refine the accuracy of the calculation
-  //        0 iterations gives km accuracy
-  //        1 iteration gives m accuracy -- good enough for most mapping applications
-  //        2 iterations bives mm accuracy
-  for (var i = 0; i < this.iterations; i++) {
-    var th_n_re = th_re;
-    var th_n_im = th_im;
-    var th_n_re1;
-    var th_n_im1;
-
-    var num_re = z_re;
-    var num_im = z_im;
-    for (n = 2; n <= 6; n++) {
-      th_n_re1 = th_n_re * th_re - th_n_im * th_im;
-      th_n_im1 = th_n_im * th_re + th_n_re * th_im;
-      th_n_re = th_n_re1;
-      th_n_im = th_n_im1;
-      num_re = num_re + (n - 1) * (this.B_re[n] * th_n_re - this.B_im[n] * th_n_im);
-      num_im = num_im + (n - 1) * (this.B_im[n] * th_n_re + this.B_re[n] * th_n_im);
-    }
-
-    th_n_re = 1;
-    th_n_im = 0;
-    var den_re = this.B_re[1];
-    var den_im = this.B_im[1];
-    for (n = 2; n <= 6; n++) {
-      th_n_re1 = th_n_re * th_re - th_n_im * th_im;
-      th_n_im1 = th_n_im * th_re + th_n_re * th_im;
-      th_n_re = th_n_re1;
-      th_n_im = th_n_im1;
-      den_re = den_re + n * (this.B_re[n] * th_n_re - this.B_im[n] * th_n_im);
-      den_im = den_im + n * (this.B_im[n] * th_n_re + this.B_re[n] * th_n_im);
-    }
-
-    // Complex division
-    var den2 = den_re * den_re + den_im * den_im;
-    th_re = (num_re * den_re + num_im * den_im) / den2;
-    th_im = (num_im * den_re - num_re * den_im) / den2;
-  }
-
-  // 3. Calculate d_phi              ...                                    // and d_lambda
-  var d_psi = th_re;
-  var d_lambda = th_im;
-  var d_psi_n = 1; // d_psi^0
-
-  var d_phi = 0;
-  for (n = 1; n <= 9; n++) {
-    d_psi_n = d_psi_n * d_psi;
-    d_phi = d_phi + this.D[n] * d_psi_n;
-  }
-
-  // 4. Calculate latitude and longitude
-  // d_phi is calcuated in second of arc * 10^-5, so we need to scale back to radians. d_lambda is in radians.
-  var lat = this.lat0 + (d_phi * SEC_TO_RAD * 1E5);
-  var lon = this.long0 + d_lambda;
-
-  p.x = lon;
-  p.y = lat;
-
-  return p;
-};
-exports.names = ["New_Zealand_Map_Grid", "nzmg"];
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var e0fn = __webpack_require__(9);
-var e1fn = __webpack_require__(8);
-var e2fn = __webpack_require__(7);
-var e3fn = __webpack_require__(6);
-var adjust_lon = __webpack_require__(1);
-var adjust_lat = __webpack_require__(4);
-var mlfn = __webpack_require__(5);
-var EPSLN = 1.0e-10;
-var gN = __webpack_require__(17);
-var MAX_ITER = 20;
-exports.init = function() {
-  /* Place parameters in static storage for common use
-      -------------------------------------------------*/
-  this.temp = this.b / this.a;
-  this.es = 1 - Math.pow(this.temp, 2); // devait etre dans tmerc.js mais n y est pas donc je commente sinon retour de valeurs nulles
-  this.e = Math.sqrt(this.es);
-  this.e0 = e0fn(this.es);
-  this.e1 = e1fn(this.es);
-  this.e2 = e2fn(this.es);
-  this.e3 = e3fn(this.es);
-  this.ml0 = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, this.lat0); //si que des zeros le calcul ne se fait pas
-};
-
-
-/* Polyconic forward equations--mapping lat,long to x,y
-    ---------------------------------------------------*/
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-  var x, y, el;
-  var dlon = adjust_lon(lon - this.long0);
-  el = dlon * Math.sin(lat);
-  if (this.sphere) {
-    if (Math.abs(lat) <= EPSLN) {
-      x = this.a * dlon;
-      y = -1 * this.a * this.lat0;
-    }
-    else {
-      x = this.a * Math.sin(el) / Math.tan(lat);
-      y = this.a * (adjust_lat(lat - this.lat0) + (1 - Math.cos(el)) / Math.tan(lat));
-    }
-  }
-  else {
-    if (Math.abs(lat) <= EPSLN) {
-      x = this.a * dlon;
-      y = -1 * this.ml0;
-    }
-    else {
-      var nl = gN(this.a, this.e, Math.sin(lat)) / Math.tan(lat);
-      x = nl * Math.sin(el);
-      y = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, lat) - this.ml0 + nl * (1 - Math.cos(el));
-    }
-
-  }
-  p.x = x + this.x0;
-  p.y = y + this.y0;
-  return p;
-};
-
-
-/* Inverse equations
-  -----------------*/
-exports.inverse = function(p) {
-  var lon, lat, x, y, i;
-  var al, bl;
-  var phi, dphi;
-  x = p.x - this.x0;
-  y = p.y - this.y0;
-
-  if (this.sphere) {
-    if (Math.abs(y + this.a * this.lat0) <= EPSLN) {
-      lon = adjust_lon(x / this.a + this.long0);
-      lat = 0;
-    }
-    else {
-      al = this.lat0 + y / this.a;
-      bl = x * x / this.a / this.a + al * al;
-      phi = al;
-      var tanphi;
-      for (i = MAX_ITER; i; --i) {
-        tanphi = Math.tan(phi);
-        dphi = -1 * (al * (phi * tanphi + 1) - phi - 0.5 * (phi * phi + bl) * tanphi) / ((phi - al) / tanphi - 1);
-        phi += dphi;
-        if (Math.abs(dphi) <= EPSLN) {
-          lat = phi;
-          break;
-        }
-      }
-      lon = adjust_lon(this.long0 + (Math.asin(x * Math.tan(phi) / this.a)) / Math.sin(lat));
-    }
-  }
-  else {
-    if (Math.abs(y + this.ml0) <= EPSLN) {
-      lat = 0;
-      lon = adjust_lon(this.long0 + x / this.a);
-    }
-    else {
-
-      al = (this.ml0 + y) / this.a;
-      bl = x * x / this.a / this.a + al * al;
-      phi = al;
-      var cl, mln, mlnp, ma;
-      var con;
-      for (i = MAX_ITER; i; --i) {
-        con = this.e * Math.sin(phi);
-        cl = Math.sqrt(1 - con * con) * Math.tan(phi);
-        mln = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, phi);
-        mlnp = this.e0 - 2 * this.e1 * Math.cos(2 * phi) + 4 * this.e2 * Math.cos(4 * phi) - 6 * this.e3 * Math.cos(6 * phi);
-        ma = mln / this.a;
-        dphi = (al * (cl * ma + 1) - ma - 0.5 * cl * (ma * ma + bl)) / (this.es * Math.sin(2 * phi) * (ma * ma + bl - 2 * al * ma) / (4 * cl) + (al - ma) * (cl * mlnp - 2 / Math.sin(2 * phi)) - mlnp);
-        phi -= dphi;
-        if (Math.abs(dphi) <= EPSLN) {
-          lat = phi;
-          break;
-        }
-      }
-
-      //lat=phi4z(this.e,this.e0,this.e1,this.e2,this.e3,al,bl,0,0);
-      cl = Math.sqrt(1 - this.es * Math.pow(Math.sin(lat), 2)) * Math.tan(lat);
-      lon = adjust_lon(this.long0 + Math.asin(x * cl / this.a) / Math.sin(lat));
-    }
-  }
-
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["Polyconic", "poly"];
-
-/***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-var adjust_lat = __webpack_require__(4);
-exports.init = function() {
-
-  this.x0 = this.x0 || 0;
-  this.y0 = this.y0 || 0;
-  this.lat0 = this.lat0 || 0;
-  this.long0 = this.long0 || 0;
-  this.lat_ts = this.lat_ts || 0;
-  this.title = this.title || "Equidistant Cylindrical (Plate Carre)";
-
-  this.rc = Math.cos(this.lat_ts);
-};
-
-
-// forward equations--mapping lat,long to x,y
-// -----------------------------------------------------------------
-exports.forward = function(p) {
-
-  var lon = p.x;
-  var lat = p.y;
-
-  var dlon = adjust_lon(lon - this.long0);
-  var dlat = adjust_lat(lat - this.lat0);
-  p.x = this.x0 + (this.a * dlon * this.rc);
-  p.y = this.y0 + (this.a * dlat);
-  return p;
-};
-
-// inverse equations--mapping x,y to lat/long
-// -----------------------------------------------------------------
-exports.inverse = function(p) {
-
-  var x = p.x;
-  var y = p.y;
-
-  p.x = adjust_lon(this.long0 + ((x - this.x0) / (this.a * this.rc)));
-  p.y = adjust_lat(this.lat0 + ((y - this.y0) / (this.a)));
-  return p;
-};
-exports.names = ["Equirectangular", "Equidistant_Cylindrical", "eqc"];
-
-
-/***/ }),
-/* 49 */
-/***/ (function(module, exports) {
-
-var HALF_PI = Math.PI/2;
-
-module.exports = function(eccent, q) {
-  var temp = 1 - (1 - eccent * eccent) / (2 * eccent) * Math.log((1 - eccent) / (1 + eccent));
-  if (Math.abs(Math.abs(q) - temp) < 1.0E-6) {
-    if (q < 0) {
-      return (-1 * HALF_PI);
-    }
-    else {
-      return HALF_PI;
-    }
-  }
-  //var phi = 0.5* q/(1-eccent*eccent);
-  var phi = Math.asin(0.5 * q);
-  var dphi;
-  var sin_phi;
-  var cos_phi;
-  var con;
-  for (var i = 0; i < 30; i++) {
-    sin_phi = Math.sin(phi);
-    cos_phi = Math.cos(phi);
-    con = eccent * sin_phi;
-    dphi = Math.pow(1 - con * con, 2) / (2 * cos_phi) * (q / (1 - eccent * eccent) - sin_phi / (1 - con * con) + 0.5 / eccent * Math.log((1 - con) / (1 + con)));
-    phi += dphi;
-    if (Math.abs(dphi) <= 0.0000000001) {
-      return phi;
-    }
-  }
-
-  //console.log("IQSFN-CONV:Latitude failed to converge after 30 iterations");
-  return NaN;
-};
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-var qsfnz = __webpack_require__(15);
-var msfnz = __webpack_require__(3);
-var iqsfnz = __webpack_require__(49);
-/*
-  reference:  
-    "Cartographic Projection Procedures for the UNIX Environment-
-    A User's Manual" by Gerald I. Evenden,
-    USGS Open File Report 90-284and Release 4 Interim Reports (2003)
-*/
-exports.init = function() {
-  //no-op
-  if (!this.sphere) {
-    this.k0 = msfnz(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts));
-  }
-};
-
-
-/* Cylindrical Equal Area forward equations--mapping lat,long to x,y
-    ------------------------------------------------------------*/
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-  var x, y;
-  /* Forward equations
-      -----------------*/
-  var dlon = adjust_lon(lon - this.long0);
-  if (this.sphere) {
-    x = this.x0 + this.a * dlon * Math.cos(this.lat_ts);
-    y = this.y0 + this.a * Math.sin(lat) / Math.cos(this.lat_ts);
-  }
-  else {
-    var qs = qsfnz(this.e, Math.sin(lat));
-    x = this.x0 + this.a * this.k0 * dlon;
-    y = this.y0 + this.a * qs * 0.5 / this.k0;
-  }
-
-  p.x = x;
-  p.y = y;
-  return p;
-};
-
-/* Cylindrical Equal Area inverse equations--mapping x,y to lat/long
-    ------------------------------------------------------------*/
-exports.inverse = function(p) {
-  p.x -= this.x0;
-  p.y -= this.y0;
-  var lon, lat;
-
-  if (this.sphere) {
-    lon = adjust_lon(this.long0 + (p.x / this.a) / Math.cos(this.lat_ts));
-    lat = Math.asin((p.y / this.a) * Math.cos(this.lat_ts));
-  }
-  else {
-    lat = iqsfnz(this.e, 2 * p.y * this.k0 / this.a);
-    lon = adjust_lon(this.long0 + p.x / (this.a * this.k0));
-  }
-
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["cea"];
-
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-var EPSLN = 1.0e-10;
-var asinz = __webpack_require__(2);
-
-/*
-  reference:
-    Wolfram Mathworld "Gnomonic Projection"
-    http://mathworld.wolfram.com/GnomonicProjection.html
-    Accessed: 12th November 2009
-  */
-exports.init = function() {
-
-  /* Place parameters in static storage for common use
-      -------------------------------------------------*/
-  this.sin_p14 = Math.sin(this.lat0);
-  this.cos_p14 = Math.cos(this.lat0);
-  // Approximation for projecting points to the horizon (infinity)
-  this.infinity_dist = 1000 * this.a;
-  this.rc = 1;
-};
-
-
-/* Gnomonic forward equations--mapping lat,long to x,y
-    ---------------------------------------------------*/
-exports.forward = function(p) {
-  var sinphi, cosphi; /* sin and cos value        */
-  var dlon; /* delta longitude value      */
-  var coslon; /* cos of longitude        */
-  var ksp; /* scale factor          */
-  var g;
-  var x, y;
-  var lon = p.x;
-  var lat = p.y;
-  /* Forward equations
-      -----------------*/
-  dlon = adjust_lon(lon - this.long0);
-
-  sinphi = Math.sin(lat);
-  cosphi = Math.cos(lat);
-
-  coslon = Math.cos(dlon);
-  g = this.sin_p14 * sinphi + this.cos_p14 * cosphi * coslon;
-  ksp = 1;
-  if ((g > 0) || (Math.abs(g) <= EPSLN)) {
-    x = this.x0 + this.a * ksp * cosphi * Math.sin(dlon) / g;
-    y = this.y0 + this.a * ksp * (this.cos_p14 * sinphi - this.sin_p14 * cosphi * coslon) / g;
-  }
-  else {
-
-    // Point is in the opposing hemisphere and is unprojectable
-    // We still need to return a reasonable point, so we project 
-    // to infinity, on a bearing 
-    // equivalent to the northern hemisphere equivalent
-    // This is a reasonable approximation for short shapes and lines that 
-    // straddle the horizon.
-
-    x = this.x0 + this.infinity_dist * cosphi * Math.sin(dlon);
-    y = this.y0 + this.infinity_dist * (this.cos_p14 * sinphi - this.sin_p14 * cosphi * coslon);
-
-  }
-  p.x = x;
-  p.y = y;
-  return p;
-};
-
-
-exports.inverse = function(p) {
-  var rh; /* Rho */
-  var sinc, cosc;
-  var c;
-  var lon, lat;
-
-  /* Inverse equations
-      -----------------*/
-  p.x = (p.x - this.x0) / this.a;
-  p.y = (p.y - this.y0) / this.a;
-
-  p.x /= this.k0;
-  p.y /= this.k0;
-
-  if ((rh = Math.sqrt(p.x * p.x + p.y * p.y))) {
-    c = Math.atan2(rh, this.rc);
-    sinc = Math.sin(c);
-    cosc = Math.cos(c);
-
-    lat = asinz(cosc * this.sin_p14 + (p.y * sinc * this.cos_p14) / rh);
-    lon = Math.atan2(p.x * sinc, rh * this.cos_p14 * cosc - p.y * this.sin_p14 * sinc);
-    lon = adjust_lon(this.long0 + lon);
-  }
-  else {
-    lat = this.phic0;
-    lon = 0;
-  }
-
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["gnom"];
-
-
-/***/ }),
-/* 52 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var EPSLN = 1.0e-10;
-var msfnz = __webpack_require__(3);
-var qsfnz = __webpack_require__(15);
-var adjust_lon = __webpack_require__(1);
-var asinz = __webpack_require__(2);
-exports.init = function() {
-
-  if (Math.abs(this.lat1 + this.lat2) < EPSLN) {
-    return;
-  }
-  this.temp = this.b / this.a;
-  this.es = 1 - Math.pow(this.temp, 2);
-  this.e3 = Math.sqrt(this.es);
-
-  this.sin_po = Math.sin(this.lat1);
-  this.cos_po = Math.cos(this.lat1);
-  this.t1 = this.sin_po;
-  this.con = this.sin_po;
-  this.ms1 = msfnz(this.e3, this.sin_po, this.cos_po);
-  this.qs1 = qsfnz(this.e3, this.sin_po, this.cos_po);
-
-  this.sin_po = Math.sin(this.lat2);
-  this.cos_po = Math.cos(this.lat2);
-  this.t2 = this.sin_po;
-  this.ms2 = msfnz(this.e3, this.sin_po, this.cos_po);
-  this.qs2 = qsfnz(this.e3, this.sin_po, this.cos_po);
-
-  this.sin_po = Math.sin(this.lat0);
-  this.cos_po = Math.cos(this.lat0);
-  this.t3 = this.sin_po;
-  this.qs0 = qsfnz(this.e3, this.sin_po, this.cos_po);
-
-  if (Math.abs(this.lat1 - this.lat2) > EPSLN) {
-    this.ns0 = (this.ms1 * this.ms1 - this.ms2 * this.ms2) / (this.qs2 - this.qs1);
-  }
-  else {
-    this.ns0 = this.con;
-  }
-  this.c = this.ms1 * this.ms1 + this.ns0 * this.qs1;
-  this.rh = this.a * Math.sqrt(this.c - this.ns0 * this.qs0) / this.ns0;
-};
-
-/* Albers Conical Equal Area forward equations--mapping lat,long to x,y
-  -------------------------------------------------------------------*/
-exports.forward = function(p) {
-
-  var lon = p.x;
-  var lat = p.y;
-
-  this.sin_phi = Math.sin(lat);
-  this.cos_phi = Math.cos(lat);
-
-  var qs = qsfnz(this.e3, this.sin_phi, this.cos_phi);
-  var rh1 = this.a * Math.sqrt(this.c - this.ns0 * qs) / this.ns0;
-  var theta = this.ns0 * adjust_lon(lon - this.long0);
-  var x = rh1 * Math.sin(theta) + this.x0;
-  var y = this.rh - rh1 * Math.cos(theta) + this.y0;
-
-  p.x = x;
-  p.y = y;
-  return p;
-};
-
-
-exports.inverse = function(p) {
-  var rh1, qs, con, theta, lon, lat;
-
-  p.x -= this.x0;
-  p.y = this.rh - p.y + this.y0;
-  if (this.ns0 >= 0) {
-    rh1 = Math.sqrt(p.x * p.x + p.y * p.y);
-    con = 1;
-  }
-  else {
-    rh1 = -Math.sqrt(p.x * p.x + p.y * p.y);
-    con = -1;
-  }
-  theta = 0;
-  if (rh1 !== 0) {
-    theta = Math.atan2(con * p.x, con * p.y);
-  }
-  con = rh1 * this.ns0 / this.a;
-  if (this.sphere) {
-    lat = Math.asin((this.c - con * con) / (2 * this.ns0));
-  }
-  else {
-    qs = (this.c - con * con) / this.ns0;
-    lat = this.phi1z(this.e3, qs);
-  }
-
-  lon = adjust_lon(theta / this.ns0 + this.long0);
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-
-/* Function to compute phi1, the latitude for the inverse of the
-   Albers Conical Equal-Area projection.
--------------------------------------------*/
-exports.phi1z = function(eccent, qs) {
-  var sinphi, cosphi, con, com, dphi;
-  var phi = asinz(0.5 * qs);
-  if (eccent < EPSLN) {
-    return phi;
-  }
-
-  var eccnts = eccent * eccent;
-  for (var i = 1; i <= 25; i++) {
-    sinphi = Math.sin(phi);
-    cosphi = Math.cos(phi);
-    con = eccent * sinphi;
-    com = 1 - con * con;
-    dphi = 0.5 * com * com / cosphi * (qs / (1 - eccnts) - sinphi / com + 0.5 / eccent * Math.log((1 - con) / (1 + con)));
-    phi = phi + dphi;
-    if (Math.abs(dphi) <= 1e-7) {
-      return phi;
-    }
-  }
-  return null;
-};
-exports.names = ["Albers_Conic_Equal_Area", "Albers", "aea"];
-
-
-/***/ }),
-/* 53 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var HALF_PI = Math.PI/2;
-var FORTPI = Math.PI/4;
-var EPSLN = 1.0e-10;
-var qsfnz = __webpack_require__(15);
-var adjust_lon = __webpack_require__(1);
-/*
-  reference
-    "New Equal-Area Map Projections for Noncircular Regions", John P. Snyder,
-    The American Cartographer, Vol 15, No. 4, October 1988, pp. 341-355.
-  */
-
-exports.S_POLE = 1;
-exports.N_POLE = 2;
-exports.EQUIT = 3;
-exports.OBLIQ = 4;
-
-
-/* Initialize the Lambert Azimuthal Equal Area projection
-  ------------------------------------------------------*/
-exports.init = function() {
-  var t = Math.abs(this.lat0);
-  if (Math.abs(t - HALF_PI) < EPSLN) {
-    this.mode = this.lat0 < 0 ? this.S_POLE : this.N_POLE;
-  }
-  else if (Math.abs(t) < EPSLN) {
-    this.mode = this.EQUIT;
-  }
-  else {
-    this.mode = this.OBLIQ;
-  }
-  if (this.es > 0) {
-    var sinphi;
-
-    this.qp = qsfnz(this.e, 1);
-    this.mmf = 0.5 / (1 - this.es);
-    this.apa = this.authset(this.es);
-    switch (this.mode) {
-    case this.N_POLE:
-      this.dd = 1;
-      break;
-    case this.S_POLE:
-      this.dd = 1;
-      break;
-    case this.EQUIT:
-      this.rq = Math.sqrt(0.5 * this.qp);
-      this.dd = 1 / this.rq;
-      this.xmf = 1;
-      this.ymf = 0.5 * this.qp;
-      break;
-    case this.OBLIQ:
-      this.rq = Math.sqrt(0.5 * this.qp);
-      sinphi = Math.sin(this.lat0);
-      this.sinb1 = qsfnz(this.e, sinphi) / this.qp;
-      this.cosb1 = Math.sqrt(1 - this.sinb1 * this.sinb1);
-      this.dd = Math.cos(this.lat0) / (Math.sqrt(1 - this.es * sinphi * sinphi) * this.rq * this.cosb1);
-      this.ymf = (this.xmf = this.rq) / this.dd;
-      this.xmf *= this.dd;
-      break;
-    }
-  }
-  else {
-    if (this.mode === this.OBLIQ) {
-      this.sinph0 = Math.sin(this.lat0);
-      this.cosph0 = Math.cos(this.lat0);
-    }
-  }
-};
-
-/* Lambert Azimuthal Equal Area forward equations--mapping lat,long to x,y
-  -----------------------------------------------------------------------*/
-exports.forward = function(p) {
-
-  /* Forward equations
-      -----------------*/
-  var x, y, coslam, sinlam, sinphi, q, sinb, cosb, b, cosphi;
-  var lam = p.x;
-  var phi = p.y;
-
-  lam = adjust_lon(lam - this.long0);
-
-  if (this.sphere) {
-    sinphi = Math.sin(phi);
-    cosphi = Math.cos(phi);
-    coslam = Math.cos(lam);
-    if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
-      y = (this.mode === this.EQUIT) ? 1 + cosphi * coslam : 1 + this.sinph0 * sinphi + this.cosph0 * cosphi * coslam;
-      if (y <= EPSLN) {
-        return null;
-      }
-      y = Math.sqrt(2 / y);
-      x = y * cosphi * Math.sin(lam);
-      y *= (this.mode === this.EQUIT) ? sinphi : this.cosph0 * sinphi - this.sinph0 * cosphi * coslam;
-    }
-    else if (this.mode === this.N_POLE || this.mode === this.S_POLE) {
-      if (this.mode === this.N_POLE) {
-        coslam = -coslam;
-      }
-      if (Math.abs(phi + this.phi0) < EPSLN) {
-        return null;
-      }
-      y = FORTPI - phi * 0.5;
-      y = 2 * ((this.mode === this.S_POLE) ? Math.cos(y) : Math.sin(y));
-      x = y * Math.sin(lam);
-      y *= coslam;
-    }
-  }
-  else {
-    sinb = 0;
-    cosb = 0;
-    b = 0;
-    coslam = Math.cos(lam);
-    sinlam = Math.sin(lam);
-    sinphi = Math.sin(phi);
-    q = qsfnz(this.e, sinphi);
-    if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
-      sinb = q / this.qp;
-      cosb = Math.sqrt(1 - sinb * sinb);
-    }
-    switch (this.mode) {
-    case this.OBLIQ:
-      b = 1 + this.sinb1 * sinb + this.cosb1 * cosb * coslam;
-      break;
-    case this.EQUIT:
-      b = 1 + cosb * coslam;
-      break;
-    case this.N_POLE:
-      b = HALF_PI + phi;
-      q = this.qp - q;
-      break;
-    case this.S_POLE:
-      b = phi - HALF_PI;
-      q = this.qp + q;
-      break;
-    }
-    if (Math.abs(b) < EPSLN) {
-      return null;
-    }
-    switch (this.mode) {
-    case this.OBLIQ:
-    case this.EQUIT:
-      b = Math.sqrt(2 / b);
-      if (this.mode === this.OBLIQ) {
-        y = this.ymf * b * (this.cosb1 * sinb - this.sinb1 * cosb * coslam);
-      }
-      else {
-        y = (b = Math.sqrt(2 / (1 + cosb * coslam))) * sinb * this.ymf;
-      }
-      x = this.xmf * b * cosb * sinlam;
-      break;
-    case this.N_POLE:
-    case this.S_POLE:
-      if (q >= 0) {
-        x = (b = Math.sqrt(q)) * sinlam;
-        y = coslam * ((this.mode === this.S_POLE) ? b : -b);
-      }
-      else {
-        x = y = 0;
-      }
-      break;
-    }
-  }
-
-  p.x = this.a * x + this.x0;
-  p.y = this.a * y + this.y0;
-  return p;
-};
-
-/* Inverse equations
-  -----------------*/
-exports.inverse = function(p) {
-  p.x -= this.x0;
-  p.y -= this.y0;
-  var x = p.x / this.a;
-  var y = p.y / this.a;
-  var lam, phi, cCe, sCe, q, rho, ab;
-
-  if (this.sphere) {
-    var cosz = 0,
-      rh, sinz = 0;
-
-    rh = Math.sqrt(x * x + y * y);
-    phi = rh * 0.5;
-    if (phi > 1) {
-      return null;
-    }
-    phi = 2 * Math.asin(phi);
-    if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
-      sinz = Math.sin(phi);
-      cosz = Math.cos(phi);
-    }
-    switch (this.mode) {
-    case this.EQUIT:
-      phi = (Math.abs(rh) <= EPSLN) ? 0 : Math.asin(y * sinz / rh);
-      x *= sinz;
-      y = cosz * rh;
-      break;
-    case this.OBLIQ:
-      phi = (Math.abs(rh) <= EPSLN) ? this.phi0 : Math.asin(cosz * this.sinph0 + y * sinz * this.cosph0 / rh);
-      x *= sinz * this.cosph0;
-      y = (cosz - Math.sin(phi) * this.sinph0) * rh;
-      break;
-    case this.N_POLE:
-      y = -y;
-      phi = HALF_PI - phi;
-      break;
-    case this.S_POLE:
-      phi -= HALF_PI;
-      break;
-    }
-    lam = (y === 0 && (this.mode === this.EQUIT || this.mode === this.OBLIQ)) ? 0 : Math.atan2(x, y);
-  }
-  else {
-    ab = 0;
-    if (this.mode === this.OBLIQ || this.mode === this.EQUIT) {
-      x /= this.dd;
-      y *= this.dd;
-      rho = Math.sqrt(x * x + y * y);
-      if (rho < EPSLN) {
-        p.x = 0;
-        p.y = this.phi0;
-        return p;
-      }
-      sCe = 2 * Math.asin(0.5 * rho / this.rq);
-      cCe = Math.cos(sCe);
-      x *= (sCe = Math.sin(sCe));
-      if (this.mode === this.OBLIQ) {
-        ab = cCe * this.sinb1 + y * sCe * this.cosb1 / rho;
-        q = this.qp * ab;
-        y = rho * this.cosb1 * cCe - y * this.sinb1 * sCe;
-      }
-      else {
-        ab = y * sCe / rho;
-        q = this.qp * ab;
-        y = rho * cCe;
-      }
-    }
-    else if (this.mode === this.N_POLE || this.mode === this.S_POLE) {
-      if (this.mode === this.N_POLE) {
-        y = -y;
-      }
-      q = (x * x + y * y);
-      if (!q) {
-        p.x = 0;
-        p.y = this.phi0;
-        return p;
-      }
-      ab = 1 - q / this.qp;
-      if (this.mode === this.S_POLE) {
-        ab = -ab;
-      }
-    }
-    lam = Math.atan2(x, y);
-    phi = this.authlat(Math.asin(ab), this.apa);
-  }
-
-
-  p.x = adjust_lon(this.long0 + lam);
-  p.y = phi;
-  return p;
-};
-
-/* determine latitude from authalic latitude */
-exports.P00 = 0.33333333333333333333;
-exports.P01 = 0.17222222222222222222;
-exports.P02 = 0.10257936507936507936;
-exports.P10 = 0.06388888888888888888;
-exports.P11 = 0.06640211640211640211;
-exports.P20 = 0.01641501294219154443;
-
-exports.authset = function(es) {
-  var t;
-  var APA = [];
-  APA[0] = es * this.P00;
-  t = es * es;
-  APA[0] += t * this.P01;
-  APA[1] = t * this.P10;
-  t *= es;
-  APA[0] += t * this.P02;
-  APA[1] += t * this.P11;
-  APA[2] = t * this.P20;
-  return APA;
-};
-
-exports.authlat = function(beta, APA) {
-  var t = beta + beta;
-  return (beta + APA[0] * Math.sin(t) + APA[1] * Math.sin(t + t) + APA[2] * Math.sin(t + t + t));
-};
-exports.names = ["Lambert Azimuthal Equal Area", "Lambert_Azimuthal_Equal_Area", "laea"];
-
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var mlfn = __webpack_require__(5);
-var e0fn = __webpack_require__(9);
-var e1fn = __webpack_require__(8);
-var e2fn = __webpack_require__(7);
-var e3fn = __webpack_require__(6);
-var gN = __webpack_require__(17);
-var adjust_lon = __webpack_require__(1);
-var adjust_lat = __webpack_require__(4);
-var imlfn = __webpack_require__(16);
-var HALF_PI = Math.PI/2;
-var EPSLN = 1.0e-10;
-exports.init = function() {
-  if (!this.sphere) {
-    this.e0 = e0fn(this.es);
-    this.e1 = e1fn(this.es);
-    this.e2 = e2fn(this.es);
-    this.e3 = e3fn(this.es);
-    this.ml0 = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, this.lat0);
-  }
-};
-
-
-
-/* Cassini forward equations--mapping lat,long to x,y
-  -----------------------------------------------------------------------*/
-exports.forward = function(p) {
-
-  /* Forward equations
-      -----------------*/
-  var x, y;
-  var lam = p.x;
-  var phi = p.y;
-  lam = adjust_lon(lam - this.long0);
-
-  if (this.sphere) {
-    x = this.a * Math.asin(Math.cos(phi) * Math.sin(lam));
-    y = this.a * (Math.atan2(Math.tan(phi), Math.cos(lam)) - this.lat0);
-  }
-  else {
-    //ellipsoid
-    var sinphi = Math.sin(phi);
-    var cosphi = Math.cos(phi);
-    var nl = gN(this.a, this.e, sinphi);
-    var tl = Math.tan(phi) * Math.tan(phi);
-    var al = lam * Math.cos(phi);
-    var asq = al * al;
-    var cl = this.es * cosphi * cosphi / (1 - this.es);
-    var ml = this.a * mlfn(this.e0, this.e1, this.e2, this.e3, phi);
-
-    x = nl * al * (1 - asq * tl * (1 / 6 - (8 - tl + 8 * cl) * asq / 120));
-    y = ml - this.ml0 + nl * sinphi / cosphi * asq * (0.5 + (5 - tl + 6 * cl) * asq / 24);
-
-
-  }
-
-  p.x = x + this.x0;
-  p.y = y + this.y0;
-  return p;
-};
-
-/* Inverse equations
-  -----------------*/
-exports.inverse = function(p) {
-  p.x -= this.x0;
-  p.y -= this.y0;
-  var x = p.x / this.a;
-  var y = p.y / this.a;
-  var phi, lam;
-
-  if (this.sphere) {
-    var dd = y + this.lat0;
-    phi = Math.asin(Math.sin(dd) * Math.cos(x));
-    lam = Math.atan2(Math.tan(x), Math.cos(dd));
-  }
-  else {
-    /* ellipsoid */
-    var ml1 = this.ml0 / this.a + y;
-    var phi1 = imlfn(ml1, this.e0, this.e1, this.e2, this.e3);
-    if (Math.abs(Math.abs(phi1) - HALF_PI) <= EPSLN) {
-      p.x = this.long0;
-      p.y = HALF_PI;
-      if (y < 0) {
-        p.y *= -1;
-      }
-      return p;
-    }
-    var nl1 = gN(this.a, this.e, Math.sin(phi1));
-
-    var rl1 = nl1 * nl1 * nl1 / this.a / this.a * (1 - this.es);
-    var tl1 = Math.pow(Math.tan(phi1), 2);
-    var dl = x * this.a / nl1;
-    var dsq = dl * dl;
-    phi = phi1 - nl1 * Math.tan(phi1) / rl1 * dl * dl * (0.5 - (1 + 3 * tl1) * dl * dl / 24);
-    lam = dl * (1 - dsq * (tl1 / 3 + (1 + 3 * tl1) * tl1 * dsq / 15)) / Math.cos(phi1);
-
-  }
-
-  p.x = adjust_lon(lam + this.long0);
-  p.y = adjust_lat(phi);
-  return p;
-
-};
-exports.names = ["Cassini", "Cassini_Soldner", "cass"];
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var adjust_lon = __webpack_require__(1);
-exports.init = function() {
-  this.a = 6377397.155;
-  this.es = 0.006674372230614;
-  this.e = Math.sqrt(this.es);
-  if (!this.lat0) {
-    this.lat0 = 0.863937979737193;
-  }
-  if (!this.long0) {
-    this.long0 = 0.7417649320975901 - 0.308341501185665;
-  }
-  /* if scale not set default to 0.9999 */
-  if (!this.k0) {
-    this.k0 = 0.9999;
-  }
-  this.s45 = 0.785398163397448; /* 45 */
-  this.s90 = 2 * this.s45;
-  this.fi0 = this.lat0;
-  this.e2 = this.es;
-  this.e = Math.sqrt(this.e2);
-  this.alfa = Math.sqrt(1 + (this.e2 * Math.pow(Math.cos(this.fi0), 4)) / (1 - this.e2));
-  this.uq = 1.04216856380474;
-  this.u0 = Math.asin(Math.sin(this.fi0) / this.alfa);
-  this.g = Math.pow((1 + this.e * Math.sin(this.fi0)) / (1 - this.e * Math.sin(this.fi0)), this.alfa * this.e / 2);
-  this.k = Math.tan(this.u0 / 2 + this.s45) / Math.pow(Math.tan(this.fi0 / 2 + this.s45), this.alfa) * this.g;
-  this.k1 = this.k0;
-  this.n0 = this.a * Math.sqrt(1 - this.e2) / (1 - this.e2 * Math.pow(Math.sin(this.fi0), 2));
-  this.s0 = 1.37008346281555;
-  this.n = Math.sin(this.s0);
-  this.ro0 = this.k1 * this.n0 / Math.tan(this.s0);
-  this.ad = this.s90 - this.uq;
-};
-
-/* ellipsoid */
-/* calculate xy from lat/lon */
-/* Constants, identical to inverse transform function */
-exports.forward = function(p) {
-  var gfi, u, deltav, s, d, eps, ro;
-  var lon = p.x;
-  var lat = p.y;
-  var delta_lon = adjust_lon(lon - this.long0);
-  /* Transformation */
-  gfi = Math.pow(((1 + this.e * Math.sin(lat)) / (1 - this.e * Math.sin(lat))), (this.alfa * this.e / 2));
-  u = 2 * (Math.atan(this.k * Math.pow(Math.tan(lat / 2 + this.s45), this.alfa) / gfi) - this.s45);
-  deltav = -delta_lon * this.alfa;
-  s = Math.asin(Math.cos(this.ad) * Math.sin(u) + Math.sin(this.ad) * Math.cos(u) * Math.cos(deltav));
-  d = Math.asin(Math.cos(u) * Math.sin(deltav) / Math.cos(s));
-  eps = this.n * d;
-  ro = this.ro0 * Math.pow(Math.tan(this.s0 / 2 + this.s45), this.n) / Math.pow(Math.tan(s / 2 + this.s45), this.n);
-  p.y = ro * Math.cos(eps) / 1;
-  p.x = ro * Math.sin(eps) / 1;
-
-  if (!this.czech) {
-    p.y *= -1;
-    p.x *= -1;
-  }
-  return (p);
-};
-
-/* calculate lat/lon from xy */
-exports.inverse = function(p) {
-  var u, deltav, s, d, eps, ro, fi1;
-  var ok;
-
-  /* Transformation */
-  /* revert y, x*/
-  var tmp = p.x;
-  p.x = p.y;
-  p.y = tmp;
-  if (!this.czech) {
-    p.y *= -1;
-    p.x *= -1;
-  }
-  ro = Math.sqrt(p.x * p.x + p.y * p.y);
-  eps = Math.atan2(p.y, p.x);
-  d = eps / Math.sin(this.s0);
-  s = 2 * (Math.atan(Math.pow(this.ro0 / ro, 1 / this.n) * Math.tan(this.s0 / 2 + this.s45)) - this.s45);
-  u = Math.asin(Math.cos(this.ad) * Math.sin(s) - Math.sin(this.ad) * Math.cos(s) * Math.cos(d));
-  deltav = Math.asin(Math.cos(s) * Math.sin(d) / Math.cos(u));
-  p.x = this.long0 - deltav / this.alfa;
-  fi1 = u;
-  ok = 0;
-  var iter = 0;
-  do {
-    p.y = 2 * (Math.atan(Math.pow(this.k, - 1 / this.alfa) * Math.pow(Math.tan(u / 2 + this.s45), 1 / this.alfa) * Math.pow((1 + this.e * Math.sin(fi1)) / (1 - this.e * Math.sin(fi1)), this.e / 2)) - this.s45);
-    if (Math.abs(fi1 - p.y) < 0.0000000001) {
-      ok = 1;
-    }
-    fi1 = p.y;
-    iter += 1;
-  } while (ok === 0 && iter < 15);
-  if (iter >= 15) {
-    return null;
-  }
-
-  return (p);
-};
-exports.names = ["Krovak", "krovak"];
-
-
-/***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var EPSLN = 1.0e-10;
-var msfnz = __webpack_require__(3);
-var tsfnz = __webpack_require__(12);
-var HALF_PI = Math.PI/2;
-var sign = __webpack_require__(10);
-var adjust_lon = __webpack_require__(1);
-var phi2z = __webpack_require__(11);
-exports.init = function() {
-
-  // array of:  r_maj,r_min,lat1,lat2,c_lon,c_lat,false_east,false_north
-  //double c_lat;                   /* center latitude                      */
-  //double c_lon;                   /* center longitude                     */
-  //double lat1;                    /* first standard parallel              */
-  //double lat2;                    /* second standard parallel             */
-  //double r_maj;                   /* major axis                           */
-  //double r_min;                   /* minor axis                           */
-  //double false_east;              /* x offset in meters                   */
-  //double false_north;             /* y offset in meters                   */
-
-  if (!this.lat2) {
-    this.lat2 = this.lat1;
-  } //if lat2 is not defined
-  if (!this.k0) {
-    this.k0 = 1;
-  }
-  this.x0 = this.x0 || 0;
-  this.y0 = this.y0 || 0;
-  // Standard Parallels cannot be equal and on opposite sides of the equator
-  if (Math.abs(this.lat1 + this.lat2) < EPSLN) {
-    return;
-  }
-
-  var temp = this.b / this.a;
-  this.e = Math.sqrt(1 - temp * temp);
-
-  var sin1 = Math.sin(this.lat1);
-  var cos1 = Math.cos(this.lat1);
-  var ms1 = msfnz(this.e, sin1, cos1);
-  var ts1 = tsfnz(this.e, this.lat1, sin1);
-
-  var sin2 = Math.sin(this.lat2);
-  var cos2 = Math.cos(this.lat2);
-  var ms2 = msfnz(this.e, sin2, cos2);
-  var ts2 = tsfnz(this.e, this.lat2, sin2);
-
-  var ts0 = tsfnz(this.e, this.lat0, Math.sin(this.lat0));
-
-  if (Math.abs(this.lat1 - this.lat2) > EPSLN) {
-    this.ns = Math.log(ms1 / ms2) / Math.log(ts1 / ts2);
-  }
-  else {
-    this.ns = sin1;
-  }
-  if (isNaN(this.ns)) {
-    this.ns = sin1;
-  }
-  this.f0 = ms1 / (this.ns * Math.pow(ts1, this.ns));
-  this.rh = this.a * this.f0 * Math.pow(ts0, this.ns);
-  if (!this.title) {
-    this.title = "Lambert Conformal Conic";
-  }
-};
-
-
-// Lambert Conformal conic forward equations--mapping lat,long to x,y
-// -----------------------------------------------------------------
-exports.forward = function(p) {
-
-  var lon = p.x;
-  var lat = p.y;
-
-  // singular cases :
-  if (Math.abs(2 * Math.abs(lat) - Math.PI) <= EPSLN) {
-    lat = sign(lat) * (HALF_PI - 2 * EPSLN);
-  }
-
-  var con = Math.abs(Math.abs(lat) - HALF_PI);
-  var ts, rh1;
-  if (con > EPSLN) {
-    ts = tsfnz(this.e, lat, Math.sin(lat));
-    rh1 = this.a * this.f0 * Math.pow(ts, this.ns);
-  }
-  else {
-    con = lat * this.ns;
-    if (con <= 0) {
-      return null;
-    }
-    rh1 = 0;
-  }
-  var theta = this.ns * adjust_lon(lon - this.long0);
-  p.x = this.k0 * (rh1 * Math.sin(theta)) + this.x0;
-  p.y = this.k0 * (this.rh - rh1 * Math.cos(theta)) + this.y0;
-
-  return p;
-};
-
-// Lambert Conformal Conic inverse equations--mapping x,y to lat/long
-// -----------------------------------------------------------------
-exports.inverse = function(p) {
-
-  var rh1, con, ts;
-  var lat, lon;
-  var x = (p.x - this.x0) / this.k0;
-  var y = (this.rh - (p.y - this.y0) / this.k0);
-  if (this.ns > 0) {
-    rh1 = Math.sqrt(x * x + y * y);
-    con = 1;
-  }
-  else {
-    rh1 = -Math.sqrt(x * x + y * y);
-    con = -1;
-  }
-  var theta = 0;
-  if (rh1 !== 0) {
-    theta = Math.atan2((con * x), (con * y));
-  }
-  if ((rh1 !== 0) || (this.ns > 0)) {
-    con = 1 / this.ns;
-    ts = Math.pow((rh1 / (this.a * this.f0)), con);
-    lat = phi2z(this.e, ts);
-    if (lat === -9999) {
-      return null;
-    }
-  }
-  else {
-    lat = -HALF_PI;
-  }
-  lon = adjust_lon(theta / this.ns + this.long0);
-
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-
-exports.names = ["Lambert Tangential Conformal Conic Projection", "Lambert_Conformal_Conic", "Lambert_Conformal_Conic_2SP", "lcc"];
-
-
-/***/ }),
-/* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var tsfnz = __webpack_require__(12);
-var adjust_lon = __webpack_require__(1);
-var phi2z = __webpack_require__(11);
-var HALF_PI = Math.PI/2;
-var FORTPI = Math.PI/4;
-var EPSLN = 1.0e-10;
-
-/* Initialize the Oblique Mercator  projection
-    ------------------------------------------*/
-exports.init = function() {
-  this.no_off = this.no_off || false;
-  this.no_rot = this.no_rot || false;
-
-  if (isNaN(this.k0)) {
-    this.k0 = 1;
-  }
-  var sinlat = Math.sin(this.lat0);
-  var coslat = Math.cos(this.lat0);
-  var con = this.e * sinlat;
-
-  this.bl = Math.sqrt(1 + this.es / (1 - this.es) * Math.pow(coslat, 4));
-  this.al = this.a * this.bl * this.k0 * Math.sqrt(1 - this.es) / (1 - con * con);
-  var t0 = tsfnz(this.e, this.lat0, sinlat);
-  var dl = this.bl / coslat * Math.sqrt((1 - this.es) / (1 - con * con));
-  if (dl * dl < 1) {
-    dl = 1;
-  }
-  var fl;
-  var gl;
-  if (!isNaN(this.longc)) {
-    //Central point and azimuth method
-
-    if (this.lat0 >= 0) {
-      fl = dl + Math.sqrt(dl * dl - 1);
-    }
-    else {
-      fl = dl - Math.sqrt(dl * dl - 1);
-    }
-    this.el = fl * Math.pow(t0, this.bl);
-    gl = 0.5 * (fl - 1 / fl);
-    this.gamma0 = Math.asin(Math.sin(this.alpha) / dl);
-    this.long0 = this.longc - Math.asin(gl * Math.tan(this.gamma0)) / this.bl;
-
-  }
-  else {
-    //2 points method
-    var t1 = tsfnz(this.e, this.lat1, Math.sin(this.lat1));
-    var t2 = tsfnz(this.e, this.lat2, Math.sin(this.lat2));
-    if (this.lat0 >= 0) {
-      this.el = (dl + Math.sqrt(dl * dl - 1)) * Math.pow(t0, this.bl);
-    }
-    else {
-      this.el = (dl - Math.sqrt(dl * dl - 1)) * Math.pow(t0, this.bl);
-    }
-    var hl = Math.pow(t1, this.bl);
-    var ll = Math.pow(t2, this.bl);
-    fl = this.el / hl;
-    gl = 0.5 * (fl - 1 / fl);
-    var jl = (this.el * this.el - ll * hl) / (this.el * this.el + ll * hl);
-    var pl = (ll - hl) / (ll + hl);
-    var dlon12 = adjust_lon(this.long1 - this.long2);
-    this.long0 = 0.5 * (this.long1 + this.long2) - Math.atan(jl * Math.tan(0.5 * this.bl * (dlon12)) / pl) / this.bl;
-    this.long0 = adjust_lon(this.long0);
-    var dlon10 = adjust_lon(this.long1 - this.long0);
-    this.gamma0 = Math.atan(Math.sin(this.bl * (dlon10)) / gl);
-    this.alpha = Math.asin(dl * Math.sin(this.gamma0));
-  }
-
-  if (this.no_off) {
-    this.uc = 0;
-  }
-  else {
-    if (this.lat0 >= 0) {
-      this.uc = this.al / this.bl * Math.atan2(Math.sqrt(dl * dl - 1), Math.cos(this.alpha));
-    }
-    else {
-      this.uc = -1 * this.al / this.bl * Math.atan2(Math.sqrt(dl * dl - 1), Math.cos(this.alpha));
-    }
-  }
-
-};
-
-
-/* Oblique Mercator forward equations--mapping lat,long to x,y
-    ----------------------------------------------------------*/
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-  var dlon = adjust_lon(lon - this.long0);
-  var us, vs;
-  var con;
-  if (Math.abs(Math.abs(lat) - HALF_PI) <= EPSLN) {
-    if (lat > 0) {
-      con = -1;
-    }
-    else {
-      con = 1;
-    }
-    vs = this.al / this.bl * Math.log(Math.tan(FORTPI + con * this.gamma0 * 0.5));
-    us = -1 * con * HALF_PI * this.al / this.bl;
-  }
-  else {
-    var t = tsfnz(this.e, lat, Math.sin(lat));
-    var ql = this.el / Math.pow(t, this.bl);
-    var sl = 0.5 * (ql - 1 / ql);
-    var tl = 0.5 * (ql + 1 / ql);
-    var vl = Math.sin(this.bl * (dlon));
-    var ul = (sl * Math.sin(this.gamma0) - vl * Math.cos(this.gamma0)) / tl;
-    if (Math.abs(Math.abs(ul) - 1) <= EPSLN) {
-      vs = Number.POSITIVE_INFINITY;
-    }
-    else {
-      vs = 0.5 * this.al * Math.log((1 - ul) / (1 + ul)) / this.bl;
-    }
-    if (Math.abs(Math.cos(this.bl * (dlon))) <= EPSLN) {
-      us = this.al * this.bl * (dlon);
-    }
-    else {
-      us = this.al * Math.atan2(sl * Math.cos(this.gamma0) + vl * Math.sin(this.gamma0), Math.cos(this.bl * dlon)) / this.bl;
-    }
-  }
-
-  if (this.no_rot) {
-    p.x = this.x0 + us;
-    p.y = this.y0 + vs;
-  }
-  else {
-
-    us -= this.uc;
-    p.x = this.x0 + vs * Math.cos(this.alpha) + us * Math.sin(this.alpha);
-    p.y = this.y0 + us * Math.cos(this.alpha) - vs * Math.sin(this.alpha);
-  }
-  return p;
-};
-
-exports.inverse = function(p) {
-  var us, vs;
-  if (this.no_rot) {
-    vs = p.y - this.y0;
-    us = p.x - this.x0;
-  }
-  else {
-    vs = (p.x - this.x0) * Math.cos(this.alpha) - (p.y - this.y0) * Math.sin(this.alpha);
-    us = (p.y - this.y0) * Math.cos(this.alpha) + (p.x - this.x0) * Math.sin(this.alpha);
-    us += this.uc;
-  }
-  var qp = Math.exp(-1 * this.bl * vs / this.al);
-  var sp = 0.5 * (qp - 1 / qp);
-  var tp = 0.5 * (qp + 1 / qp);
-  var vp = Math.sin(this.bl * us / this.al);
-  var up = (vp * Math.cos(this.gamma0) + sp * Math.sin(this.gamma0)) / tp;
-  var ts = Math.pow(this.el / Math.sqrt((1 + up) / (1 - up)), 1 / this.bl);
-  if (Math.abs(up - 1) < EPSLN) {
-    p.x = this.long0;
-    p.y = HALF_PI;
-  }
-  else if (Math.abs(up + 1) < EPSLN) {
-    p.x = this.long0;
-    p.y = -1 * HALF_PI;
-  }
-  else {
-    p.y = phi2z(this.e, ts);
-    p.x = adjust_lon(this.long0 - Math.atan2(sp * Math.cos(this.gamma0) - vp * Math.sin(this.gamma0), Math.cos(this.bl * us / this.al)) / this.bl);
-  }
-  return p;
-};
-
-exports.names = ["Hotine_Oblique_Mercator", "Hotine Oblique Mercator", "Hotine_Oblique_Mercator_Azimuth_Natural_Origin", "Hotine_Oblique_Mercator_Azimuth_Center", "omerc"];
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports) {
-
-/*
-  references:
-    Formules et constantes pour le Calcul pour la
-    projection cylindrique conforme à axe oblique et pour la transformation entre
-    des systèmes de référence.
-    http://www.swisstopo.admin.ch/internet/swisstopo/fr/home/topics/survey/sys/refsys/switzerland.parsysrelated1.31216.downloadList.77004.DownloadFile.tmp/swissprojectionfr.pdf
-  */
-exports.init = function() {
-  var phy0 = this.lat0;
-  this.lambda0 = this.long0;
-  var sinPhy0 = Math.sin(phy0);
-  var semiMajorAxis = this.a;
-  var invF = this.rf;
-  var flattening = 1 / invF;
-  var e2 = 2 * flattening - Math.pow(flattening, 2);
-  var e = this.e = Math.sqrt(e2);
-  this.R = this.k0 * semiMajorAxis * Math.sqrt(1 - e2) / (1 - e2 * Math.pow(sinPhy0, 2));
-  this.alpha = Math.sqrt(1 + e2 / (1 - e2) * Math.pow(Math.cos(phy0), 4));
-  this.b0 = Math.asin(sinPhy0 / this.alpha);
-  var k1 = Math.log(Math.tan(Math.PI / 4 + this.b0 / 2));
-  var k2 = Math.log(Math.tan(Math.PI / 4 + phy0 / 2));
-  var k3 = Math.log((1 + e * sinPhy0) / (1 - e * sinPhy0));
-  this.K = k1 - this.alpha * k2 + this.alpha * e / 2 * k3;
-};
-
-
-exports.forward = function(p) {
-  var Sa1 = Math.log(Math.tan(Math.PI / 4 - p.y / 2));
-  var Sa2 = this.e / 2 * Math.log((1 + this.e * Math.sin(p.y)) / (1 - this.e * Math.sin(p.y)));
-  var S = -this.alpha * (Sa1 + Sa2) + this.K;
-
-  // spheric latitude
-  var b = 2 * (Math.atan(Math.exp(S)) - Math.PI / 4);
-
-  // spheric longitude
-  var I = this.alpha * (p.x - this.lambda0);
-
-  // psoeudo equatorial rotation
-  var rotI = Math.atan(Math.sin(I) / (Math.sin(this.b0) * Math.tan(b) + Math.cos(this.b0) * Math.cos(I)));
-
-  var rotB = Math.asin(Math.cos(this.b0) * Math.sin(b) - Math.sin(this.b0) * Math.cos(b) * Math.cos(I));
-
-  p.y = this.R / 2 * Math.log((1 + Math.sin(rotB)) / (1 - Math.sin(rotB))) + this.y0;
-  p.x = this.R * rotI + this.x0;
-  return p;
-};
-
-exports.inverse = function(p) {
-  var Y = p.x - this.x0;
-  var X = p.y - this.y0;
-
-  var rotI = Y / this.R;
-  var rotB = 2 * (Math.atan(Math.exp(X / this.R)) - Math.PI / 4);
-
-  var b = Math.asin(Math.cos(this.b0) * Math.sin(rotB) + Math.sin(this.b0) * Math.cos(rotB) * Math.cos(rotI));
-  var I = Math.atan(Math.sin(rotI) / (Math.cos(this.b0) * Math.cos(rotI) - Math.sin(this.b0) * Math.tan(rotB)));
-
-  var lambda = this.lambda0 + I / this.alpha;
-
-  var S = 0;
-  var phy = b;
-  var prevPhy = -1000;
-  var iteration = 0;
-  while (Math.abs(phy - prevPhy) > 0.0000001) {
-    if (++iteration > 20) {
-      //...reportError("omercFwdInfinity");
-      return;
-    }
-    //S = Math.log(Math.tan(Math.PI / 4 + phy / 2));
-    S = 1 / this.alpha * (Math.log(Math.tan(Math.PI / 4 + b / 2)) - this.K) + this.e * Math.log(Math.tan(Math.PI / 4 + Math.asin(this.e * Math.sin(phy)) / 2));
-    prevPhy = phy;
-    phy = 2 * Math.atan(Math.exp(S)) - Math.PI / 2;
-  }
-
-  p.x = lambda;
-  p.y = phy;
-  return p;
-};
-
-exports.names = ["somerc"];
-
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var HALF_PI = Math.PI/2;
-var EPSLN = 1.0e-10;
-var sign = __webpack_require__(10);
-var msfnz = __webpack_require__(3);
-var tsfnz = __webpack_require__(12);
-var phi2z = __webpack_require__(11);
-var adjust_lon = __webpack_require__(1);
-exports.ssfn_ = function(phit, sinphi, eccen) {
-  sinphi *= eccen;
-  return (Math.tan(0.5 * (HALF_PI + phit)) * Math.pow((1 - sinphi) / (1 + sinphi), 0.5 * eccen));
-};
-
-exports.init = function() {
-  this.coslat0 = Math.cos(this.lat0);
-  this.sinlat0 = Math.sin(this.lat0);
-  if (this.sphere) {
-    if (this.k0 === 1 && !isNaN(this.lat_ts) && Math.abs(this.coslat0) <= EPSLN) {
-      this.k0 = 0.5 * (1 + sign(this.lat0) * Math.sin(this.lat_ts));
-    }
-  }
-  else {
-    if (Math.abs(this.coslat0) <= EPSLN) {
-      if (this.lat0 > 0) {
-        //North pole
-        //trace('stere:north pole');
-        this.con = 1;
-      }
-      else {
-        //South pole
-        //trace('stere:south pole');
-        this.con = -1;
-      }
-    }
-    this.cons = Math.sqrt(Math.pow(1 + this.e, 1 + this.e) * Math.pow(1 - this.e, 1 - this.e));
-    if (this.k0 === 1 && !isNaN(this.lat_ts) && Math.abs(this.coslat0) <= EPSLN) {
-      this.k0 = 0.5 * this.cons * msfnz(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts)) / tsfnz(this.e, this.con * this.lat_ts, this.con * Math.sin(this.lat_ts));
-    }
-    this.ms1 = msfnz(this.e, this.sinlat0, this.coslat0);
-    this.X0 = 2 * Math.atan(this.ssfn_(this.lat0, this.sinlat0, this.e)) - HALF_PI;
-    this.cosX0 = Math.cos(this.X0);
-    this.sinX0 = Math.sin(this.X0);
-  }
-};
-
-// Stereographic forward equations--mapping lat,long to x,y
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-  var sinlat = Math.sin(lat);
-  var coslat = Math.cos(lat);
-  var A, X, sinX, cosX, ts, rh;
-  var dlon = adjust_lon(lon - this.long0);
-
-  if (Math.abs(Math.abs(lon - this.long0) - Math.PI) <= EPSLN && Math.abs(lat + this.lat0) <= EPSLN) {
-    //case of the origine point
-    //trace('stere:this is the origin point');
-    p.x = NaN;
-    p.y = NaN;
-    return p;
-  }
-  if (this.sphere) {
-    //trace('stere:sphere case');
-    A = 2 * this.k0 / (1 + this.sinlat0 * sinlat + this.coslat0 * coslat * Math.cos(dlon));
-    p.x = this.a * A * coslat * Math.sin(dlon) + this.x0;
-    p.y = this.a * A * (this.coslat0 * sinlat - this.sinlat0 * coslat * Math.cos(dlon)) + this.y0;
-    return p;
-  }
-  else {
-    X = 2 * Math.atan(this.ssfn_(lat, sinlat, this.e)) - HALF_PI;
-    cosX = Math.cos(X);
-    sinX = Math.sin(X);
-    if (Math.abs(this.coslat0) <= EPSLN) {
-      ts = tsfnz(this.e, lat * this.con, this.con * sinlat);
-      rh = 2 * this.a * this.k0 * ts / this.cons;
-      p.x = this.x0 + rh * Math.sin(lon - this.long0);
-      p.y = this.y0 - this.con * rh * Math.cos(lon - this.long0);
-      //trace(p.toString());
-      return p;
-    }
-    else if (Math.abs(this.sinlat0) < EPSLN) {
-      //Eq
-      //trace('stere:equateur');
-      A = 2 * this.a * this.k0 / (1 + cosX * Math.cos(dlon));
-      p.y = A * sinX;
-    }
-    else {
-      //other case
-      //trace('stere:normal case');
-      A = 2 * this.a * this.k0 * this.ms1 / (this.cosX0 * (1 + this.sinX0 * sinX + this.cosX0 * cosX * Math.cos(dlon)));
-      p.y = A * (this.cosX0 * sinX - this.sinX0 * cosX * Math.cos(dlon)) + this.y0;
-    }
-    p.x = A * cosX * Math.sin(dlon) + this.x0;
-  }
-  //trace(p.toString());
-  return p;
-};
-
-
-//* Stereographic inverse equations--mapping x,y to lat/long
-exports.inverse = function(p) {
-  p.x -= this.x0;
-  p.y -= this.y0;
-  var lon, lat, ts, ce, Chi;
-  var rh = Math.sqrt(p.x * p.x + p.y * p.y);
-  if (this.sphere) {
-    var c = 2 * Math.atan(rh / (0.5 * this.a * this.k0));
-    lon = this.long0;
-    lat = this.lat0;
-    if (rh <= EPSLN) {
-      p.x = lon;
-      p.y = lat;
-      return p;
-    }
-    lat = Math.asin(Math.cos(c) * this.sinlat0 + p.y * Math.sin(c) * this.coslat0 / rh);
-    if (Math.abs(this.coslat0) < EPSLN) {
-      if (this.lat0 > 0) {
-        lon = adjust_lon(this.long0 + Math.atan2(p.x, - 1 * p.y));
-      }
-      else {
-        lon = adjust_lon(this.long0 + Math.atan2(p.x, p.y));
-      }
-    }
-    else {
-      lon = adjust_lon(this.long0 + Math.atan2(p.x * Math.sin(c), rh * this.coslat0 * Math.cos(c) - p.y * this.sinlat0 * Math.sin(c)));
-    }
-    p.x = lon;
-    p.y = lat;
-    return p;
-  }
-  else {
-    if (Math.abs(this.coslat0) <= EPSLN) {
-      if (rh <= EPSLN) {
-        lat = this.lat0;
-        lon = this.long0;
-        p.x = lon;
-        p.y = lat;
-        //trace(p.toString());
-        return p;
-      }
-      p.x *= this.con;
-      p.y *= this.con;
-      ts = rh * this.cons / (2 * this.a * this.k0);
-      lat = this.con * phi2z(this.e, ts);
-      lon = this.con * adjust_lon(this.con * this.long0 + Math.atan2(p.x, - 1 * p.y));
-    }
-    else {
-      ce = 2 * Math.atan(rh * this.cosX0 / (2 * this.a * this.k0 * this.ms1));
-      lon = this.long0;
-      if (rh <= EPSLN) {
-        Chi = this.X0;
-      }
-      else {
-        Chi = Math.asin(Math.cos(ce) * this.sinX0 + p.y * Math.sin(ce) * this.cosX0 / rh);
-        lon = adjust_lon(this.long0 + Math.atan2(p.x * Math.sin(ce), rh * this.cosX0 * Math.cos(ce) - p.y * this.sinX0 * Math.sin(ce)));
-      }
-      lat = -1 * phi2z(this.e, Math.tan(0.5 * (HALF_PI + Chi)));
-    }
-  }
-  p.x = lon;
-  p.y = lat;
-
-  //trace(p.toString());
-  return p;
-
-};
-exports.names = ["stere", "Stereographic_South_Pole", "Polar Stereographic (variant B)"];
-
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports) {
-
-module.exports = function(esinp, exp) {
-  return (Math.pow((1 - esinp) / (1 + esinp), exp));
-};
-
-/***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var FORTPI = Math.PI/4;
-var srat = __webpack_require__(60);
-var HALF_PI = Math.PI/2;
-var MAX_ITER = 20;
-exports.init = function() {
-  var sphi = Math.sin(this.lat0);
-  var cphi = Math.cos(this.lat0);
-  cphi *= cphi;
-  this.rc = Math.sqrt(1 - this.es) / (1 - this.es * sphi * sphi);
-  this.C = Math.sqrt(1 + this.es * cphi * cphi / (1 - this.es));
-  this.phic0 = Math.asin(sphi / this.C);
-  this.ratexp = 0.5 * this.C * this.e;
-  this.K = Math.tan(0.5 * this.phic0 + FORTPI) / (Math.pow(Math.tan(0.5 * this.lat0 + FORTPI), this.C) * srat(this.e * sphi, this.ratexp));
-};
-
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-
-  p.y = 2 * Math.atan(this.K * Math.pow(Math.tan(0.5 * lat + FORTPI), this.C) * srat(this.e * Math.sin(lat), this.ratexp)) - HALF_PI;
-  p.x = this.C * lon;
-  return p;
-};
-
-exports.inverse = function(p) {
-  var DEL_TOL = 1e-14;
-  var lon = p.x / this.C;
-  var lat = p.y;
-  var num = Math.pow(Math.tan(0.5 * lat + FORTPI) / this.K, 1 / this.C);
-  for (var i = MAX_ITER; i > 0; --i) {
-    lat = 2 * Math.atan(num * srat(this.e * Math.sin(p.y), - 0.5 * this.e)) - HALF_PI;
-    if (Math.abs(lat - p.y) < DEL_TOL) {
-      break;
-    }
-    p.y = lat;
-  }
-  /* convergence failed */
-  if (!i) {
-    return null;
-  }
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-exports.names = ["gauss"];
-
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var gauss = __webpack_require__(61);
-var adjust_lon = __webpack_require__(1);
-exports.init = function() {
-  gauss.init.apply(this);
-  if (!this.rc) {
-    return;
-  }
-  this.sinc0 = Math.sin(this.phic0);
-  this.cosc0 = Math.cos(this.phic0);
-  this.R2 = 2 * this.rc;
-  if (!this.title) {
-    this.title = "Oblique Stereographic Alternative";
-  }
-};
-
-exports.forward = function(p) {
-  var sinc, cosc, cosl, k;
-  p.x = adjust_lon(p.x - this.long0);
-  gauss.forward.apply(this, [p]);
-  sinc = Math.sin(p.y);
-  cosc = Math.cos(p.y);
-  cosl = Math.cos(p.x);
-  k = this.k0 * this.R2 / (1 + this.sinc0 * sinc + this.cosc0 * cosc * cosl);
-  p.x = k * cosc * Math.sin(p.x);
-  p.y = k * (this.cosc0 * sinc - this.sinc0 * cosc * cosl);
-  p.x = this.a * p.x + this.x0;
-  p.y = this.a * p.y + this.y0;
-  return p;
-};
-
-exports.inverse = function(p) {
-  var sinc, cosc, lon, lat, rho;
-  p.x = (p.x - this.x0) / this.a;
-  p.y = (p.y - this.y0) / this.a;
-
-  p.x /= this.k0;
-  p.y /= this.k0;
-  if ((rho = Math.sqrt(p.x * p.x + p.y * p.y))) {
-    var c = 2 * Math.atan2(rho, this.R2);
-    sinc = Math.sin(c);
-    cosc = Math.cos(c);
-    lat = Math.asin(cosc * this.sinc0 + p.y * sinc * this.cosc0 / rho);
-    lon = Math.atan2(p.x * sinc, rho * this.cosc0 * cosc - p.y * this.sinc0 * sinc);
-  }
-  else {
-    lat = this.phic0;
-    lon = 0;
-  }
-
-  p.x = lon;
-  p.y = lat;
-  gauss.inverse.apply(this, [p]);
-  p.x = adjust_lon(p.x + this.long0);
-  return p;
-};
-
-exports.names = ["Stereographic_North_Pole", "Oblique_Stereographic", "Polar_Stereographic", "sterea","Oblique Stereographic Alternative"];
-
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var D2R = 0.01745329251994329577;
-var tmerc = __webpack_require__(26);
-exports.dependsOn = 'tmerc';
-exports.init = function() {
-  if (!this.zone) {
-    return;
-  }
-  this.lat0 = 0;
-  this.long0 = ((6 * Math.abs(this.zone)) - 183) * D2R;
-  this.x0 = 500000;
-  this.y0 = this.utmSouth ? 10000000 : 0;
-  this.k0 = 0.9996;
-
-  tmerc.init.apply(this);
-  this.forward = tmerc.forward;
-  this.inverse = tmerc.inverse;
-};
-exports.names = ["Universal Transverse Mercator System", "utm"];
-
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var projs = [
-  __webpack_require__(26),
-  __webpack_require__(63),
-  __webpack_require__(62),
-  __webpack_require__(59),
-  __webpack_require__(58),
-  __webpack_require__(57),
-  __webpack_require__(56),
-  __webpack_require__(55),
-  __webpack_require__(54),
-  __webpack_require__(53),
-  __webpack_require__(52),
-  __webpack_require__(51),
-  __webpack_require__(50),
-  __webpack_require__(48),
-  __webpack_require__(47),
-  __webpack_require__(46),
-  __webpack_require__(45),
-  __webpack_require__(44),
-  __webpack_require__(41),
-  __webpack_require__(40),
-  __webpack_require__(39),
-  __webpack_require__(38)
-];
-module.exports = function(proj4){
-  projs.forEach(function(proj){
-    proj4.Proj.projections.add(proj);
-  });
-};
-
-/***/ }),
-/* 65 */
-/***/ (function(module) {
-
-module.exports = {"_from":"proj4@2.3.15","_id":"proj4@2.3.15","_inBundle":false,"_integrity":"sha1-WtBui8owvg/6OJpJ5FZfUfBtCJ4=","_location":"/proj4","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"proj4@2.3.15","name":"proj4","escapedName":"proj4","rawSpec":"2.3.15","saveSpec":null,"fetchSpec":"2.3.15"},"_requiredBy":["/"],"_resolved":"http://localhost:4873/proj4/-/proj4-2.3.15.tgz","_shasum":"5ad06e8bca30be0ffa389a49e4565f51f06d089e","_spec":"proj4@2.3.15","_where":"E:\\2018\\git\\iClient-JavaScript","author":"","bugs":{"url":"https://github.com/proj4js/proj4js/issues"},"bundleDependencies":false,"contributors":[{"name":"Mike Adair","email":"madair@dmsolutions.ca"},{"name":"Richard Greenwood","email":"rich@greenwoodmap.com"},{"name":"Calvin Metcalf","email":"calvin.metcalf@gmail.com"},{"name":"Richard Marsden","url":"http://www.winwaed.com"},{"name":"T. Mittan"},{"name":"D. Steinwand"},{"name":"S. Nelson"}],"dependencies":{"mgrs":"~0.0.2"},"deprecated":false,"description":"Proj4js is a JavaScript library to transform point coordinates from one coordinate system to another, including datum transformations.","devDependencies":{"browserify":"~12.0.1","chai":"~1.8.1","curl":"git://github.com/cujojs/curl.git","grunt":"~0.4.2","grunt-browserify":"~4.0.1","grunt-cli":"~0.1.13","grunt-contrib-connect":"~0.6.0","grunt-contrib-jshint":"~0.8.0","grunt-contrib-uglify":"~0.11.1","grunt-mocha-phantomjs":"~0.4.0","istanbul":"~0.2.4","mocha":"~1.17.1","tin":"~0.4.0"},"directories":{"test":"test","doc":"docs"},"homepage":"https://github.com/proj4js/proj4js#readme","jam":{"main":"dist/proj4.js","include":["dist/proj4.js","README.md","AUTHORS","LICENSE.md"]},"license":"MIT","main":"lib/index.js","name":"proj4","repository":{"type":"git","url":"git://github.com/proj4js/proj4js.git"},"scripts":{"test":"./node_modules/istanbul/lib/cli.js test ./node_modules/mocha/bin/_mocha test/test.js"},"version":"2.3.15"};
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var mgrs = __webpack_require__(27);
-
-function Point(x, y, z) {
-  if (!(this instanceof Point)) {
-    return new Point(x, y, z);
-  }
-  if (Array.isArray(x)) {
-    this.x = x[0];
-    this.y = x[1];
-    this.z = x[2] || 0.0;
-  } else if(typeof x === 'object') {
-    this.x = x.x;
-    this.y = x.y;
-    this.z = x.z || 0.0;
-  } else if (typeof x === 'string' && typeof y === 'undefined') {
-    var coords = x.split(',');
-    this.x = parseFloat(coords[0], 10);
-    this.y = parseFloat(coords[1], 10);
-    this.z = parseFloat(coords[2], 10) || 0.0;
-  } else {
-    this.x = x;
-    this.y = y;
-    this.z = z || 0.0;
-  }
-  console.warn('proj4.Point will be removed in version 3, use proj4.toPoint');
-}
-
-Point.fromMGRS = function(mgrsStr) {
-  return new Point(mgrs.toPoint(mgrsStr));
-};
-Point.prototype.toMGRS = function(accuracy) {
-  return mgrs.forward([this.x, this.y], accuracy);
-};
-module.exports = Point;
-
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports) {
-
-module.exports = function(crs, denorm, point) {
-  var xin = point.x,
-    yin = point.y,
-    zin = point.z || 0.0;
-  var v, t, i;
-  for (i = 0; i < 3; i++) {
-    if (denorm && i === 2 && point.z === undefined) {
-      continue;
-    }
-    if (i === 0) {
-      v = xin;
-      t = 'x';
-    }
-    else if (i === 1) {
-      v = yin;
-      t = 'y';
-    }
-    else {
-      v = zin;
-      t = 'z';
-    }
-    switch (crs.axis[i]) {
-    case 'e':
-      point[t] = v;
-      break;
-    case 'w':
-      point[t] = -v;
-      break;
-    case 'n':
-      point[t] = v;
-      break;
-    case 's':
-      point[t] = -v;
-      break;
-    case 'u':
-      if (point[t] !== undefined) {
-        point.z = v;
-      }
-      break;
-    case 'd':
-      if (point[t] !== undefined) {
-        point.z = -v;
-      }
-      break;
-    default:
-      //console.log("ERROR: unknow axis ("+crs.axis[i]+") - check definition of "+crs.projName);
-      return null;
-    }
-  }
-  return point;
-};
-
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports) {
-
-var PJD_3PARAM = 1;
-var PJD_7PARAM = 2;
-var PJD_GRIDSHIFT = 3;
-var PJD_NODATUM = 5; // WGS84 or equivalent
-var SRS_WGS84_SEMIMAJOR = 6378137; // only used in grid shift transforms
-var SRS_WGS84_ESQUARED = 0.006694379990141316; //DGR: 2012-07-29
-module.exports = function(source, dest, point) {
-  var wp, i, l;
-
-  function checkParams(fallback) {
-    return (fallback === PJD_3PARAM || fallback === PJD_7PARAM);
-  }
-  // Short cut if the datums are identical.
-  if (source.compare_datums(dest)) {
-    return point; // in this case, zero is sucess,
-    // whereas cs_compare_datums returns 1 to indicate TRUE
-    // confusing, should fix this
-  }
-
-  // Explicitly skip datum transform by setting 'datum=none' as parameter for either source or dest
-  if (source.datum_type === PJD_NODATUM || dest.datum_type === PJD_NODATUM) {
-    return point;
-  }
-
-  //DGR: 2012-07-29 : add nadgrids support (begin)
-  var src_a = source.a;
-  var src_es = source.es;
-
-  var dst_a = dest.a;
-  var dst_es = dest.es;
-
-  var fallback = source.datum_type;
-  // If this datum requires grid shifts, then apply it to geodetic coordinates.
-  if (fallback === PJD_GRIDSHIFT) {
-    if (this.apply_gridshift(source, 0, point) === 0) {
-      source.a = SRS_WGS84_SEMIMAJOR;
-      source.es = SRS_WGS84_ESQUARED;
-    }
-    else {
-      // try 3 or 7 params transformation or nothing ?
-      if (!source.datum_params) {
-        source.a = src_a;
-        source.es = source.es;
-        return point;
-      }
-      wp = 1;
-      for (i = 0, l = source.datum_params.length; i < l; i++) {
-        wp *= source.datum_params[i];
-      }
-      if (wp === 0) {
-        source.a = src_a;
-        source.es = source.es;
-        return point;
-      }
-      if (source.datum_params.length > 3) {
-        fallback = PJD_7PARAM;
-      }
-      else {
-        fallback = PJD_3PARAM;
-      }
-    }
-  }
-  if (dest.datum_type === PJD_GRIDSHIFT) {
-    dest.a = SRS_WGS84_SEMIMAJOR;
-    dest.es = SRS_WGS84_ESQUARED;
-  }
-  // Do we need to go through geocentric coordinates?
-  if (source.es !== dest.es || source.a !== dest.a || checkParams(fallback) || checkParams(dest.datum_type)) {
-    //DGR: 2012-07-29 : add nadgrids support (end)
-    // Convert to geocentric coordinates.
-    source.geodetic_to_geocentric(point);
-    // CHECK_RETURN;
-    // Convert between datums
-    if (checkParams(source.datum_type)) {
-      source.geocentric_to_wgs84(point);
-      // CHECK_RETURN;
-    }
-    if (checkParams(dest.datum_type)) {
-      dest.geocentric_from_wgs84(point);
-      // CHECK_RETURN;
-    }
-    // Convert back to geodetic coordinates
-    dest.geocentric_to_geodetic(point);
-    // CHECK_RETURN;
-  }
-  // Apply grid shift to destination if required
-  if (dest.datum_type === PJD_GRIDSHIFT) {
-    this.apply_gridshift(dest, 1, point);
-    // CHECK_RETURN;
-  }
-
-  source.a = src_a;
-  source.es = src_es;
-  dest.a = dst_a;
-  dest.es = dst_es;
-
-  return point;
-};
-
-
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports) {
-
-var HALF_PI = Math.PI/2;
-var PJD_3PARAM = 1;
-var PJD_7PARAM = 2;
-var PJD_GRIDSHIFT = 3;
-var PJD_WGS84 = 4; // WGS84 or equivalent
-var PJD_NODATUM = 5; // WGS84 or equivalent
-var SEC_TO_RAD = 4.84813681109535993589914102357e-6;
-var AD_C = 1.0026000;
-var COS_67P5 = 0.38268343236508977;
-var datum = function(proj) {
-  if (!(this instanceof datum)) {
-    return new datum(proj);
-  }
-  this.datum_type = PJD_WGS84; //default setting
-  if (!proj) {
-    return;
-  }
-  if (proj.datumCode && proj.datumCode === 'none') {
-    this.datum_type = PJD_NODATUM;
-  }
-
-  if (proj.datum_params) {
-    this.datum_params = proj.datum_params.map(parseFloat);
-    if (this.datum_params[0] !== 0 || this.datum_params[1] !== 0 || this.datum_params[2] !== 0) {
-      this.datum_type = PJD_3PARAM;
-    }
-    if (this.datum_params.length > 3) {
-      if (this.datum_params[3] !== 0 || this.datum_params[4] !== 0 || this.datum_params[5] !== 0 || this.datum_params[6] !== 0) {
-        this.datum_type = PJD_7PARAM;
-        this.datum_params[3] *= SEC_TO_RAD;
-        this.datum_params[4] *= SEC_TO_RAD;
-        this.datum_params[5] *= SEC_TO_RAD;
-        this.datum_params[6] = (this.datum_params[6] / 1000000.0) + 1.0;
-      }
-    }
-  }
-
-  // DGR 2011-03-21 : nadgrids support
-  this.datum_type = proj.grids ? PJD_GRIDSHIFT : this.datum_type;
-
-  this.a = proj.a; //datum object also uses these values
-  this.b = proj.b;
-  this.es = proj.es;
-  this.ep2 = proj.ep2;
-  if (this.datum_type === PJD_GRIDSHIFT) {
-    this.grids = proj.grids;
-  }
-};
-datum.prototype = {
-
-
-  /****************************************************************/
-  // cs_compare_datums()
-  //   Returns TRUE if the two datums match, otherwise FALSE.
-  compare_datums: function(dest) {
-    if (this.datum_type !== dest.datum_type) {
-      return false; // false, datums are not equal
-    }
-    else if (this.a !== dest.a || Math.abs(this.es - dest.es) > 0.000000000050) {
-      // the tolerence for es is to ensure that GRS80 and WGS84
-      // are considered identical
-      return false;
-    }
-    else if (this.datum_type === PJD_3PARAM) {
-      return (this.datum_params[0] === dest.datum_params[0] && this.datum_params[1] === dest.datum_params[1] && this.datum_params[2] === dest.datum_params[2]);
-    }
-    else if (this.datum_type === PJD_7PARAM) {
-      return (this.datum_params[0] === dest.datum_params[0] && this.datum_params[1] === dest.datum_params[1] && this.datum_params[2] === dest.datum_params[2] && this.datum_params[3] === dest.datum_params[3] && this.datum_params[4] === dest.datum_params[4] && this.datum_params[5] === dest.datum_params[5] && this.datum_params[6] === dest.datum_params[6]);
-    }
-    else if (this.datum_type === PJD_GRIDSHIFT || dest.datum_type === PJD_GRIDSHIFT) {
-      //alert("ERROR: Grid shift transformations are not implemented.");
-      //return false
-      //DGR 2012-07-29 lazy ...
-      return this.nadgrids === dest.nadgrids;
-    }
-    else {
-      return true; // datums are equal
-    }
-  }, // cs_compare_datums()
-
-  /*
-   * The function Convert_Geodetic_To_Geocentric converts geodetic coordinates
-   * (latitude, longitude, and height) to geocentric coordinates (X, Y, Z),
-   * according to the current ellipsoid parameters.
-   *
-   *    Latitude  : Geodetic latitude in radians                     (input)
-   *    Longitude : Geodetic longitude in radians                    (input)
-   *    Height    : Geodetic height, in meters                       (input)
-   *    X         : Calculated Geocentric X coordinate, in meters    (output)
-   *    Y         : Calculated Geocentric Y coordinate, in meters    (output)
-   *    Z         : Calculated Geocentric Z coordinate, in meters    (output)
-   *
-   */
-  geodetic_to_geocentric: function(p) {
-    var Longitude = p.x;
-    var Latitude = p.y;
-    var Height = p.z ? p.z : 0; //Z value not always supplied
-    var X; // output
-    var Y;
-    var Z;
-
-    var Error_Code = 0; //  GEOCENT_NO_ERROR;
-    var Rn; /*  Earth radius at location  */
-    var Sin_Lat; /*  Math.sin(Latitude)  */
-    var Sin2_Lat; /*  Square of Math.sin(Latitude)  */
-    var Cos_Lat; /*  Math.cos(Latitude)  */
-
-    /*
-     ** Don't blow up if Latitude is just a little out of the value
-     ** range as it may just be a rounding issue.  Also removed longitude
-     ** test, it should be wrapped by Math.cos() and Math.sin().  NFW for PROJ.4, Sep/2001.
-     */
-    if (Latitude < -HALF_PI && Latitude > -1.001 * HALF_PI) {
-      Latitude = -HALF_PI;
-    }
-    else if (Latitude > HALF_PI && Latitude < 1.001 * HALF_PI) {
-      Latitude = HALF_PI;
-    }
-    else if ((Latitude < -HALF_PI) || (Latitude > HALF_PI)) {
-      /* Latitude out of range */
-      //..reportError('geocent:lat out of range:' + Latitude);
-      return null;
-    }
-
-    if (Longitude > Math.PI) {
-      Longitude -= (2 * Math.PI);
-    }
-    Sin_Lat = Math.sin(Latitude);
-    Cos_Lat = Math.cos(Latitude);
-    Sin2_Lat = Sin_Lat * Sin_Lat;
-    Rn = this.a / (Math.sqrt(1.0e0 - this.es * Sin2_Lat));
-    X = (Rn + Height) * Cos_Lat * Math.cos(Longitude);
-    Y = (Rn + Height) * Cos_Lat * Math.sin(Longitude);
-    Z = ((Rn * (1 - this.es)) + Height) * Sin_Lat;
-
-    p.x = X;
-    p.y = Y;
-    p.z = Z;
-    return Error_Code;
-  }, // cs_geodetic_to_geocentric()
-
-
-  geocentric_to_geodetic: function(p) {
-    /* local defintions and variables */
-    /* end-criterium of loop, accuracy of sin(Latitude) */
-    var genau = 1e-12;
-    var genau2 = (genau * genau);
-    var maxiter = 30;
-
-    var P; /* distance between semi-minor axis and location */
-    var RR; /* distance between center and location */
-    var CT; /* sin of geocentric latitude */
-    var ST; /* cos of geocentric latitude */
-    var RX;
-    var RK;
-    var RN; /* Earth radius at location */
-    var CPHI0; /* cos of start or old geodetic latitude in iterations */
-    var SPHI0; /* sin of start or old geodetic latitude in iterations */
-    var CPHI; /* cos of searched geodetic latitude */
-    var SPHI; /* sin of searched geodetic latitude */
-    var SDPHI; /* end-criterium: addition-theorem of sin(Latitude(iter)-Latitude(iter-1)) */
-    var At_Pole; /* indicates location is in polar region */
-    var iter; /* # of continous iteration, max. 30 is always enough (s.a.) */
-
-    var X = p.x;
-    var Y = p.y;
-    var Z = p.z ? p.z : 0.0; //Z value not always supplied
-    var Longitude;
-    var Latitude;
-    var Height;
-
-    At_Pole = false;
-    P = Math.sqrt(X * X + Y * Y);
-    RR = Math.sqrt(X * X + Y * Y + Z * Z);
-
-    /*      special cases for latitude and longitude */
-    if (P / this.a < genau) {
-
-      /*  special case, if P=0. (X=0., Y=0.) */
-      At_Pole = true;
-      Longitude = 0.0;
-
-      /*  if (X,Y,Z)=(0.,0.,0.) then Height becomes semi-minor axis
-       *  of ellipsoid (=center of mass), Latitude becomes PI/2 */
-      if (RR / this.a < genau) {
-        Latitude = HALF_PI;
-        Height = -this.b;
-        return;
-      }
-    }
-    else {
-      /*  ellipsoidal (geodetic) longitude
-       *  interval: -PI < Longitude <= +PI */
-      Longitude = Math.atan2(Y, X);
-    }
-
-    /* --------------------------------------------------------------
-     * Following iterative algorithm was developped by
-     * "Institut for Erdmessung", University of Hannover, July 1988.
-     * Internet: www.ife.uni-hannover.de
-     * Iterative computation of CPHI,SPHI and Height.
-     * Iteration of CPHI and SPHI to 10**-12 radian resp.
-     * 2*10**-7 arcsec.
-     * --------------------------------------------------------------
-     */
-    CT = Z / RR;
-    ST = P / RR;
-    RX = 1.0 / Math.sqrt(1.0 - this.es * (2.0 - this.es) * ST * ST);
-    CPHI0 = ST * (1.0 - this.es) * RX;
-    SPHI0 = CT * RX;
-    iter = 0;
-
-    /* loop to find sin(Latitude) resp. Latitude
-     * until |sin(Latitude(iter)-Latitude(iter-1))| < genau */
-    do {
-      iter++;
-      RN = this.a / Math.sqrt(1.0 - this.es * SPHI0 * SPHI0);
-
-      /*  ellipsoidal (geodetic) height */
-      Height = P * CPHI0 + Z * SPHI0 - RN * (1.0 - this.es * SPHI0 * SPHI0);
-
-      RK = this.es * RN / (RN + Height);
-      RX = 1.0 / Math.sqrt(1.0 - RK * (2.0 - RK) * ST * ST);
-      CPHI = ST * (1.0 - RK) * RX;
-      SPHI = CT * RX;
-      SDPHI = SPHI * CPHI0 - CPHI * SPHI0;
-      CPHI0 = CPHI;
-      SPHI0 = SPHI;
-    }
-    while (SDPHI * SDPHI > genau2 && iter < maxiter);
-
-    /*      ellipsoidal (geodetic) latitude */
-    Latitude = Math.atan(SPHI / Math.abs(CPHI));
-
-    p.x = Longitude;
-    p.y = Latitude;
-    p.z = Height;
-    return p;
-  }, // cs_geocentric_to_geodetic()
-
-  /** Convert_Geocentric_To_Geodetic
-   * The method used here is derived from 'An Improved Algorithm for
-   * Geocentric to Geodetic Coordinate Conversion', by Ralph Toms, Feb 1996
-   */
-  geocentric_to_geodetic_noniter: function(p) {
-    var X = p.x;
-    var Y = p.y;
-    var Z = p.z ? p.z : 0; //Z value not always supplied
-    var Longitude;
-    var Latitude;
-    var Height;
-
-    var W; /* distance from Z axis */
-    var W2; /* square of distance from Z axis */
-    var T0; /* initial estimate of vertical component */
-    var T1; /* corrected estimate of vertical component */
-    var S0; /* initial estimate of horizontal component */
-    var S1; /* corrected estimate of horizontal component */
-    var Sin_B0; /* Math.sin(B0), B0 is estimate of Bowring aux variable */
-    var Sin3_B0; /* cube of Math.sin(B0) */
-    var Cos_B0; /* Math.cos(B0) */
-    var Sin_p1; /* Math.sin(phi1), phi1 is estimated latitude */
-    var Cos_p1; /* Math.cos(phi1) */
-    var Rn; /* Earth radius at location */
-    var Sum; /* numerator of Math.cos(phi1) */
-    var At_Pole; /* indicates location is in polar region */
-
-    X = parseFloat(X); // cast from string to float
-    Y = parseFloat(Y);
-    Z = parseFloat(Z);
-
-    At_Pole = false;
-    if (X !== 0.0) {
-      Longitude = Math.atan2(Y, X);
-    }
-    else {
-      if (Y > 0) {
-        Longitude = HALF_PI;
-      }
-      else if (Y < 0) {
-        Longitude = -HALF_PI;
-      }
-      else {
-        At_Pole = true;
-        Longitude = 0.0;
-        if (Z > 0.0) { /* north pole */
-          Latitude = HALF_PI;
-        }
-        else if (Z < 0.0) { /* south pole */
-          Latitude = -HALF_PI;
-        }
-        else { /* center of earth */
-          Latitude = HALF_PI;
-          Height = -this.b;
-          return;
-        }
-      }
-    }
-    W2 = X * X + Y * Y;
-    W = Math.sqrt(W2);
-    T0 = Z * AD_C;
-    S0 = Math.sqrt(T0 * T0 + W2);
-    Sin_B0 = T0 / S0;
-    Cos_B0 = W / S0;
-    Sin3_B0 = Sin_B0 * Sin_B0 * Sin_B0;
-    T1 = Z + this.b * this.ep2 * Sin3_B0;
-    Sum = W - this.a * this.es * Cos_B0 * Cos_B0 * Cos_B0;
-    S1 = Math.sqrt(T1 * T1 + Sum * Sum);
-    Sin_p1 = T1 / S1;
-    Cos_p1 = Sum / S1;
-    Rn = this.a / Math.sqrt(1.0 - this.es * Sin_p1 * Sin_p1);
-    if (Cos_p1 >= COS_67P5) {
-      Height = W / Cos_p1 - Rn;
-    }
-    else if (Cos_p1 <= -COS_67P5) {
-      Height = W / -Cos_p1 - Rn;
-    }
-    else {
-      Height = Z / Sin_p1 + Rn * (this.es - 1.0);
-    }
-    if (At_Pole === false) {
-      Latitude = Math.atan(Sin_p1 / Cos_p1);
-    }
-
-    p.x = Longitude;
-    p.y = Latitude;
-    p.z = Height;
-    return p;
-  }, // geocentric_to_geodetic_noniter()
-
-  /****************************************************************/
-  // pj_geocentic_to_wgs84( p )
-  //  p = point to transform in geocentric coordinates (x,y,z)
-  geocentric_to_wgs84: function(p) {
-
-    if (this.datum_type === PJD_3PARAM) {
-      // if( x[io] === HUGE_VAL )
-      //    continue;
-      p.x += this.datum_params[0];
-      p.y += this.datum_params[1];
-      p.z += this.datum_params[2];
-
-    }
-    else if (this.datum_type === PJD_7PARAM) {
-      var Dx_BF = this.datum_params[0];
-      var Dy_BF = this.datum_params[1];
-      var Dz_BF = this.datum_params[2];
-      var Rx_BF = this.datum_params[3];
-      var Ry_BF = this.datum_params[4];
-      var Rz_BF = this.datum_params[5];
-      var M_BF = this.datum_params[6];
-      // if( x[io] === HUGE_VAL )
-      //    continue;
-      var x_out = M_BF * (p.x - Rz_BF * p.y + Ry_BF * p.z) + Dx_BF;
-      var y_out = M_BF * (Rz_BF * p.x + p.y - Rx_BF * p.z) + Dy_BF;
-      var z_out = M_BF * (-Ry_BF * p.x + Rx_BF * p.y + p.z) + Dz_BF;
-      p.x = x_out;
-      p.y = y_out;
-      p.z = z_out;
-    }
-  }, // cs_geocentric_to_wgs84
-
-  /****************************************************************/
-  // pj_geocentic_from_wgs84()
-  //  coordinate system definition,
-  //  point to transform in geocentric coordinates (x,y,z)
-  geocentric_from_wgs84: function(p) {
-
-    if (this.datum_type === PJD_3PARAM) {
-      //if( x[io] === HUGE_VAL )
-      //    continue;
-      p.x -= this.datum_params[0];
-      p.y -= this.datum_params[1];
-      p.z -= this.datum_params[2];
-
-    }
-    else if (this.datum_type === PJD_7PARAM) {
-      var Dx_BF = this.datum_params[0];
-      var Dy_BF = this.datum_params[1];
-      var Dz_BF = this.datum_params[2];
-      var Rx_BF = this.datum_params[3];
-      var Ry_BF = this.datum_params[4];
-      var Rz_BF = this.datum_params[5];
-      var M_BF = this.datum_params[6];
-      var x_tmp = (p.x - Dx_BF) / M_BF;
-      var y_tmp = (p.y - Dy_BF) / M_BF;
-      var z_tmp = (p.z - Dz_BF) / M_BF;
-      //if( x[io] === HUGE_VAL )
-      //    continue;
-
-      p.x = x_tmp + Rz_BF * y_tmp - Ry_BF * z_tmp;
-      p.y = -Rz_BF * x_tmp + y_tmp + Rx_BF * z_tmp;
-      p.z = Ry_BF * x_tmp - Rx_BF * y_tmp + z_tmp;
-    } //cs_geocentric_from_wgs84()
-  }
-};
-
-/** point object, nothing fancy, just allows values to be
-    passed back and forth by reference rather than by value.
-    Other point classes may be used as long as they have
-    x and y properties, which will get modified in the transform method.
-*/
-module.exports = datum;
-
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports) {
-
-exports.MERIT = {
-  a: 6378137.0,
-  rf: 298.257,
-  ellipseName: "MERIT 1983"
-};
-exports.SGS85 = {
-  a: 6378136.0,
-  rf: 298.257,
-  ellipseName: "Soviet Geodetic System 85"
-};
-exports.GRS80 = {
-  a: 6378137.0,
-  rf: 298.257222101,
-  ellipseName: "GRS 1980(IUGG, 1980)"
-};
-exports.IAU76 = {
-  a: 6378140.0,
-  rf: 298.257,
-  ellipseName: "IAU 1976"
-};
-exports.airy = {
-  a: 6377563.396,
-  b: 6356256.910,
-  ellipseName: "Airy 1830"
-};
-exports.APL4 = {
-  a: 6378137,
-  rf: 298.25,
-  ellipseName: "Appl. Physics. 1965"
-};
-exports.NWL9D = {
-  a: 6378145.0,
-  rf: 298.25,
-  ellipseName: "Naval Weapons Lab., 1965"
-};
-exports.mod_airy = {
-  a: 6377340.189,
-  b: 6356034.446,
-  ellipseName: "Modified Airy"
-};
-exports.andrae = {
-  a: 6377104.43,
-  rf: 300.0,
-  ellipseName: "Andrae 1876 (Den., Iclnd.)"
-};
-exports.aust_SA = {
-  a: 6378160.0,
-  rf: 298.25,
-  ellipseName: "Australian Natl & S. Amer. 1969"
-};
-exports.GRS67 = {
-  a: 6378160.0,
-  rf: 298.2471674270,
-  ellipseName: "GRS 67(IUGG 1967)"
-};
-exports.bessel = {
-  a: 6377397.155,
-  rf: 299.1528128,
-  ellipseName: "Bessel 1841"
-};
-exports.bess_nam = {
-  a: 6377483.865,
-  rf: 299.1528128,
-  ellipseName: "Bessel 1841 (Namibia)"
-};
-exports.clrk66 = {
-  a: 6378206.4,
-  b: 6356583.8,
-  ellipseName: "Clarke 1866"
-};
-exports.clrk80 = {
-  a: 6378249.145,
-  rf: 293.4663,
-  ellipseName: "Clarke 1880 mod."
-};
-exports.clrk58 = {
-  a: 6378293.645208759,
-  rf: 294.2606763692654,
-  ellipseName: "Clarke 1858"
-};
-exports.CPM = {
-  a: 6375738.7,
-  rf: 334.29,
-  ellipseName: "Comm. des Poids et Mesures 1799"
-};
-exports.delmbr = {
-  a: 6376428.0,
-  rf: 311.5,
-  ellipseName: "Delambre 1810 (Belgium)"
-};
-exports.engelis = {
-  a: 6378136.05,
-  rf: 298.2566,
-  ellipseName: "Engelis 1985"
-};
-exports.evrst30 = {
-  a: 6377276.345,
-  rf: 300.8017,
-  ellipseName: "Everest 1830"
-};
-exports.evrst48 = {
-  a: 6377304.063,
-  rf: 300.8017,
-  ellipseName: "Everest 1948"
-};
-exports.evrst56 = {
-  a: 6377301.243,
-  rf: 300.8017,
-  ellipseName: "Everest 1956"
-};
-exports.evrst69 = {
-  a: 6377295.664,
-  rf: 300.8017,
-  ellipseName: "Everest 1969"
-};
-exports.evrstSS = {
-  a: 6377298.556,
-  rf: 300.8017,
-  ellipseName: "Everest (Sabah & Sarawak)"
-};
-exports.fschr60 = {
-  a: 6378166.0,
-  rf: 298.3,
-  ellipseName: "Fischer (Mercury Datum) 1960"
-};
-exports.fschr60m = {
-  a: 6378155.0,
-  rf: 298.3,
-  ellipseName: "Fischer 1960"
-};
-exports.fschr68 = {
-  a: 6378150.0,
-  rf: 298.3,
-  ellipseName: "Fischer 1968"
-};
-exports.helmert = {
-  a: 6378200.0,
-  rf: 298.3,
-  ellipseName: "Helmert 1906"
-};
-exports.hough = {
-  a: 6378270.0,
-  rf: 297.0,
-  ellipseName: "Hough"
-};
-exports.intl = {
-  a: 6378388.0,
-  rf: 297.0,
-  ellipseName: "International 1909 (Hayford)"
-};
-exports.kaula = {
-  a: 6378163.0,
-  rf: 298.24,
-  ellipseName: "Kaula 1961"
-};
-exports.lerch = {
-  a: 6378139.0,
-  rf: 298.257,
-  ellipseName: "Lerch 1979"
-};
-exports.mprts = {
-  a: 6397300.0,
-  rf: 191.0,
-  ellipseName: "Maupertius 1738"
-};
-exports.new_intl = {
-  a: 6378157.5,
-  b: 6356772.2,
-  ellipseName: "New International 1967"
-};
-exports.plessis = {
-  a: 6376523.0,
-  rf: 6355863.0,
-  ellipseName: "Plessis 1817 (France)"
-};
-exports.krass = {
-  a: 6378245.0,
-  rf: 298.3,
-  ellipseName: "Krassovsky, 1942"
-};
-exports.SEasia = {
-  a: 6378155.0,
-  b: 6356773.3205,
-  ellipseName: "Southeast Asia"
-};
-exports.walbeck = {
-  a: 6376896.0,
-  b: 6355834.8467,
-  ellipseName: "Walbeck"
-};
-exports.WGS60 = {
-  a: 6378165.0,
-  rf: 298.3,
-  ellipseName: "WGS 60"
-};
-exports.WGS66 = {
-  a: 6378145.0,
-  rf: 298.25,
-  ellipseName: "WGS 66"
-};
-exports.WGS7 = {
-  a: 6378135.0,
-  rf: 298.26,
-  ellipseName: "WGS 72"
-};
-exports.WGS84 = {
-  a: 6378137.0,
-  rf: 298.257223563,
-  ellipseName: "WGS 84"
-};
-exports.sphere = {
-  a: 6370997.0,
-  b: 6370997.0,
-  ellipseName: "Normal Sphere (r=6370997)"
-};
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports) {
-
-exports.wgs84 = {
-  towgs84: "0,0,0",
-  ellipse: "WGS84",
-  datumName: "WGS84"
-};
-exports.ch1903 = {
-  towgs84: "674.374,15.056,405.346",
-  ellipse: "bessel",
-  datumName: "swiss"
-};
-exports.ggrs87 = {
-  towgs84: "-199.87,74.79,246.62",
-  ellipse: "GRS80",
-  datumName: "Greek_Geodetic_Reference_System_1987"
-};
-exports.nad83 = {
-  towgs84: "0,0,0",
-  ellipse: "GRS80",
-  datumName: "North_American_Datum_1983"
-};
-exports.nad27 = {
-  nadgrids: "@conus,@alaska,@ntv2_0.gsb,@ntv1_can.dat",
-  ellipse: "clrk66",
-  datumName: "North_American_Datum_1927"
-};
-exports.potsdam = {
-  towgs84: "606.0,23.0,413.0",
-  ellipse: "bessel",
-  datumName: "Potsdam Rauenberg 1950 DHDN"
-};
-exports.carthage = {
-  towgs84: "-263.0,6.0,431.0",
-  ellipse: "clark80",
-  datumName: "Carthage 1934 Tunisia"
-};
-exports.hermannskogel = {
-  towgs84: "653.0,-212.0,449.0",
-  ellipse: "bessel",
-  datumName: "Hermannskogel"
-};
-exports.ire65 = {
-  towgs84: "482.530,-130.596,564.557,-1.042,-0.214,-0.631,8.15",
-  ellipse: "mod_airy",
-  datumName: "Ireland 1965"
-};
-exports.rassadiran = {
-  towgs84: "-133.63,-157.5,-158.62",
-  ellipse: "intl",
-  datumName: "Rassadiran"
-};
-exports.nzgd49 = {
-  towgs84: "59.47,-5.04,187.44,0.47,-0.1,1.024,-4.5993",
-  ellipse: "intl",
-  datumName: "New Zealand Geodetic Datum 1949"
-};
-exports.osgb36 = {
-  towgs84: "446.448,-125.157,542.060,0.1502,0.2470,0.8421,-20.4894",
-  ellipse: "airy",
-  datumName: "Airy 1830"
-};
-exports.s_jtsk = {
-  towgs84: "589,76,480",
-  ellipse: 'bessel',
-  datumName: 'S-JTSK (Ferro)'
-};
-exports.beduaram = {
-  towgs84: '-106,-87,188',
-  ellipse: 'clrk80',
-  datumName: 'Beduaram'
-};
-exports.gunung_segara = {
-  towgs84: '-403,684,41',
-  ellipse: 'bessel',
-  datumName: 'Gunung Segara Jakarta'
-};
-exports.rnb72 = {
-  towgs84: "106.869,-52.2978,103.724,-0.33657,0.456955,-1.84218,1",
-  ellipse: "intl",
-  datumName: "Reseau National Belge 1972"
-};
-
-/***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Datum = __webpack_require__(71);
-var Ellipsoid = __webpack_require__(70);
-var extend = __webpack_require__(18);
-var datum = __webpack_require__(69);
-var EPSLN = 1.0e-10;
-// ellipoid pj_set_ell.c
-var SIXTH = 0.1666666666666666667;
-/* 1/6 */
-var RA4 = 0.04722222222222222222;
-/* 17/360 */
-var RA6 = 0.02215608465608465608;
-module.exports = function(json) {
-  // DGR 2011-03-20 : nagrids -> nadgrids
-  if (json.datumCode && json.datumCode !== 'none') {
-    var datumDef = Datum[json.datumCode];
-    if (datumDef) {
-      json.datum_params = datumDef.towgs84 ? datumDef.towgs84.split(',') : null;
-      json.ellps = datumDef.ellipse;
-      json.datumName = datumDef.datumName ? datumDef.datumName : json.datumCode;
-    }
-  }
-  if (!json.a) { // do we have an ellipsoid?
-    var ellipse = Ellipsoid[json.ellps] ? Ellipsoid[json.ellps] : Ellipsoid.WGS84;
-    extend(json, ellipse);
-  }
-  if (json.rf && !json.b) {
-    json.b = (1.0 - 1.0 / json.rf) * json.a;
-  }
-  if (json.rf === 0 || Math.abs(json.a - json.b) < EPSLN) {
-    json.sphere = true;
-    json.b = json.a;
-  }
-  json.a2 = json.a * json.a; // used in geocentric
-  json.b2 = json.b * json.b; // used in geocentric
-  json.es = (json.a2 - json.b2) / json.a2; // e ^ 2
-  json.e = Math.sqrt(json.es); // eccentricity
-  if (json.R_A) {
-    json.a *= 1 - json.es * (SIXTH + json.es * (RA4 + json.es * RA6));
-    json.a2 = json.a * json.a;
-    json.b2 = json.b * json.b;
-    json.es = 0;
-  }
-  json.ep2 = (json.a2 - json.b2) / json.b2; // used in geocentric
-  if (!json.k0) {
-    json.k0 = 1.0; //default value
-  }
-  //DGR 2010-11-12: axis
-  if (!json.axis) {
-    json.axis = "enu";
-  }
-
-  if (!json.datum) {
-    json.datum = datum(json);
-  }
-  return json;
-};
-
-
-/***/ }),
-/* 73 */
-/***/ (function(module, exports) {
-
-exports.init = function() {
-  //no-op for longlat
-};
-
-function identity(pt) {
-  return pt;
-}
-exports.forward = identity;
-exports.inverse = identity;
-exports.names = ["longlat", "identity"];
-
-
-/***/ }),
-/* 74 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var msfnz = __webpack_require__(3);
-var HALF_PI = Math.PI/2;
-var EPSLN = 1.0e-10;
-var R2D = 57.29577951308232088;
-var adjust_lon = __webpack_require__(1);
-var FORTPI = Math.PI/4;
-var tsfnz = __webpack_require__(12);
-var phi2z = __webpack_require__(11);
-exports.init = function() {
-  var con = this.b / this.a;
-  this.es = 1 - con * con;
-  if(!('x0' in this)){
-    this.x0 = 0;
-  }
-  if(!('y0' in this)){
-    this.y0 = 0;
-  }
-  this.e = Math.sqrt(this.es);
-  if (this.lat_ts) {
-    if (this.sphere) {
-      this.k0 = Math.cos(this.lat_ts);
-    }
-    else {
-      this.k0 = msfnz(this.e, Math.sin(this.lat_ts), Math.cos(this.lat_ts));
-    }
-  }
-  else {
-    if (!this.k0) {
-      if (this.k) {
-        this.k0 = this.k;
-      }
-      else {
-        this.k0 = 1;
-      }
-    }
-  }
-};
-
-/* Mercator forward equations--mapping lat,long to x,y
-  --------------------------------------------------*/
-
-exports.forward = function(p) {
-  var lon = p.x;
-  var lat = p.y;
-  // convert to radians
-  if (lat * R2D > 90 && lat * R2D < -90 && lon * R2D > 180 && lon * R2D < -180) {
-    return null;
-  }
-
-  var x, y;
-  if (Math.abs(Math.abs(lat) - HALF_PI) <= EPSLN) {
-    return null;
-  }
-  else {
-    if (this.sphere) {
-      x = this.x0 + this.a * this.k0 * adjust_lon(lon - this.long0);
-      y = this.y0 + this.a * this.k0 * Math.log(Math.tan(FORTPI + 0.5 * lat));
-    }
-    else {
-      var sinphi = Math.sin(lat);
-      var ts = tsfnz(this.e, lat, sinphi);
-      x = this.x0 + this.a * this.k0 * adjust_lon(lon - this.long0);
-      y = this.y0 - this.a * this.k0 * Math.log(ts);
-    }
-    p.x = x;
-    p.y = y;
-    return p;
-  }
-};
-
-
-/* Mercator inverse equations--mapping x,y to lat/long
-  --------------------------------------------------*/
-exports.inverse = function(p) {
-
-  var x = p.x - this.x0;
-  var y = p.y - this.y0;
-  var lon, lat;
-
-  if (this.sphere) {
-    lat = HALF_PI - 2 * Math.atan(Math.exp(-y / (this.a * this.k0)));
-  }
-  else {
-    var ts = Math.exp(-y / (this.a * this.k0));
-    lat = phi2z(this.e, ts);
-    if (lat === -9999) {
-      return null;
-    }
-  }
-  lon = adjust_lon(this.long0 + x / (this.a * this.k0));
-
-  p.x = lon;
-  p.y = lat;
-  return p;
-};
-
-exports.names = ["Mercator", "Popular Visualisation Pseudo Mercator", "Mercator_1SP", "Mercator_Auxiliary_Sphere", "merc"];
-
-
-/***/ }),
-/* 75 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var projs = [
-  __webpack_require__(74),
-  __webpack_require__(73)
-];
-var names = {};
-var projStore = [];
-
-function add(proj, i) {
-  var len = projStore.length;
-  if (!proj.names) {
-    console.log(i);
-    return true;
-  }
-  projStore[len] = proj;
-  proj.names.forEach(function(n) {
-    names[n.toLowerCase()] = len;
-  });
-  return this;
-}
-
-exports.add = add;
-
-exports.get = function(name) {
-  if (!name) {
-    return false;
-  }
-  var n = name.toLowerCase();
-  if (typeof names[n] !== 'undefined' && projStore[names[n]]) {
-    return projStore[names[n]];
-  }
-};
-exports.start = function() {
-  projs.forEach(add);
-};
-
-
-/***/ }),
-/* 76 */
-/***/ (function(module, exports) {
-
-exports.ft = {to_meter: 0.3048};
-exports['us-ft'] = {to_meter: 1200 / 3937};
-
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports) {
-
-exports.greenwich = 0.0; //"0dE",
-exports.lisbon = -9.131906111111; //"9d07'54.862\"W",
-exports.paris = 2.337229166667; //"2d20'14.025\"E",
-exports.bogota = -74.080916666667; //"74d04'51.3\"W",
-exports.madrid = -3.687938888889; //"3d41'16.58\"W",
-exports.rome = 12.452333333333; //"12d27'8.4\"E",
-exports.bern = 7.439583333333; //"7d26'22.5\"E",
-exports.jakarta = 106.807719444444; //"106d48'27.79\"E",
-exports.ferro = -17.666666666667; //"17d40'W",
-exports.brussels = 4.367975; //"4d22'4.71\"E",
-exports.stockholm = 18.058277777778; //"18d3'29.8\"E",
-exports.athens = 23.7163375; //"23d42'58.815\"E",
-exports.oslo = 10.722916666667; //"10d43'22.5\"E"
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports) {
-
-module.exports = function(defs) {
-  defs('EPSG:4326', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
-  defs('EPSG:4269', "+title=NAD83 (long/lat) +proj=longlat +a=6378137.0 +b=6356752.31414036 +ellps=GRS80 +datum=NAD83 +units=degrees");
-  defs('EPSG:3857', "+title=WGS 84 / Pseudo-Mercator +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs");
-
-  defs.WGS84 = defs['EPSG:4326'];
-  defs['EPSG:3785'] = defs['EPSG:3857']; // maintain backward compat, official code is 3857
-  defs.GOOGLE = defs['EPSG:3857'];
-  defs['EPSG:900913'] = defs['EPSG:3857'];
-  defs['EPSG:102113'] = defs['EPSG:3857'];
-};
-
-
-/***/ }),
-/* 79 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var defs = __webpack_require__(32);
-var wkt = __webpack_require__(30);
-var projStr = __webpack_require__(31);
-function testObj(code){
-  return typeof code === 'string';
-}
-function testDef(code){
-  return code in defs;
-}
-function testWKT(code){
-  var codeWords = ['GEOGCS','GEOCCS','PROJCS','LOCAL_CS'];
-  return codeWords.reduce(function(a,b){
-    return a+1+code.indexOf(b);
-  },0);
-}
-function testProj(code){
-  return code[0] === '+';
-}
-function parse(code){
-  if (testObj(code)) {
-    //check to see if this is a WKT string
-    if (testDef(code)) {
-      return defs[code];
-    }
-    else if (testWKT(code)) {
-      return wkt(code);
-    }
-    else if (testProj(code)) {
-      return projStr(code);
-    }
-  }else{
-    return code;
-  }
-}
-
-module.exports = parse;
-
-/***/ }),
-/* 80 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var proj = __webpack_require__(19);
-var transform = __webpack_require__(29);
-var wgs84 = proj('WGS84');
-
-function transformer(from, to, coords) {
-  var transformedArray;
-  if (Array.isArray(coords)) {
-    transformedArray = transform(from, to, coords);
-    if (coords.length === 3) {
-      return [transformedArray.x, transformedArray.y, transformedArray.z];
-    }
-    else {
-      return [transformedArray.x, transformedArray.y];
-    }
-  }
-  else {
-    return transform(from, to, coords);
-  }
-}
-
-function checkProj(item) {
-  if (item instanceof proj) {
-    return item;
-  }
-  if (item.oProj) {
-    return item.oProj;
-  }
-  return proj(item);
-}
-function proj4(fromProj, toProj, coord) {
-  fromProj = checkProj(fromProj);
-  var single = false;
-  var obj;
-  if (typeof toProj === 'undefined') {
-    toProj = fromProj;
-    fromProj = wgs84;
-    single = true;
-  }
-  else if (typeof toProj.x !== 'undefined' || Array.isArray(toProj)) {
-    coord = toProj;
-    toProj = fromProj;
-    fromProj = wgs84;
-    single = true;
-  }
-  toProj = checkProj(toProj);
-  if (coord) {
-    return transformer(fromProj, toProj, coord);
-  }
-  else {
-    obj = {
-      forward: function(coords) {
-        return transformer(fromProj, toProj, coords);
-      },
-      inverse: function(coords) {
-        return transformer(toProj, fromProj, coords);
-      }
-    };
-    if (single) {
-      obj.oProj = toProj;
-    }
-    return obj;
-  }
-}
-module.exports = proj4;
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports) {
-
-function getObjectType(obj) {
-  return Object.prototype.toString.call(obj);
-}
-function isDate(obj) {
-  return getObjectType(obj) === '[object Date]';
-}
-function isString(obj) {
-  return getObjectType(obj) === '[object String]';
-}
-function isDateString(obj) {
-  return isString(obj) && !isNaN(Date.parse(obj))
-}
-function isNumber(obj) {
-  return typeof obj === 'number'
-}
-function parseDateFromString(str) {
-  return Date.parse(str)
-}
-module.exports = {
-  getObjectType: getObjectType,
-  isDate: isDate,
-  isString: isString,
-  isDateString: isDateString,
-  parseDateFromString: parseDateFromString,
-  isNumber: isNumber
-}
-
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports) {
-
-(function(self) {
-  'use strict';
-
-  // if __disableNativeFetch is set to true, the it will always polyfill fetch
-  // with Ajax.
-  if (!self.__disableNativeFetch && self.fetch) {
-    return
-  }
-
-  function normalizeName(name) {
-    if (typeof name !== 'string') {
-      name = String(name)
-    }
-    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
-      throw new TypeError('Invalid character in header field name')
-    }
-    return name.toLowerCase()
-  }
-
-  function normalizeValue(value) {
-    if (typeof value !== 'string') {
-      value = String(value)
-    }
-    return value
-  }
-
-  function Headers(headers) {
-    this.map = {}
-
-    if (headers instanceof Headers) {
-      headers.forEach(function(value, name) {
-        this.append(name, value)
-      }, this)
-
-    } else if (headers) {
-      Object.getOwnPropertyNames(headers).forEach(function(name) {
-        this.append(name, headers[name])
-      }, this)
-    }
-  }
-
-  Headers.prototype.append = function(name, value) {
-    name = normalizeName(name)
-    value = normalizeValue(value)
-    var list = this.map[name]
-    if (!list) {
-      list = []
-      this.map[name] = list
-    }
-    list.push(value)
-  }
-
-  Headers.prototype['delete'] = function(name) {
-    delete this.map[normalizeName(name)]
-  }
-
-  Headers.prototype.get = function(name) {
-    var values = this.map[normalizeName(name)]
-    return values ? values[0] : null
-  }
-
-  Headers.prototype.getAll = function(name) {
-    return this.map[normalizeName(name)] || []
-  }
-
-  Headers.prototype.has = function(name) {
-    return this.map.hasOwnProperty(normalizeName(name))
-  }
-
-  Headers.prototype.set = function(name, value) {
-    this.map[normalizeName(name)] = [normalizeValue(value)]
-  }
-
-  Headers.prototype.forEach = function(callback, thisArg) {
-    Object.getOwnPropertyNames(this.map).forEach(function(name) {
-      this.map[name].forEach(function(value) {
-        callback.call(thisArg, value, name, this)
-      }, this)
-    }, this)
-  }
-
-  function consumed(body) {
-    if (body.bodyUsed) {
-      return Promise.reject(new TypeError('Already read'))
-    }
-    body.bodyUsed = true
-  }
-
-  function fileReaderReady(reader) {
-    return new Promise(function(resolve, reject) {
-      reader.onload = function() {
-        resolve(reader.result)
-      }
-      reader.onerror = function() {
-        reject(reader.error)
-      }
-    })
-  }
-
-  function readBlobAsArrayBuffer(blob) {
-    var reader = new FileReader()
-    reader.readAsArrayBuffer(blob)
-    return fileReaderReady(reader)
-  }
-
-  function readBlobAsText(blob, options) {
-    var reader = new FileReader()
-    var contentType = options.headers.map['content-type'] ? options.headers.map['content-type'].toString() : ''
-    var regex = /charset\=[0-9a-zA-Z\-\_]*;?/
-    var _charset = blob.type.match(regex) || contentType.match(regex)
-    var args = [blob]
-
-    if(_charset) {
-      args.push(_charset[0].replace(/^charset\=/, '').replace(/;$/, ''))
-    }
-
-    reader.readAsText.apply(reader, args)
-    return fileReaderReady(reader)
-  }
-
-  var support = {
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
-      try {
-        new Blob();
-        return true
-      } catch(e) {
-        return false
-      }
-    })(),
-    formData: 'FormData' in self,
-    arrayBuffer: 'ArrayBuffer' in self
-  }
-
-  function Body() {
-    this.bodyUsed = false
-
-
-    this._initBody = function(body, options) {
-      this._bodyInit = body
-      if (typeof body === 'string') {
-        this._bodyText = body
-      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-        this._bodyBlob = body
-        this._options = options
-      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-        this._bodyFormData = body
-      } else if (!body) {
-        this._bodyText = ''
-      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
-        // Only support ArrayBuffers for POST method.
-        // Receiving ArrayBuffers happens via Blobs, instead.
-      } else {
-        throw new Error('unsupported BodyInit type')
-      }
-    }
-
-    if (support.blob) {
-      this.blob = function() {
-        var rejected = consumed(this)
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return Promise.resolve(this._bodyBlob)
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as blob')
-        } else {
-          return Promise.resolve(new Blob([this._bodyText]))
-        }
-      }
-
-      this.arrayBuffer = function() {
-        return this.blob().then(readBlobAsArrayBuffer)
-      }
-
-      this.text = function() {
-        var rejected = consumed(this)
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return readBlobAsText(this._bodyBlob, this._options)
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as text')
-        } else {
-          return Promise.resolve(this._bodyText)
-        }
-      }
-    } else {
-      this.text = function() {
-        var rejected = consumed(this)
-        return rejected ? rejected : Promise.resolve(this._bodyText)
-      }
-    }
-
-    if (support.formData) {
-      this.formData = function() {
-        return this.text().then(decode)
-      }
-    }
-
-    this.json = function() {
-      return this.text().then(JSON.parse)
-    }
-
-    return this
-  }
-
-  // HTTP methods whose capitalization should be normalized
-  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
-
-  function normalizeMethod(method) {
-    var upcased = method.toUpperCase()
-    return (methods.indexOf(upcased) > -1) ? upcased : method
-  }
-
-  function Request(input, options) {
-    options = options || {}
-    var body = options.body
-    if (Request.prototype.isPrototypeOf(input)) {
-      if (input.bodyUsed) {
-        throw new TypeError('Already read')
-      }
-      this.url = input.url
-      this.credentials = input.credentials
-      if (!options.headers) {
-        this.headers = new Headers(input.headers)
-      }
-      this.method = input.method
-      this.mode = input.mode
-      if (!body) {
-        body = input._bodyInit
-        input.bodyUsed = true
-      }
-    } else {
-      this.url = input
-    }
-
-    this.credentials = options.credentials || this.credentials || 'omit'
-    if (options.headers || !this.headers) {
-      this.headers = new Headers(options.headers)
-    }
-    this.method = normalizeMethod(options.method || this.method || 'GET')
-    this.mode = options.mode || this.mode || null
-    this.referrer = null
-
-    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-      throw new TypeError('Body not allowed for GET or HEAD requests')
-    }
-    this._initBody(body, options)
-  }
-
-  Request.prototype.clone = function() {
-    return new Request(this)
-  }
-
-  function decode(body) {
-    var form = new FormData()
-    body.trim().split('&').forEach(function(bytes) {
-      if (bytes) {
-        var split = bytes.split('=')
-        var name = split.shift().replace(/\+/g, ' ')
-        var value = split.join('=').replace(/\+/g, ' ')
-        form.append(decodeURIComponent(name), decodeURIComponent(value))
-      }
-    })
-    return form
-  }
-
-  function headers(xhr) {
-    var head = new Headers()
-    var pairs = xhr.getAllResponseHeaders().trim().split('\n')
-    pairs.forEach(function(header) {
-      var split = header.trim().split(':')
-      var key = split.shift().trim()
-      var value = split.join(':').trim()
-      head.append(key, value)
-    })
-    return head
-  }
-
-  Body.call(Request.prototype)
-
-  function Response(bodyInit, options) {
-    if (!options) {
-      options = {}
-    }
-
-    this._initBody(bodyInit, options)
-    this.type = 'default'
-    this.status = options.status
-    this.ok = this.status >= 200 && this.status < 300
-    this.statusText = options.statusText
-    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
-    this.url = options.url || ''
-  }
-
-  Body.call(Response.prototype)
-
-  Response.prototype.clone = function() {
-    return new Response(this._bodyInit, {
-      status: this.status,
-      statusText: this.statusText,
-      headers: new Headers(this.headers),
-      url: this.url
-    })
-  }
-
-  Response.error = function() {
-    var response = new Response(null, {status: 0, statusText: ''})
-    response.type = 'error'
-    return response
-  }
-
-  var redirectStatuses = [301, 302, 303, 307, 308]
-
-  Response.redirect = function(url, status) {
-    if (redirectStatuses.indexOf(status) === -1) {
-      throw new RangeError('Invalid status code')
-    }
-
-    return new Response(null, {status: status, headers: {location: url}})
-  }
-
-  self.Headers = Headers;
-  self.Request = Request;
-  self.Response = Response;
-
-  self.fetch = function(input, init) {
-    return new Promise(function(resolve, reject) {
-      var request
-      if (Request.prototype.isPrototypeOf(input) && !init) {
-        request = input
-      } else {
-        request = new Request(input, init)
-      }
-
-      var xhr = new XMLHttpRequest()
-
-      function responseURL() {
-        if ('responseURL' in xhr) {
-          return xhr.responseURL
-        }
-
-        // Avoid security warnings on getResponseHeader when not allowed by CORS
-        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
-          return xhr.getResponseHeader('X-Request-URL')
-        }
-
-        return;
-      }
-
-      var __onLoadHandled = false;
-
-      function onload() {
-        if (xhr.readyState !== 4) {
-          return
-        }
-        var status = (xhr.status === 1223) ? 204 : xhr.status
-        if (status < 100 || status > 599) {
-          if (__onLoadHandled) { return; } else { __onLoadHandled = true; }
-          reject(new TypeError('Network request failed'))
-          return
-        }
-        var options = {
-          status: status,
-          statusText: xhr.statusText,
-          headers: headers(xhr),
-          url: responseURL()
-        }
-        var body = 'response' in xhr ? xhr.response : xhr.responseText;
-
-        if (__onLoadHandled) { return; } else { __onLoadHandled = true; }
-        resolve(new Response(body, options))
-      }
-      xhr.onreadystatechange = onload;
-      xhr.onload = onload;
-      xhr.onerror = function() {
-        if (__onLoadHandled) { return; } else { __onLoadHandled = true; }
-        reject(new TypeError('Network request failed'))
-      }
-
-      xhr.open(request.method, request.url, true)
-
-      // `withCredentials` should be setted after calling `.open` in IE10
-      // http://stackoverflow.com/a/19667959/1219343
-      try {
-        if (request.credentials === 'include') {
-          if ('withCredentials' in xhr) {
-            xhr.withCredentials = true;
-          } else {
-            console && console.warn && console.warn('withCredentials is not supported, you can ignore this warning');
-          }
-        }
-      } catch (e) {
-        console && console.warn && console.warn('set withCredentials error:' + e);
-      }
-
-      if ('responseType' in xhr && support.blob) {
-        xhr.responseType = 'blob'
-      }
-
-      request.headers.forEach(function(value, name) {
-        xhr.setRequestHeader(name, value)
-      })
-
-      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
-    })
-  }
-  self.fetch.polyfill = true
-
-  // Support CommonJS
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = self.fetch;
-  }
-})(typeof self !== 'undefined' ? self : this);
-
-
-/***/ }),
-/* 83 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
-    "use strict";
-
-    if (global.setImmediate) {
-        return;
-    }
-
-    var nextHandle = 1; // Spec says greater than zero
-    var tasksByHandle = {};
-    var currentlyRunningATask = false;
-    var doc = global.document;
-    var registerImmediate;
-
-    function setImmediate(callback) {
-      // Callback can either be a function or a string
-      if (typeof callback !== "function") {
-        callback = new Function("" + callback);
-      }
-      // Copy function arguments
-      var args = new Array(arguments.length - 1);
-      for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i + 1];
-      }
-      // Store and register the task
-      var task = { callback: callback, args: args };
-      tasksByHandle[nextHandle] = task;
-      registerImmediate(nextHandle);
-      return nextHandle++;
-    }
-
-    function clearImmediate(handle) {
-        delete tasksByHandle[handle];
-    }
-
-    function run(task) {
-        var callback = task.callback;
-        var args = task.args;
-        switch (args.length) {
-        case 0:
-            callback();
-            break;
-        case 1:
-            callback(args[0]);
-            break;
-        case 2:
-            callback(args[0], args[1]);
-            break;
-        case 3:
-            callback(args[0], args[1], args[2]);
-            break;
-        default:
-            callback.apply(undefined, args);
-            break;
-        }
-    }
-
-    function runIfPresent(handle) {
-        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
-        // So if we're currently running a task, we'll need to delay this invocation.
-        if (currentlyRunningATask) {
-            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
-            // "too much recursion" error.
-            setTimeout(runIfPresent, 0, handle);
-        } else {
-            var task = tasksByHandle[handle];
-            if (task) {
-                currentlyRunningATask = true;
-                try {
-                    run(task);
-                } finally {
-                    clearImmediate(handle);
-                    currentlyRunningATask = false;
-                }
-            }
-        }
-    }
-
-    function installNextTickImplementation() {
-        registerImmediate = function(handle) {
-            process.nextTick(function () { runIfPresent(handle); });
-        };
-    }
-
-    function canUsePostMessage() {
-        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
-        // where `global.postMessage` means something completely different and can't be used for this purpose.
-        if (global.postMessage && !global.importScripts) {
-            var postMessageIsAsynchronous = true;
-            var oldOnMessage = global.onmessage;
-            global.onmessage = function() {
-                postMessageIsAsynchronous = false;
-            };
-            global.postMessage("", "*");
-            global.onmessage = oldOnMessage;
-            return postMessageIsAsynchronous;
-        }
-    }
-
-    function installPostMessageImplementation() {
-        // Installs an event handler on `global` for the `message` event: see
-        // * https://developer.mozilla.org/en/DOM/window.postMessage
-        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
-
-        var messagePrefix = "setImmediate$" + Math.random() + "$";
-        var onGlobalMessage = function(event) {
-            if (event.source === global &&
-                typeof event.data === "string" &&
-                event.data.indexOf(messagePrefix) === 0) {
-                runIfPresent(+event.data.slice(messagePrefix.length));
-            }
-        };
-
-        if (global.addEventListener) {
-            global.addEventListener("message", onGlobalMessage, false);
-        } else {
-            global.attachEvent("onmessage", onGlobalMessage);
-        }
-
-        registerImmediate = function(handle) {
-            global.postMessage(messagePrefix + handle, "*");
-        };
-    }
-
-    function installMessageChannelImplementation() {
-        var channel = new MessageChannel();
-        channel.port1.onmessage = function(event) {
-            var handle = event.data;
-            runIfPresent(handle);
-        };
-
-        registerImmediate = function(handle) {
-            channel.port2.postMessage(handle);
-        };
-    }
-
-    function installReadyStateChangeImplementation() {
-        var html = doc.documentElement;
-        registerImmediate = function(handle) {
-            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
-            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-            var script = doc.createElement("script");
-            script.onreadystatechange = function () {
-                runIfPresent(handle);
-                script.onreadystatechange = null;
-                html.removeChild(script);
-                script = null;
-            };
-            html.appendChild(script);
-        };
-    }
-
-    function installSetTimeoutImplementation() {
-        registerImmediate = function(handle) {
-            setTimeout(runIfPresent, 0, handle);
-        };
-    }
-
-    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
-    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
-    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
-
-    // Don't get fooled by e.g. browserify environments.
-    if ({}.toString.call(global.process) === "[object process]") {
-        // For Node.js before 0.9
-        installNextTickImplementation();
-
-    } else if (canUsePostMessage()) {
-        // For non-IE10 modern browsers
-        installPostMessageImplementation();
-
-    } else if (global.MessageChannel) {
-        // For web workers, where supported
-        installMessageChannelImplementation();
-
-    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
-        // For IE 6–8
-        installReadyStateChangeImplementation();
-
-    } else {
-        // For older browsers
-        installSetTimeoutImplementation();
-    }
-
-    attachTo.setImmediate = setImmediate;
-    attachTo.clearImmediate = clearImmediate;
-}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(20), __webpack_require__(83)))
-
-/***/ }),
-/* 85 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(84);
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(20)))
-
-/***/ }),
-/* 86 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(37);
-module.exports = __webpack_require__(36);
-
-
-/***/ }),
-/* 87 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 88 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 89 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 90 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-// removed by extract-text-webpack-plugin
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./src/common/css/supermapol-icons.css
+var supermapol_icons = __webpack_require__(91);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/widgets-icon.css
+var widgets_icon = __webpack_require__(98);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/Icon.css
+var Icon = __webpack_require__(103);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/OpenFile.css
+var OpenFile = __webpack_require__(115);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/MessageBox.css
+var MessageBox = __webpack_require__(116);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/DataFlow.css
+var DataFlow = __webpack_require__(117);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/Search.css
+var Search = __webpack_require__(118);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/CommonContainer.css
+var CommonContainer = __webpack_require__(119);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/DropDownBox.css
+var DropDownBox = __webpack_require__(120);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/Select.css
+var Select = __webpack_require__(121);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/CityTabsPage.css
+var CityTabsPage = __webpack_require__(122);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/NavTabsPage.css
+var NavTabsPage = __webpack_require__(123);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/PaginationContainer.css
+var PaginationContainer = __webpack_require__(124);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/PopContainer.css
+var PopContainer = __webpack_require__(125);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/Analysis.css
+var Analysis = __webpack_require__(126);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/DistributedAnalysis.css
+var DistributedAnalysis = __webpack_require__(127);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/ClientComputation.css
+var ClientComputation = __webpack_require__(128);
+
+// EXTERNAL MODULE: ./src/common/widgets/css/DataServiceQuery.css
+var DataServiceQuery = __webpack_require__(129);
+
+// CONCATENATED MODULE: ./src/common/css/index.js
+/* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
+ * This program are made available under the terms of the Apache License, Version 2.0
+ * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
+
+
+//微件样式
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// EXTERNAL MODULE: ./src/openlayers/css/ChangeTileVersion.css
+var ChangeTileVersion = __webpack_require__(130);
+
+// CONCATENATED MODULE: ./src/openlayers/css/index.js
+/* Copyright© 2000 - 2018 SuperMap Software Co.Ltd. All rights reserved.
+ * This program are made available under the terms of the Apache License, Version 2.0
+ * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
+
+
 
 /***/ }),
 /* 91 */
@@ -85010,73 +89337,28 @@ module.exports = __webpack_require__(36);
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 92 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 93 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 94 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 95 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 96 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 97 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
 /* 98 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 99 */
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 100 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 102 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 103 */,
 /* 104 */,
 /* 105 */,
 /* 106 */,
@@ -85087,29 +89369,98 @@ module.exports = __webpack_require__(36);
 /* 111 */,
 /* 112 */,
 /* 113 */,
-/* 114 */
+/* 114 */,
+/* 115 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 115 */,
-/* 116 */,
-/* 117 */,
-/* 118 */,
+/* 116 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 117 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 118 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
 /* 119 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 120 */,
-/* 121 */,
-/* 122 */,
-/* 123 */,
-/* 124 */,
-/* 125 */,
+/* 120 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 122 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 123 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 124 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 125 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
 /* 126 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 127 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 128 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 129 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 130 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

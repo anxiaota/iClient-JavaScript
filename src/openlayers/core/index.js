@@ -4,3 +4,7 @@
 export {StyleUtils} from './StyleUtils';
 export {Util} from './Util';
 export {MapExtend} from './MapExtend';
+export {ColorsPickerUtil} from './colors_picker_util/ColorsPickerUtil';
+export {Color} from './colors_picker_util/Color';
+export {ColorUtil} from './colors_picker_util/Util';
+export {ArrayStatistic} from './ArrayStatistic';

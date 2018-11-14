@@ -51,7 +51,7 @@
         var excludes = (targetScript.getAttribute('exclude') || "").split(",");
         if (!inArray(excludes, 'ol') && !inArray(includes, 'ol-debug')) {
             inputCSS("https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.css");
-            inputScript("https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol.js");
+            inputScript("https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol-debug.js");
         }
         if (inArray(includes, 'ol-debug')) {
             inputCSS("https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.5/ol-debug.css");
@@ -72,9 +72,10 @@
         }
         if (!inArray(excludes, 'iclient9-openlayers')) {
             if (supportES6()) {
-                inputScript("../../dist/openlayers/iclient9-openlayers-es6.min.js");
+                // inputScript("../../dist/openlayers/iclient9-openlayers-es6.min.js");
+                inputScript("../../dist/openlayers/iclient9-openlayers.js");
             } else {
-                inputScript("../../dist/openlayers/iclient9-openlayers.min.js");
+                inputScript("../../dist/openlayers/iclient9-openlayers.js");
             }
         }
         if (!inArray(excludes, 'iclient9-openlayers-css')) {
