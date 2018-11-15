@@ -265,8 +265,8 @@ export class Util {
         var canvas = document.createElement('canvas');
         return Boolean(canvas && canvas.getContext("webgl2"));
     }
-    static getRootUrl(url = window.location.href) {
-        /*let tempRootUrl = {};
+    static getRootUrl(url) {
+        let tempRootUrl = {};
         let onlineUrl = 'https://www.supermapol.com/', itestUrl = 'https://itest.supermapol.com/';
         if (tempRootUrl[url]) return tempRootUrl[url];
         let rootUrl = "";
@@ -284,8 +284,41 @@ export class Util {
             }
         }
         tempRootUrl[url] = rootUrl;
-        return rootUrl;*/
-        return 'http://127.0.0.1:8090/iportal/';
+        return rootUrl;
+        // return 'http://127.0.0.1:8090/iportal/';
+    }
+    /**
+     * 获取https或http域名
+     * @param url
+     * @returns {*}
+     */
+    static getAnchor(url) {
+        let tempAnchor = {};
+        if (tempAnchor[url]) {
+            return tempAnchor[url];
+        }
+        let anchor = document.createElement('a');
+        anchor.href = url;
+        tempAnchor[url] = anchor;
+        return anchor;
+    }
+    /**
+     * 获取端口号
+     *
+     * @param url {string} url地址
+     * @returns {*|string|string}
+     */
+    static getHost(url) {
+        let anchor = this.getAnchor(url);
+        if (!anchor) {
+            return null;
+        }
+        let port = anchor.port, host = anchor.host;
+        //IE下会自动给host添加http(80), https(443)
+        if (port === "80" || port === "443") {
+            return host.split(":")[0];
+        }
+        return host;
     }
     /**
      * 是否为字符串

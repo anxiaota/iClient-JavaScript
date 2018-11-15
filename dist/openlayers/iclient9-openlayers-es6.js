@@ -72514,8 +72514,8 @@ class core_Util_Util {
         var canvas = document.createElement('canvas');
         return Boolean(canvas && canvas.getContext("webgl2"));
     }
-    static getRootUrl(url = window.location.href) {
-        /*let tempRootUrl = {};
+    static getRootUrl(url) {
+        let tempRootUrl = {};
         let onlineUrl = 'https://www.supermapol.com/', itestUrl = 'https://itest.supermapol.com/';
         if (tempRootUrl[url]) return tempRootUrl[url];
         let rootUrl = "";
@@ -72533,8 +72533,41 @@ class core_Util_Util {
             }
         }
         tempRootUrl[url] = rootUrl;
-        return rootUrl;*/
-        return 'http://127.0.0.1:8090/iportal/';
+        return rootUrl;
+        // return 'http://127.0.0.1:8090/iportal/';
+    }
+    /**
+     * 获取https或http域名
+     * @param url
+     * @returns {*}
+     */
+    static getAnchor(url) {
+        let tempAnchor = {};
+        if (tempAnchor[url]) {
+            return tempAnchor[url];
+        }
+        let anchor = document.createElement('a');
+        anchor.href = url;
+        tempAnchor[url] = anchor;
+        return anchor;
+    }
+    /**
+     * 获取端口号
+     *
+     * @param url {string} url地址
+     * @returns {*|string|string}
+     */
+    static getHost(url) {
+        let anchor = this.getAnchor(url);
+        if (!anchor) {
+            return null;
+        }
+        let port = anchor.port, host = anchor.host;
+        //IE下会自动给host添加http(80), https(443)
+        if (port === "80" || port === "443") {
+            return host.split(":")[0];
+        }
+        return host;
     }
     /**
      * 是否为字符串
@@ -80352,26 +80385,49 @@ const DatavizWebMap_mapInfo ={
     },
     "layers": [
         {
-            "layerType": "VECOTR",
-            "featureType": "LINE",
+            "layerType": "UNIQUE",
             "visible": true,
-            "name": "Jingjin:BaseMap_L",
-            "dataTypes":{},
-            "style": {
-                "strokeWidth": 2,
-                "lineDash": "solid",
-                "strokeColor": "#4CC8A3",
-                "strokeOpacity": 0.9
+            "name": "浙江高等院校",
+            "featureType": "POINT",
+            "xyField": {
+                "xField": "经度",
+                "yField": "纬度"
             },
-            "url": "http://192.168.12.58:8091/iserver/services/data-jingjin/rest/data",
-            "projection": "EPSG:4326"
+            "style": {
+                "colors": [
+                    "#D53E4F",
+                    "#FC8D59",
+                    "#FEE08B",
+                    "#FFFFBF",
+                    "#E6F598",
+                    "#99D594",
+                    "#3288BD"
+                ],
+                "customSettings": {
+                    "http://www.qzu.zj.cn": "#bd10e0",
+                    "www.qzct.net": "#7ed321"
+                },
+                "themeField":"网址",
+                "fillColor": "#3288bd",
+                "fillOpacity": 0.9,
+                "lineDash": "solid",
+                "radius": 5,
+                "strokeColor": "#ffffff",
+                "strokeOpacity": 1,
+                "strokeWidth": 1
+            },
+            "projection": "EPSG:4326",
+            "dataSource": {
+                "type": "PORTAL_DATA",
+                "serverId": "327767450"
+            }
         }
     ],
     "description": "",
     "projection": "EPSG:3857",
     "title": "Unuqie",
     "version": "1.0"
-}
+};
 /**
  * @class ol.supermap.WebMap
  * @category  iPortal/Online
@@ -80452,6 +80508,24 @@ class DatavizWebMap_DatavizWebMap extends external_ol_default.a.Observable {
     addBaseMap(mapInfo) {
         this.createView(mapInfo);
         this.map.addLayer(this.createBaseLayer(mapInfo));
+        /*if(mapInfo.baseLayer && mapInfo.baseLayer.isLabel) {
+            let layerInfo = mapInfo.baseLayer;
+            //存在天地图路网
+            let labelLayer = new ol.layer.Tile({
+                source: this.createTiandituSource(layerInfo, layerInfo.layerType, mapInfo.projection, true),
+                zIndex: layerInfo.zIndex || 0,
+                visible: layerInfo.visible
+            });
+            this.map.addLayer(labelLayer);
+        }*/
+        let layerInfo = mapInfo.baseLayer;
+        //存在天地图路网
+        let labelLayer = new external_ol_default.a.layer.Tile({
+            source: this.createTiandituSource(layerInfo, layerInfo.layerType, mapInfo.projection, true),
+            zIndex: layerInfo.zIndex || 0,
+            visible: layerInfo.visible
+        });
+        this.map.addLayer(labelLayer);
     }
     createView(options) {
         let view = this.map.getView(),
@@ -80629,9 +80703,10 @@ class DatavizWebMap_DatavizWebMap extends external_ol_default.a.Observable {
         let features;
         if(layers.length > 0) {
             layers.forEach(function (layer) {
-                if(layer.dataSource && layer.dataSource.serverId) {
+                if((layer.dataSource && layer.dataSource.serverId) || layer.layerType === "MARKER") {
                     //数据存储到iportal上了
-                    let url = `${core_Util_Util.getRootUrl()}web/datas/${layer.dataSource.serverId}/content.json?pageSize=9999999&currentPage=1`;
+                    let serverId = layer.dataSource ? layer.dataSource.serverId : layer.serverId;
+                    let url = `${core_Util_Util.getRootUrl(that.mapUrl)}web/datas/${serverId}/content.json?pageSize=9999999&currentPage=1`;
                     FetchRequest.get(url, null, {withCredentials: true}).then(function (response) {
                         return response.json()
                     }).then(function (data) {
@@ -80647,28 +80722,26 @@ class DatavizWebMap_DatavizWebMap extends external_ol_default.a.Observable {
                            that.addLayer(layer, features);
                         }
                     })
-                } else if(layer.url) {
-                    if(layer.layerType === "SUPERMAP_REST") {
-                        //从iserver获取的瓦片地图
-                        this.map.addLayer(this.createBaseLayer(layer));
-                    } else if(layer.layerType === "VECOTR") {
-                        //从restData获取数据
-                        core_Util_Util.getFeatureBySQL(layer.url, [layer.dataSourseName || layer.name], function(result) {
-                            features = that.parseGeoJsonData2Feature({
-                                allDatas: { features: result.result.features.features },
-                                fileCode: layer.projection.split(':')[1],
-                                featureProjection: that.baseProjection.split(':')[1]
-                            });
-
-                            /*if (!layerObj.layerInfo.dataTypes) {
-                                let data = DataManager.assembleTableJSONData(result.result.features);
-                                layerObj.layerInfo.dataTypes = Util.getFieldType(data.titles, data.rows[0]);
-                            }*/
-                            that.addLayer(layer, features);
-                        }, function(err) {
-                            console.log(err);
+                } else if(layer.layerType === "SUPERMAP_REST" || layer.layerType === "WMS" || layer.layerType === "WMTS") {
+                    this.map.addLayer(this.createBaseLayer(layer));
+                } else if(layer.dataSource && layer.dataSource.type === "REST_DATA") {
+                    let dataSource = layer.dataSource;
+                    //从restData获取数据
+                    core_Util_Util.getFeatureBySQL(dataSource.url, [dataSource.dataSourseName || layer.name], function(result) {
+                        features = that.parseGeoJsonData2Feature({
+                            allDatas: { features: result.result.features.features },
+                            fileCode: layer.projection,
+                            featureProjection: that.baseProjection
                         });
-                    }
+
+                        /*if (!layerObj.layerInfo.dataTypes) {
+                            let data = DataManager.assembleTableJSONData(result.result.features);
+                            layerObj.layerInfo.dataTypes = Util.getFieldType(data.titles, data.rows[0]);
+                        }*/
+                        that.addLayer(layer, features);
+                    }, function(err) {
+                        console.log(err);
+                    });
                 }
             }, this);
         }
@@ -80839,6 +80912,8 @@ class DatavizWebMap_DatavizWebMap extends external_ol_default.a.Observable {
             layer = this.createRangeLayer(layerInfo, features, allFeatures);
         } else if(layerInfo.layerType === "HEAT") {
             layer = this.createHeatLayer(layerInfo, features);
+        } else if(layerInfo.layerType === "MARKER"){
+            layer = this.createMarkerLayer(layerInfo, features)
         }
         layer && this.map.addLayer(layer);
         if(layerInfo.labelStyle && layerInfo.labelStyle.labelField) {
@@ -80886,7 +80961,7 @@ class DatavizWebMap_DatavizWebMap extends external_ol_default.a.Observable {
             if(!imgDom) {
                 imgDom = new Image();
                 //要组装成完整的url
-                imgDom.src = core_Util_Util.getRootUrl() + imageInfo.url;
+                imgDom.src = core_Util_Util.getRootUrl(this.mapUrl) + imageInfo.url;
             }
             shape = new external_ol_default.a.style.Icon({
                 img:  imgDom,
@@ -81343,6 +81418,64 @@ class DatavizWebMap_DatavizWebMap extends external_ol_default.a.Observable {
             return false;
         }
     }
+    createMarkerLayer(layerInfo, features) {
+        features && this.setEachFeatureDefaultStyle(features);
+        return new external_ol_default.a.layer.Vector({
+            source: new external_ol_default.a.source.Vector({
+                features: features,
+                wrapX: false
+            })
+        });
+    }
+    /**
+     * @description 为feature设置样式
+     * @author gaozy
+     * @param {any} features
+     * @param {any} [style=null]
+     * @param {Number} 图层id
+     */
+    setEachFeatureDefaultStyle(features, timeId) {
+        let that = this;
+        features = (core_Util_Util.isArray(features) || features instanceof external_ol_default.a.Collection) ? features : [features];
+        features.forEach(function (feature) {
+            let geomType = feature.getGeometry().getType().toUpperCase();
+            // let styleType = geomType === "POINT" ? 'MARKER' : geomType;
+            let defaultStyle = feature.getProperties().useStyle;
+            if(geomType === 'POINT' && defaultStyle.text) {
+                //说明是文字的feature类型
+                geomType = "TEXT";
+            }
+            let featureInfo = this.setFeatureInfo(feature);
+            feature.setProperties({ useStyle: defaultStyle, featureInfo:featureInfo});
+            //标注图层的feature上需要存一个layerId，为了之后样式应用到图层上使用
+            feature.layerId = timeId;
+            if(geomType === 'POINT' && defaultStyle.src &&
+                defaultStyle.src.indexOf('http://') === -1 && defaultStyle.src.indexOf('https://') === -1) {
+                //说明地址不完整
+                defaultStyle.src = core_Util_Util.getRootUrl(that.mapUrl) + defaultStyle.src;
+            }
+            feature.setStyle(StyleUtils_StyleUtils.toOpenLayersStyle(defaultStyle, geomType))
+        }, this)
+    }
+    setFeatureInfo(feature) {
+        let featureInfo;
+        if(feature.getProperties().featureInfo && feature.getProperties().featureInfo.dataViz_title !== undefined
+            && feature.getProperties().featureInfo.dataViz_title != null) {
+            //有featureInfo信息就不需要再添加
+            featureInfo = feature.getProperties().featureInfo;
+        } else {
+            featureInfo = this.getDefaultAttribute();
+        }
+        let properties = feature.getProperties();
+        for(let key in featureInfo) {
+            if(properties[key]) {
+                featureInfo[key] = properties[key];
+                delete properties[key];
+            }
+        }
+        return featureInfo;
+    }
+
     
 }
 
