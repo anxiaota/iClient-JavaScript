@@ -23,72 +23,6 @@ import {
 ol.supermap = ol.supermap || {};
 //数据转换工具
 const transformTools = new ol.format.GeoJSON();
-const mapInfo ={
-    "extent": {
-        "leftBottom": {
-            "x": -20037508.3427892,
-            "y": -20037508.3427892
-        },
-        "rightTop": {
-            "x": 20037508.3427892,
-            "y": 20037508.3427892
-        }
-    },
-    "level": 1,
-    "center": {
-        "x": 0,
-        "y": -7.081154551613622e-10
-    },
-    "baseLayer": {
-        "layerType": "TIANDITU_VEC_3857",
-        "name": "天地图",
-        "visible": true
-    },
-    "layers": [
-        {
-            "layerType": "UNIQUE",
-            "visible": true,
-            "name": "浙江高等院校",
-            "featureType": "POINT",
-            "xyField": {
-                "xField": "经度",
-                "yField": "纬度"
-            },
-            "style": {
-                "colors": [
-                    "#D53E4F",
-                    "#FC8D59",
-                    "#FEE08B",
-                    "#FFFFBF",
-                    "#E6F598",
-                    "#99D594",
-                    "#3288BD"
-                ],
-                "customSettings": {
-                    "http://www.qzu.zj.cn": "#bd10e0",
-                    "www.qzct.net": "#7ed321"
-                },
-                "themeField":"网址",
-                "fillColor": "#3288bd",
-                "fillOpacity": 0.9,
-                "lineDash": "solid",
-                "radius": 5,
-                "strokeColor": "#ffffff",
-                "strokeOpacity": 1,
-                "strokeWidth": 1
-            },
-            "projection": "EPSG:4326",
-            "dataSource": {
-                "type": "PORTAL_DATA",
-                "serverId": "327767450"
-            }
-        }
-    ],
-    "description": "",
-    "projection": "EPSG:3857",
-    "title": "Unuqie",
-    "version": "1.0"
-};
 /**
  * @class ol.supermap.WebMap
  * @category  iPortal/Online
@@ -150,21 +84,14 @@ export class DatavizWebMap extends ol.Observable {
      * 获取分享的地图信息
      */
     getMapInfo(url) {
-        // let mapUrl = `${url}.json`;
-      /*  let that = this;
-        let mapUrl = "http://127.0.0.1:8090/iportal/apps/viewer/1128612916.json";
-        FetchRequest.get(mapUrl, null, {withCredentials: true}).then(function (response) {
+        let that = this, mapUrl = `${url}.json`;
+        FetchRequest.get(mapUrl).then(function (response) {
             return response.json();
         }).then(function (mapInfo) {
             that.baseProjection = mapInfo.projection; //epsgCode是之前的数据格式 todo
             that.addBaseMap(mapInfo);
             that.addLayers(mapInfo);
-        });*/
-        if(mapInfo) {
-            this.baseProjection = mapInfo.projection;
-            this.addBaseMap(mapInfo);
-            this.addLayers(mapInfo);
-        }
+        });
     }
     addBaseMap(mapInfo) {
         this.createView(mapInfo);
@@ -213,6 +140,7 @@ export class DatavizWebMap extends ol.Observable {
             || layerType.indexOf('TIANDITU_TER') > -1) {
             layerType = layerType.substr(0,12);
         }
+        let that = this;
         let mapUrls = {
             CLOUD: 'http://t2.supermapcloud.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
             CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp?x={x}&y={y}&z={z}',
@@ -240,9 +168,9 @@ export class DatavizWebMap extends ol.Observable {
                 source=this.createWMSSource(layerInfo);
                 break;
             case "WMTS":
-                source=this.createWmtsLayer(layerInfo);
+                source= this.createWMTSSource(layerInfo);
                 break;
-            case 'SUPERMAP_REST':
+            case 'TILE':
                 source = this.createDynamicTiledSource(layerInfo);
                 break;
             case 'CLOUD':
@@ -297,6 +225,15 @@ export class DatavizWebMap extends ol.Observable {
         return source;
 
     }
+
+    /**
+     * 创建天地图的source
+     * @param layerInfo 图层信息
+     * @param layerType 图层类型
+     * @param projection 地理坐标系
+     * @param isLabel  是否有路网图层
+     * @returns {ol.source.Tianditu}
+     */
     createTiandituSource(layerInfo, layerType, projection, isLabel) {
         //todo 后台存储没有存储isLabel是否有标签
         let options = {
@@ -306,9 +243,21 @@ export class DatavizWebMap extends ol.Observable {
         };
         return new ol.source.Tianditu(options);
     }
+
+    /**
+     * 创建百度地图的source
+     * @returns {ol.source.BaiduMap}
+     */
     createBaiduSource() {
         return new ol.source.BaiduMap()
     }
+
+    /**
+     * 创建bing地图的source
+     * @param layerInfo
+     * @param projection
+     * @returns {ol.source.XYZ}
+     */
     createBingSource(layerInfo, projection) {
         let url = 'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadKey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
         return new ol.source.XYZ({
@@ -317,7 +266,7 @@ export class DatavizWebMap extends ol.Observable {
             tileUrlFunction: function (coordinates) {
                 let /*quadDigits = '', */[z, x, y] = [...coordinates];
                 y = y > 0 ? y - 1 : -y - 1;
-                var index = '';
+                let index = '';
                 for (let i = z; i > 0; i--) {
                     let b = 0;
                     let mask = 1 << (i - 1);
@@ -329,6 +278,13 @@ export class DatavizWebMap extends ol.Observable {
             }
         })
     }
+
+    /**
+     * 创建图层的source
+     * @param layerInfo
+     * @param url
+     * @returns {ol.source.XYZ}
+     */
     createXYZSource(layerInfo, url) {
         return new ol.source.XYZ({
             url: url,
@@ -336,13 +292,19 @@ export class DatavizWebMap extends ol.Observable {
             crossOrigin: window.location.host
         })
     }
+
+    /**
+     * 创建wms地图source
+     * @param layerInfo
+     * @returns {ol.source.TileWMS}
+     */
     createWMSSource(layerInfo) {
         let that = this;
         return new ol.source.TileWMS({
             url: layerInfo.url,
             wrapX: false,
             params: {
-                LAYERS: layerInfo.subLayers || "0",
+                LAYERS: layerInfo.layers[0] || "0",
                 FORMAT: 'image/png'
             },
             projection: layerInfo.projection,
@@ -351,10 +313,183 @@ export class DatavizWebMap extends ol.Observable {
             }
         })
     }
+
+    getWmtsInfo(layerInfo, callback) {
+        let that = this;
+        let url = "http://127.0.0.1:8090/iportal/apps/viewer/getUrlResource.json?url=http%3A%2F%2F192.168.12.69%3A8091%2Fiserver%2Fservices%2Fmap-china400%2Fwmts100%3FSERVICE%3DWMTS%26VERSION%3D1.0.0%26REQUEST%3DGetCapabilities";
+        FetchRequest.get(url, null, {withCredentials: true}).then(function (response) {
+            return response.text();
+        }).then(function (capabilitiesText) {
+            const format = new ol.format.WMTSCapabilities();
+            let capabilities = format.read(capabilitiesText);
+            if (that.isValidResponse(capabilities)) {
+                let content = capabilities.Contents,
+                    tileMatrixSet = content.TileMatrixSet,
+                    layers = content.Layer, layer, tileMatrixSetLink, relSet = [], idx;
+
+                for(let n=0; n<layers.length; n++) {
+                    if(layers[n].Title === layerInfo.name) {
+                        idx= n;
+                        layer = layers[idx];
+                        tileMatrixSetLink = layer.TileMatrixSetLink;
+                        break;
+                    }
+                }
+                let scales = [];
+                for(let i=0; i<tileMatrixSet.length; i++) {
+                    if(tileMatrixSet[i].Identifier === layerInfo.tileMatrixSet) {
+                        for (let h = 0; h < tileMatrixSet[i].TileMatrix.length; h++) {
+                            scales.push(tileMatrixSet[i].TileMatrix[h].ScaleDenominator)
+                        }
+                        break;
+                    }
+                }
+                let name = layerInfo.name,
+                    layerBounds = layer.WGS84BoundingBox,
+                    extent = ol.proj.transformExtent(layerBounds, 'EPSG:4326', that.baseProjection),
+                    matrixSet = relSet[idx],
+                    requestEncoding = layerInfo.requestEncoding;
+                //将需要的参数补上
+                layerInfo.dpi = 90.7;
+                layerInfo.extent = extent;
+                layerInfo.format = "image/png";
+                layerInfo.matrixSet = matrixSet;
+                layerInfo.name = name;
+                layerInfo.orginEpsgCode = layerInfo.projection;
+                layerInfo.overLayer = true;
+                layerInfo.requestEncoding = requestEncoding;
+                layerInfo.scales = scales;
+                layerInfo.style = "default";
+                layerInfo.title = name;
+                layerInfo.unit = "m";
+                layerInfo.zIndex = idx;
+                callback(layerInfo);
+            }
+        });
+    }
+
+    /**
+     * 获取WMTS类型图层的source
+     *
+     * @param {object} layerInfo
+     * @returns
+     */
+    createWMTSSource(layerInfo) {
+        let extent = layerInfo.extent || ol.proj.get(layerInfo.projection).getExtent();
+        let that = this;
+        return new ol.source.WMTS({
+            url: layerInfo.url,
+            layer: layerInfo.name,
+            format: 'image/png',
+            // style: 'default',
+            matrixSet: layerInfo.tileMatrixSet,
+            requestEncoding: layerInfo.requestEncoding || 'KVP',
+            tileGrid: this.getWMTSTileGrid(extent, layerInfo.scales, layerInfo.unit, layerInfo.dpi),
+            tileLoadFunction: function (imageTile, src) {
+                imageTile.getImage().src = src
+            }
+        })
+    }
+
+    /**
+     * 获取wmts的瓦片
+     * @param extent
+     * @param scales
+     * @param unit
+     * @param dpi
+     * @returns {ol.tilegrid.WMTS}
+     */
+    getWMTSTileGrid(extent, scales, unit, dpi) {
+        let resolutionsInfo = this.getReslutionsFromScales(scales, dpi || 96, unit);
+        return new ol.tilegrid.WMTS({
+            extent: extent,
+            resolutions: resolutionsInfo.res,
+            matrixIds: resolutionsInfo.matrixIds
+        });
+    }
+
+    /**
+     * 根据比例尺（比例尺分母）、地图单位、dpi、获取一个分辨率数组
+     * @param scales
+     * @param dpi
+     * @param unit
+     * @param datumAxis
+     * @returns {{res: Array, matrixIds: Array}}
+     */
+    getReslutionsFromScales(scales, dpi, unit, datumAxis) {
+        unit = (unit && unit.toLowerCase()) || 'degrees';
+        dpi = dpi > 0 ? dpi : 96;
+        datumAxis = datumAxis || 6378137;
+        let res = [], matrixIds = [];
+        //这他妈的api不给identifier 我自己给个默认的
+        if(Util.isArray(scales)) {
+            scales && scales.forEach(function (scale, idx) {
+                matrixIds.push(idx);
+                res.push(this.getResolutionFromScale(scale, dpi, unit, datumAxis));
+            }, this);
+        }
+        else {
+            let tileMatrixSet = scales['TileMatrix'];
+            tileMatrixSet && tileMatrixSet.forEach(function (tileMatrix) {
+                matrixIds.push(tileMatrix['Identifier']);
+                res.push(this.getResolutionFromScale(tileMatrix['ScaleDenominator'], dpi, unit, datumAxis));
+            }, this);
+        }
+        return { res: res, matrixIds: matrixIds };
+    }
+
+    /**
+     * 获取一个WMTS source需要的tileGrid
+     * @param scale
+     * @param dpi
+     * @param unit
+     * @param datumAxis
+     * @returns {number}
+     */
+    getResolutionFromScale(scale, dpi, unit, datumAxis) {
+        //radio = 10000;
+        let res;
+        scale = +scale;
+        scale = (scale > 1.0) ? (1.0 / scale) : scale;
+        if (unit === 'degrees' || unit === 'dd' || unit === 'degree') {
+            res = 0.0254 * 10000 / dpi / scale / ((Math.PI * 2 * datumAxis) / 360) / 10000;
+        }
+        else {
+            res = 0.0254 * 10000 / dpi / scale / 10000;
+        }
+        return res;
+
+    }
+
+    /**
+     * 返回信息是否符合对应类型的标准
+     * @param response
+     * @returns {boolean}
+     */
+    isValidResponse(response) {
+        let responseEnum = ['Contents', 'OperationsMetadata'], valid = true;
+        if (responseEnum) {
+            for (let i = 0; i < responseEnum.length; i++) {
+                if (!response[responseEnum[i]] || response.error) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        else {
+            valid = false;
+        }
+        return valid;
+    }
+
+    /**
+     * 添加除了底图之外的其余图层
+     * @param mapInfo 地图信息
+     */
     addLayers(mapInfo) {
         let layers = mapInfo.layers, that = this;
-        let features;
-        if(layers.length > 0) {
+        let features, layerAdded = 0, len = layers.length;
+        if(len > 0) {
             layers.forEach(function (layer) {
                 if((layer.dataSource && layer.dataSource.serverId) || layer.layerType === "MARKER") {
                     //数据存储到iportal上了
@@ -364,19 +499,32 @@ export class DatavizWebMap extends ol.Observable {
                         return response.json()
                     }).then(function (data) {
                         if(data && data.type) {
-                           if (!data) {
-                               features = [];
-                           } else if (data.type === "JSON" || data.type === "GEOJSON") {
-                               data.content = JSON.parse(data.content);
-                               features = that.geojsonToFeature(data.content, layer);
-                           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-                               features = that.excelData2Feature(data.content, layer);
-                           }
-                           that.addLayer(layer, features);
+                            if (!data) {
+                                features = [];
+                            } else if (data.type === "JSON" || data.type === "GEOJSON") {
+                                data.content = JSON.parse(data.content);
+                                features = that.geojsonToFeature(data.content, layer);
+                            } else if (data.type === 'EXCEL' || data.type === 'CSV') {
+                                features = that.excelData2Feature(data.content, layer);
+                            }
+                            that.addLayer(layer, features);
+                            layerAdded++;
+                            that.sendMapToUser(layerAdded, len);
                         }
+                    }).catch(function () {
+                        layerAdded++;
+                        that.sendMapToUser(layerAdded, len);
                     })
-                } else if(layer.layerType === "SUPERMAP_REST" || layer.layerType === "WMS" || layer.layerType === "WMTS") {
-                    this.map.addLayer(this.createBaseLayer(layer));
+                } else if(layer.layerType === "TILE" || layer.layerType === "WMS" || layer.layerType === "WMTS") {
+                    if(layer.layerType === "WMTS") {
+                        that.getWmtsInfo(layer, function (layerInfo) {
+                            that.map.addLayer(that.createBaseLayer(layerInfo));
+                        })
+                    } else {
+                        that.map.addLayer(that.createBaseLayer(layer));
+                    }
+                    layerAdded++;
+                    that.sendMapToUser(layerAdded, len);
                 } else if(layer.dataSource && layer.dataSource.type === "REST_DATA") {
                     let dataSource = layer.dataSource;
                     //从restData获取数据
@@ -392,13 +540,34 @@ export class DatavizWebMap extends ol.Observable {
                             layerObj.layerInfo.dataTypes = Util.getFieldType(data.titles, data.rows[0]);
                         }*/
                         that.addLayer(layer, features);
+                        layerAdded++;
+                        that.sendMapToUser(layerAdded, len);
                     }, function(err) {
                         console.log(err);
+                        layerAdded++;
+                        that.sendMapToUser(layerAdded, len);
                     });
                 }
             }, this);
         }
     }
+
+    /**
+     * 返回最终的map对象给用户，供他们操作使用
+     * @param count
+     * @param layersLen
+     */
+    sendMapToUser(count, layersLen) {
+        if(count === layersLen) {
+            this.callBack(this.map);
+        }
+    }
+    /**
+     * 将csv和xls文件内容转换成ol.feature
+     * @param content  文件内容
+     * @param layerInfo  图层信息
+     * @returns {Array}  ol.feature的数组集合
+     */
     excelData2Feature(content, layerInfo) {
         let rows = content.rows,
             colTitles = content.colTitles;
@@ -435,8 +604,12 @@ export class DatavizWebMap extends ol.Observable {
         }
         return features;
     }
+
     /**
      * geojson 转换为 feature
+     * @param geojson  geojson中的文件内容
+     * @param layerInfo  图层信息
+     * @returns {Array}  ol.feature的数组集合
      */
     geojsonToFeature(geojson, layerInfo) {
         let allFeatures = geojson.features,
@@ -515,9 +688,9 @@ export class DatavizWebMap extends ol.Observable {
     }
 
     /**
-     * 将从restData地址上获取的json转换成feature
-     * @param metaData
-     * @returns {Array}
+     * 将从restData地址上获取的json转换成feature（从iserver中获取的json转换成feature）
+     * @param metaData  json内容
+     * @returns {Array} ol.feature的数组集合
      */
     parseGeoJsonData2Feature(metaData) {
         let allFeatures = metaData.allDatas.features,
@@ -539,6 +712,12 @@ export class DatavizWebMap extends ol.Observable {
         }
         return features;
     }
+
+    /**
+     * 将单个图层添加到地图上
+     * @param layerInfo  某个图层的图层信息
+     * @param features   图层上的feature
+     */
     addLayer(layerInfo, features) {
         let layer, allFeatures;
         if(layerInfo.style && layerInfo.style.filterCondition) {
@@ -605,13 +784,20 @@ export class DatavizWebMap extends ol.Observable {
         source.refresh();
         return new ol.layer.Image({source: source});
     }
+
+    /**
+     * 将feature转换成大数据图层对应的Graphics要素
+     * @param features
+     * @param style
+     * @returns {Array}
+     */
     getGraphicsFromFeatures(features, style) {
         let olStyle, shape;
         if(style.type === "IMAGE_POINT") {
             //image-point
             let imageInfo = style.imageInfo;
             let imgDom = imageInfo.img;
-            if(!imgDom) {
+            if(!imgDom || !imgDom.src) {
                 imgDom = new Image();
                 //要组装成完整的url
                 imgDom.src = Util.getRootUrl(this.mapUrl) + imageInfo.url;
@@ -739,7 +925,7 @@ export class DatavizWebMap extends ol.Observable {
         });
         layer.setStyle(features => {
             let labelField = labelStyle.labelField;
-            let label = features.attributes[labelField] + "";
+            let label = features.attributes[labelField.trim()] + "";
             if(label === "undefined") return null;
             let styleOL = layer.get('styleOL');
             let text = styleOL.getText();
@@ -769,6 +955,13 @@ export class DatavizWebMap extends ol.Observable {
             })
         });
     }
+
+    /**
+     * 创建vector图层
+     * @param layerInfo
+     * @param features
+     * @returns {ol.layer.Vector}
+     */
     createVectorLayer (layerInfo, features) {
         let style = StyleUtils.toOpenLayersStyle(layerInfo.style, layerInfo.featureType);
         return new ol.layer.Vector({
@@ -779,6 +972,13 @@ export class DatavizWebMap extends ol.Observable {
             })
         });
     }
+
+    /**
+     * 创建热力图图层
+     * @param layerInfo
+     * @param features
+     * @returns {ol.layer.Heatmap}
+     */
     createHeatLayer(layerInfo, features) {
         let source = new ol.source.Vector({
             features: features,
@@ -840,8 +1040,15 @@ export class DatavizWebMap extends ol.Observable {
         });
         this.fieldMaxValue[field] = ArrayStatistic.getArrayStatistic(values, 'Maximum');
     }
+
+    /**
+     * 创建单值图层
+     * @param layerInfo
+     * @param features
+     * @returns {ol.layer.Vector}
+     */
     createUniqueLayer(layerInfo, features){
-        let styleSource = this.createUniqueSource(layerInfo.style, features, layerInfo.featureType);
+        let styleSource = this.createUniqueSource(layerInfo, features);
         let layer = new ol.layer.Vector({
             styleSource: styleSource,
             source: new ol.source.Vector({
@@ -858,33 +1065,39 @@ export class DatavizWebMap extends ol.Observable {
 
         return layer;
     }
-    createUniqueSource(parameters, features, featureType){
-        //找到合适的专题字段
-        let themeField = parameters.themeField;
-      /*  if(!themeField) {
-            for(let key in dataTypes){
-                themeField = key;
-                //break;
-            }
-            parameters.themeField = themeField;
-        }*/
-        let colors = parameters.colors;
-        let styleGroup = this.getStyleGroup(themeField, features, colors, featureType, parameters);
 
-        let source = {
+    /**
+     * 创建单值图层的source
+     * @param parameters {layerInfo} 图层信息
+     * @param features
+     * @returns {{map: *, style: *, isHoverAble: *, highlightStyle: *, themeField: *, styleGroups: Array}}
+     */
+    createUniqueSource(parameters, features){
+        //找到合适的专题字段
+        let styleGroup = this.getUniqueStyleGroup(parameters, features);
+        return {
             map: this.map, //必传参数 API居然不提示
             style: parameters.style ,
             isHoverAble: parameters.isHoverAble,
             highlightStyle: parameters.highlightStyle,
-            themeField: themeField,
+            themeField: parameters.themeSetting.themeField,
             styleGroups: styleGroup
         };
-
-        return source;
     }
-    getStyleGroup(fieldName, features, colors, featureType, style){
+
+    /**
+     * 获取单值专题图的styleGroup
+     * @param parameters
+     * @param features
+     * @returns {Array}
+     */
+    getUniqueStyleGroup(parameters, features){
         // 找出所有的单值
-        let names = [], customSettings = style.customSettings;
+        let featureType = parameters.featureType, style = parameters.style, themeSetting = parameters.themeSetting;
+        let fieldName = themeSetting.themeField,
+            colors = themeSetting.colors;
+
+        let names = [], customSettings = themeSetting.customSettings;
         for(let i in features){
             let attributes = features[i].attributes;
             let name = attributes[fieldName];
@@ -924,9 +1137,17 @@ export class DatavizWebMap extends ol.Observable {
 
         return styleGroup;
     }
+
+    /**
+     * 创建分段图层
+     * @param layerInfo
+     * @param features
+     * @param allFeatures
+     * @returns {ol.layer.Vector}
+     */
     createRangeLayer(layerInfo, features, allFeatures){
         //这里获取styleGroup要用所以的feature
-        let styleSource = this.createRangeSource(layerInfo.style, allFeatures || features, layerInfo.featureType);
+        let styleSource = this.createRangeSource(layerInfo, allFeatures || features);
         let layer = new ol.layer.Vector({
             styleSource: styleSource,
             source: new ol.source.Vector({
@@ -957,28 +1178,34 @@ export class DatavizWebMap extends ol.Observable {
 
         return layer;
     }
-    createRangeSource(parameters, features, featureType){
-        //找到合适的专题字段
-        let themeField = parameters.themeField;
-        let styleGroup = this.getRangeStyleGroup(themeField, parameters.segmentCount,
-            parameters.segmentMethod, features, parameters.colors, featureType, parameters, parameters.customSettings);
 
+    /**
+     * 创建分段专题图的图层source
+     * @param parameters {layerInfo} 图层信息
+     * @param features
+     * @returns {*}
+     */
+    createRangeSource(parameters, features){
+        //找到合适的专题字段
+        let styleGroup = this.getRangeStyleGroup(parameters, features);
         if(styleGroup){
-            let source = {
-                style: parameters || this.defaultParameters.style,
-                themeField: parameters.themeField,
+            return {
+                style: parameters.style || this.defaultParameters.style,
+                themeField: parameters.themeSetting.themeField,
                 styleGroups: styleGroup
             };
-
-            return source;
         }else {
             return false;
         }
     }
-    getRangeStyleGroup(fieldName, count, method, features, colors, featureType, style, customSettings){
+    getRangeStyleGroup(parameters, features){
         // 找出分段值
-        let values = [];
-        let attributes;
+        let featureType = parameters.featureType, themeSetting = parameters.themeSetting,
+            style = parameters.style;
+        let count = themeSetting.segmentCount, method = themeSetting.segmentMethod,
+            colors = themeSetting.colors, customSettings = themeSetting.customSettings,
+            fieldName = themeSetting.themeField;
+        let values = [], attributes;
         let segmentCount = count || this.defaultParameters.segmentCount;
         let segmentMethod = method || this.defaultParameters.segmentMethod;
 
@@ -1034,10 +1261,10 @@ export class DatavizWebMap extends ol.Observable {
 
             for (let index = 0; index < itemNum; index++) {
                 if (index in customSettings) {
-                    if (customSettings[index]["segment"]["start"] !== null) {
+                    if (customSettings[index]["segment"]["start"]) {
                         segements[index] = customSettings[index]["segment"]["start"];
                     }
-                    if(customSettings[index]["segment"]["end"] !== null) {
+                    if(customSettings[index]["segment"]["end"]) {
                         segements[index + 1] = customSettings[index]["segment"]["end"];
                     }
                 }
@@ -1128,8 +1355,6 @@ export class DatavizWebMap extends ol.Observable {
         }
         return featureInfo;
     }
-
-    
 }
 
 ol.supermap.DatavizWebMap = DatavizWebMap;

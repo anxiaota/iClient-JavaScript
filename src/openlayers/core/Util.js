@@ -266,7 +266,7 @@ export class Util {
         return Boolean(canvas && canvas.getContext("webgl2"));
     }
     static getRootUrl(url) {
-        let tempRootUrl = {};
+        /*let tempRootUrl = {};
         let onlineUrl = 'https://www.supermapol.com/', itestUrl = 'https://itest.supermapol.com/';
         if (tempRootUrl[url]) return tempRootUrl[url];
         let rootUrl = "";
@@ -284,8 +284,8 @@ export class Util {
             }
         }
         tempRootUrl[url] = rootUrl;
-        return rootUrl;
-        // return 'http://127.0.0.1:8090/iportal/';
+        return rootUrl;*/
+        return 'http://127.0.0.1:8090/iportal/';  //因为地址用的是本地地址，端口号不一致所以还是用测试的url
     }
     /**
      * 获取https或http域名

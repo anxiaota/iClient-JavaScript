@@ -699,6 +699,7 @@ export class StyleUtils {
         //一个图层对应一个canvas
         let canvas = document.createElement('canvas');
         canvas.id = 'dataviz-canvas-' + Util.newGuid(8);
+        canvas.style.display = "none";
         divDom.appendChild(canvas);
         try {
             canvg(canvas.id, svgUrl, {

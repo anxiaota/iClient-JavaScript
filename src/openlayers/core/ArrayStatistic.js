@@ -25,7 +25,7 @@ export class ArrayStatistic {
 
     /**
      * 获取数组统计的值
-     * 
+     *    
      * @param array 需要统计的数组
      * @param type  统计方法
      */
@@ -59,7 +59,7 @@ export class ArrayStatistic {
      * @param segNum 分段个数
      */
     static getArraySegments(array, type, segNum) {
-        if(type === "Offset") {
+        if(type === "offset") {
             return this.getEqInterval(array, segNum);
         } else if(type === "jenks") {
             return this.getJenks(array, segNum);
@@ -69,7 +69,6 @@ export class ArrayStatistic {
             if(minValue >= 0){
                 return this.getSqrtInterval(array, segNum);
             }else {
-                // todo 提示数据不合法
                 //console.log('数据都必须 >= 0');
                 // Util.showMessage(Language.hasNegValue + Language.noSupportRange, 'ERROR');
                 return false;
@@ -81,7 +80,6 @@ export class ArrayStatistic {
             if(minValue > 0){
                 return this.getGeometricProgression(array, segNum);
             }else {
-                // todo 提示数据不合法
                 //console.log('数据都必须 > 0');
                 // Util.showMessage(Language.hasZeroNegValue + Language.noSupportRange, 'ERROR');
                 return false;
