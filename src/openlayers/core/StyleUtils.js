@@ -1,5 +1,4 @@
 import ol from 'openlayers';
-import canvg from 'canvg/';
 import {SuperMap, CommonUtil, StringExt} from '@supermap/iclient-common';
 import {StyleMap} from '../overlay/vectortile/StyleMap';
 import {DeafultCanvasStyle} from '../overlay/vectortile/DeafultCanvasStyle';
@@ -697,6 +696,7 @@ export class StyleUtils {
      */
     static getCanvasFromSVG (svgUrl, divDom, callBack) {
         //一个图层对应一个canvas
+        let canvg = window.canvg;
         let canvas = document.createElement('canvas');
         canvas.id = 'dataviz-canvas-' + Util.newGuid(8);
         canvas.style.display = "none";

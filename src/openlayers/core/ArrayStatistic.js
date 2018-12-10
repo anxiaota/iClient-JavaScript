@@ -9,7 +9,11 @@ export class ArrayStatistic {
         // if(!this.geostatsInstance) {
         //         //     this.geostatsInstance = new geostats();
         //         // }
-        return window.geostats;
+        if(!this.geostatsInstance) {
+
+            this.geostatsInstance = new window.geostats();
+        }
+        return this.geostatsInstance;
     }
 
     /**

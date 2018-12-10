@@ -15,7 +15,6 @@ import {
 import {
     ColorsPickerUtil
 } from '../core/colors_picker_util/ColorsPickerUtil';
-import jsonsql from 'jsonsql';
 import {
     ArrayStatistic
 } from '../core/ArrayStatistic';
@@ -85,17 +84,25 @@ export class DatavizWebMap extends ol.Observable {
      */
     getMapInfo(url) {
         let that = this, mapUrl = `${url}.json`;
-        FetchRequest.get(mapUrl).then(function (response) {
+        FetchRequest.get(mapUrl, null, {withCredentials: true}).then(function (response) {
             return response.json();
         }).then(function (mapInfo) {
             that.baseProjection = mapInfo.projection; //epsgCode是之前的数据格式 todo
             that.addBaseMap(mapInfo);
-            that.addLayers(mapInfo);
+            if(mapInfo.layers.length === 0) {
+                that.sendMapToUser(0, mapInfo.layers.length);
+            } else {
+                that.addLayers(mapInfo);
+            }
         });
     }
     addBaseMap(mapInfo) {
         this.createView(mapInfo);
-        this.map.addLayer(this.createBaseLayer(mapInfo));
+        let layer = this.createBaseLayer(mapInfo);
+        if(mapInfo.title) {
+            layer.setProperties({title: mapInfo.title});
+        }
+        this.map.addLayer(layer);
         if(mapInfo.baseLayer && mapInfo.baseLayer.isLabel) {
             let layerInfo = mapInfo.baseLayer;
             //存在天地图路网
@@ -204,7 +211,8 @@ export class DatavizWebMap extends ol.Observable {
         let serverType = "IPORTAL",
             credential = layerInfo.credential,
             keyfix = 'Token',
-            keyParams = layerInfo.url;
+            keyParams = layerInfo.url,
+            projection = layerInfo.projection || this.baseProjection;
         if (layerInfo.url.indexOf("www.supermapol.com") > -1 || layerInfo.url.indexOf("itest.supermapol.com") > -1) {
             keyfix = 'Key';
             keyParams = [keyParams];
@@ -218,7 +226,7 @@ export class DatavizWebMap extends ol.Observable {
             url: layerInfo.url,
             wrapX: false,
             serverType: serverType,
-            prjCoordSys: { epsgCode: layerInfo.projection.split(':')[1] },
+            prjCoordSys: { epsgCode: projection.split(':')[1] },
             tileProxy: this.tileProxy
         });
         SecurityManager[`register${keyfix}`](layerInfo.url);
@@ -316,8 +324,12 @@ export class DatavizWebMap extends ol.Observable {
 
     getWmtsInfo(layerInfo, callback) {
         let that = this;
-        let url = "http://127.0.0.1:8090/iportal/apps/viewer/getUrlResource.json?url=http%3A%2F%2F192.168.12.69%3A8091%2Fiserver%2Fservices%2Fmap-china400%2Fwmts100%3FSERVICE%3DWMTS%26VERSION%3D1.0.0%26REQUEST%3DGetCapabilities";
-        FetchRequest.get(url, null, {withCredentials: true}).then(function (response) {
+        let url = layerInfo.url;
+        let options = {
+            withCredentials: false,
+            withoutFormatSuffix:true
+        };
+        FetchRequest.get(url, null, options).then(function (response) {
             return response.text();
         }).then(function (capabilitiesText) {
             const format = new ol.format.WMTSCapabilities();
@@ -347,8 +359,7 @@ export class DatavizWebMap extends ol.Observable {
                 let name = layerInfo.name,
                     layerBounds = layer.WGS84BoundingBox,
                     extent = ol.proj.transformExtent(layerBounds, 'EPSG:4326', that.baseProjection),
-                    matrixSet = relSet[idx],
-                    requestEncoding = layerInfo.requestEncoding;
+                    matrixSet = relSet[idx];
                 //将需要的参数补上
                 layerInfo.dpi = 90.7;
                 layerInfo.extent = extent;
@@ -357,7 +368,8 @@ export class DatavizWebMap extends ol.Observable {
                 layerInfo.name = name;
                 layerInfo.orginEpsgCode = layerInfo.projection;
                 layerInfo.overLayer = true;
-                layerInfo.requestEncoding = requestEncoding;
+                //只有这种，Dataviz里面不应该选择
+                layerInfo.requestEncoding = 'KVP';
                 layerInfo.scales = scales;
                 layerInfo.style = "default";
                 layerInfo.title = name;
@@ -747,6 +759,9 @@ export class DatavizWebMap extends ol.Observable {
         } else if(layerInfo.layerType === "MARKER"){
             layer = this.createMarkerLayer(layerInfo, features)
         }
+        if(layerInfo.name) {
+            layer.setProperties({name: layerInfo.name});
+        }
         layer && this.map.addLayer(layer);
         if(layerInfo.labelStyle && layerInfo.labelStyle.labelField) {
             //存在标签专题图
@@ -758,14 +773,30 @@ export class DatavizWebMap extends ol.Observable {
      * @param filterCondition {String} 过滤条件
      */
     getFiterFeatures(filterCondition, allFeatures) {
-        if(filterCondition === "") return allFeatures;
-        let obj = {}, filterFeatures;
-        for(let i=0; i<allFeatures.length; i++) {
-            obj[i] = allFeatures[i];
+        let jsonsql = window.jsonsql;
+        let condition = this.replaceFilterCharacter(filterCondition);
+        let sql = "select * from json where (" + condition + ")";
+        let filterFeatures = [];
+        for (let i = 0; i < allFeatures.length; i++) {
+            let feature = allFeatures[i];
+            let filterResult = false;
+            try {
+                filterResult = jsonsql.query(sql, { attributes: feature.attributes });
+            } //必须把要过滤得内容封装成一个对象,主要是处理jsonsql(line : 62)中由于with语句遍历对象造成的问题
+            catch (err) {
+                return false;
+            }
+            if (filterResult && filterResult.length > 0) {
+                //afterFilterFeatureIdx.push(i);
+                filterFeatures.push(feature);
+            }
         }
-        let sql = '* where attributes.' + filterCondition.replace("\"","").replace("\"","");
-        filterFeatures = jsonsql(obj, sql);
         return filterFeatures;
+    }
+    //替换查询语句 中的 and / AND / or / OR / = / !=
+    replaceFilterCharacter(filterString) {
+        filterString = filterString.replace(/=/g, '==').replace(/AND|and/g, '&&').replace(/or|OR/g, '||').replace(/<==/g, '<=').replace(/>==/g, '>=');
+        return filterString;
     }
     /**
      * 添加大数据图层到地图上
@@ -863,6 +894,10 @@ export class DatavizWebMap extends ol.Observable {
      * @param features
      */
     createSymbolLayer(layerInfo, features) {
+        /*let div = document.createElement("div");
+        div.setAttribute('class','supermapol-icons-Shape-56');
+        document.body.appendChild(div);
+        div.style.display = "none";*/
         let style = this.getSymbolStyle(layerInfo.style);
         return new ol.layer.Vector({
             style: style,
@@ -884,7 +919,6 @@ export class DatavizWebMap extends ol.Observable {
             //todo 为什么要判断，难道还有其他的图层会进来
             text = String.fromCharCode(parseInt(parameters.unicode.replace(/^&#x/, ''), 16));
         }
-        let fontSize = 2 * parameters.radius;
         // 填充色 + 透明度
         let fillColor = StyleUtils.hexToRgb(parameters.fillColor);
         fillColor.push(parameters.fillOpacity);
@@ -894,7 +928,7 @@ export class DatavizWebMap extends ol.Observable {
         return new ol.style.Style({
             text: new ol.style.Text({
                 text: text,
-                font: fontSize + "px " + "supermapol-icons",
+                font: parameters.fontSize + " " + "supermapol-icons",
                 placement: 'point',
                 textAlign: 'center',
                 fill: new ol.style.Fill({ color: fillColor}),
@@ -1160,7 +1194,7 @@ export class DatavizWebMap extends ol.Observable {
             let styleSource = layer.get('styleSource');
             if(styleSource){
                 let labelField = styleSource.themeField;
-                let value = Number(feature.attributes[labelField]);
+                let value = Number(feature.attributes[labelField.trim()]);
                 let styleGroups = styleSource.styleGroups;
                 for(let i = 0; i < styleGroups.length; i++){
                     if(i === 0){
@@ -1214,8 +1248,9 @@ export class DatavizWebMap extends ol.Observable {
             try{
                 if (attributes) {
                     //过滤掉非数值的数据
-                    if (attributes[fieldName] && Util.isNumber(attributes[fieldName])) {
-                        values.push(parseFloat(attributes[fieldName])) ;
+                    let value =attributes[fieldName.trim()];
+                    if (value && Util.isNumber(value)) {
+                        values.push(parseFloat(value)) ;
                     }
                 } else if(feature.get(fieldName) && Util.isNumber(feature.get(fieldName))) {
                     if (feature.get(fieldName)) {

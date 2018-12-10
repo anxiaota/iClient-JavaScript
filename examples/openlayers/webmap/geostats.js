@@ -1,4 +1,29 @@
+/**
+* geostats() is a tiny and standalone javascript library for classification 
+* Project page - https://github.com/simogeo/geostats
+* Copyright (c) 2011 Simon Georget, http://www.empreinte-urbaine.eu
+* Licensed under the MIT license
+*/
 
+
+(function (definition) {
+    // This file will function properly as a <script> tag, or a module
+    // using CommonJS and NodeJS or RequireJS module formats.
+
+    // CommonJS
+    if (typeof exports === "object") {
+        module.exports = definition();
+
+    // RequireJS
+    } else if (typeof define === "function" && define.amd) {
+        define(definition);
+
+    // <script>
+    } else {
+        geostats = definition();
+    }
+
+})(function () {
 
 var isInt = function(n) {
    return typeof n === 'number' && parseFloat(n) == parseInt(n, 10) && !isNaN(n);
@@ -10,7 +35,7 @@ var _t = function(str) {
 
 //taking from http://stackoverflow.com/questions/18082/validate-decimal-numbers-in-javascript-isnumeric
 var isNumber = function(n) {
-	return !isNaN(parseFloat(n)) && isFinite(n);
+	  return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 
@@ -1195,9 +1220,8 @@ var geostats = function(a) {
 	this.getUniqueValues = this.getClassUniqueValues;
 	this.getArithmeticProgression = this.getClassArithmeticProgression;
 
-	return this;
-
 };
 
-window.geostats = geostats();
-
+window.geostats = geostats;
+return geostats;
+});

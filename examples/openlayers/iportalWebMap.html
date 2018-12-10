@@ -6,18 +6,19 @@
 <head>
     <meta charset="UTF-8">
     <title data-i18n="resources.title_iportalWebMap"></title>
+    <script type="text/javascript" src="../../dist/openlayers/include-openlayers.js"></script>
     <!-- 字体图标 -->
     <link rel="stylesheet" href="../../src/openlayers/css/dataviz_font/iconfont.css" type="text/css">
-    <script type="text/javascript" src="../js/include-web.js"></script>
-    <script type="text/javascript" src="../../dist/openlayers/include-openlayers.js"></script>
     <script type="text/javascript" src="./webmap/geostats.js"></script>
+    <script type="text/javascript" src="./webmap/jsonsql.js"></script>
+    <script type="text/javascript" src="./webmap/canvg.min.js"></script>
 </head>
 <body style=" margin: 0;overflow: hidden;background: #fff;width: 100%;height:100%">
 <div id="map" style="width: 100%;height:100%"></div>
-<div id="testMap" ></div>
 <script type="text/javascript">
-    new ol.supermap.DatavizWebMap('map', 'http://127.0.0.1:8090/iportal/webmaps/11012430',{
+    new ol.supermap.DatavizWebMap('map', 'http://127.0.0.1:8090/iportal/web/maps/101036650/map',{
         callback: function (map) {
+            console.log('1');
             window.map = map;
         }
     });
